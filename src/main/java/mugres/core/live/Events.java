@@ -1,4 +1,4 @@
-package mugres.core.model;
+package mugres.core.live;
 
 import mugres.core.common.Pitch;
 

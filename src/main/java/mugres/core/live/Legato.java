@@ -1,8 +1,7 @@
-package mugres.core.filters;
+package mugres.core.live;
 
 import mugres.core.common.Context;
-import mugres.core.model.Events;
-import mugres.core.model.Events.NoteEvent;
+import mugres.core.live.Events.NoteEvent;
 
 import java.util.HashMap;
 import java.util.Map;

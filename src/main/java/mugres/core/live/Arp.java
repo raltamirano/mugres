@@ -1,10 +1,9 @@
-package mugres.core.filters;
+package mugres.core.live;
 
 import mugres.core.common.Context;
 import mugres.core.common.Length;
 import mugres.core.common.Value;
-import mugres.core.model.Events;
-import mugres.core.model.Events.NoteEvent;
+import mugres.core.live.Events.NoteEvent;
 
 import java.util.List;
 import java.util.regex.Matcher;

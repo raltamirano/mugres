@@ -1,7 +1,6 @@
-package mugres.core.filters;
+package mugres.core.live;
 
 import mugres.core.common.Context;
-import mugres.core.model.Events;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
