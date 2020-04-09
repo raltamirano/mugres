@@ -25,6 +25,14 @@ public class TimeSignature {
         this.numerator = numerator;
     }
 
+    public Length measuresLength() {
+        return measuresLength(1);
+    }
+
+    public Length measuresLength(final int measures) {
+        return denominator.length().multiply(measures * numerator);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

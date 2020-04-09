@@ -1,13 +1,10 @@
 package mugres.core.notation;
 
-import mugres.core.function.Call;
 import mugres.core.common.Context;
 import mugres.core.common.Context.ComposableContext;
+import mugres.core.function.Call;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Section {
     private String name;
@@ -39,6 +36,16 @@ public class Section {
 
     public Map<Party, List<Call>> getMatrix() {
         return Collections.unmodifiableMap(matrix);
+    }
+
+    public void addPart(final Party party, final Call call) {
+        if (party == null)
+            throw new IllegalArgumentException("party");
+        if (call == null)
+            throw new IllegalArgumentException("call");
+
+        song.addParty(party);
+        matrix.computeIfAbsent(party, p -> new ArrayList()).add(call);
     }
 
     @Override

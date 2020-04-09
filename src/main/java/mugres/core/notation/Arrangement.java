@@ -7,9 +7,8 @@ import java.util.List;
 public class Arrangement {
     private final List<Entry> entries = new ArrayList<>();
 
-    public Arrangement addEntry(final Section section, final int repetitions) {
+    public void addEntry(final Section section, final int repetitions) {
         entries.add(new Entry(section, repetitions));
-        return this;
     }
 
     public List<Entry> getEntries() {

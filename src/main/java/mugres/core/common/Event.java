@@ -6,11 +6,15 @@ public class Event {
     private final Value value;
     private int velocity;
 
-    public Event(Length position, Pitch pitch, Value value, int velocity) {
+    private Event(Length position, Pitch pitch, Value value, int velocity) {
         this.position = position;
         this.pitch = pitch;
         this.value = value;
         this.velocity = velocity;
+    }
+
+    public static Event of(Length position, Pitch pitch, Value value, int velocity) {
+        return new Event(position, pitch, value, velocity);
     }
 
     public Length getPosition() {
@@ -31,5 +35,10 @@ public class Event {
 
     public void setVelocity(int velocity) {
         this.velocity = velocity;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s @ %s", pitch, value, position);
     }
 }

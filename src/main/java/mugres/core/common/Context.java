@@ -16,6 +16,14 @@ public interface Context {
     void put(final String key, Object value);
     <X> X get(final String key);
 
+    static Context createBasicContext() {
+        final Context context = new Context.ComposableContext();
+        context.put(Context.TEMPO, 120);
+        context.put(Context.KEY, Key.C);
+        context.put(Context.TIME_SIGNATURE, TimeSignature.TS44);
+        return context;
+    }
+
     String TEMPO = "tempo";
     String KEY = "key";
     String TIME_SIGNATURE = "time-signature";

@@ -1,19 +1,35 @@
 package mugres.core.function;
 
 import mugres.core.common.Context;
+import mugres.core.common.Length;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Function call */
+import static mugres.core.function.Function.LENGTH_PARAMETER;
+
+/** Function call. */
 public class Call {
     private final Function function;
     private final Map<String, Object> arguments = new HashMap<>();
 
-    public Call(final Function function, final Map<String, Object> arguments) {
+    private Call(final Function function, final Map<String, Object> arguments) {
         this.function = function;
         this.arguments.putAll(arguments);
+    }
+
+    private Call(final Function function, final int lengthInMeasures) {
+        this.function = function;
+        this.arguments.put(LENGTH_PARAMETER.getName(), lengthInMeasures);
+    }
+
+    public static Call of(final Function function, final Map<String, Object> arguments) {
+        return new Call(function, arguments);
+    }
+
+    public static Call of(final Function function, final int lengthInMeasures) {
+        return new Call(function, lengthInMeasures);
     }
 
     public Function getFunction() {
