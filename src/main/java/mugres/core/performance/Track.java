@@ -9,14 +9,20 @@ import java.util.Objects;
 
 public class Track {
     private final String party;
+    private final int channel;
     private final List<Event> events = new ArrayList<>();
 
-    public Track(final String party) {
+    public Track(final String party, final int channel) {
         this.party = party;
+        this.channel = channel;
     }
 
     public String getParty() {
         return party;
+    }
+
+    public int getChannel() {
+        return channel;
     }
 
     public List<Event> getEvents() {

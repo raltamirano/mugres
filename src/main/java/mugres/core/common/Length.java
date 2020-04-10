@@ -27,6 +27,10 @@ public class Length implements Comparable<Length> {
         return Math.round((60000.0 / bpm / 16.0) * n);
     }
 
+    public long toPPQTicks(final int ppqResolution) {
+        return n / 16 * ppqResolution;
+    }
+
     public Length plus(final Length other) {
         return new Length(this.n + other.n);
     }
@@ -59,5 +63,4 @@ public class Length implements Comparable<Length> {
     public String toString() {
         return String.valueOf(n);
     }
-
 }

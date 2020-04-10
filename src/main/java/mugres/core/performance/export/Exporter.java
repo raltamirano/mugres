@@ -2,9 +2,15 @@ package mugres.core.performance.export;
 
 import mugres.core.performance.Performance;
 
-import java.io.OutputStream;
+import java.io.File;
+import java.io.IOException;
 
 public interface Exporter {
-    void export(final Performance performance,
-                final OutputStream outputStream);
+    default void export(final Performance performance, final String outputFilename)
+            throws IOException {
+        export(performance, new File(outputFilename));
+    }
+
+    void export(final Performance performance, final File outputFile)
+            throws IOException;
 }

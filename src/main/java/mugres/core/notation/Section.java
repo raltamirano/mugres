@@ -2,19 +2,22 @@ package mugres.core.notation;
 
 import mugres.core.common.Context;
 import mugres.core.common.Context.ComposableContext;
+import mugres.core.common.Length;
 import mugres.core.function.Call;
 
 import java.util.*;
 
 public class Section {
     private String name;
-    private Song song;
+    private final int measures;
+    private final Song song;
     private final Context context;
     private final Map<Party, List<Call>> matrix = new HashMap<>();
 
-    public Section(final Song song, final String name) {
+    public Section(final Song song, final String name, final int measures) {
         this.song = song;
         this.name = name;
+        this.measures = measures;
         this.context = new ComposableContext(song.getContext());
     }
 
@@ -28,6 +31,10 @@ public class Section {
 
     public Song getSong() {
         return song;
+    }
+
+    public int getMeasures() {
+        return measures;
     }
 
     public Context getContext() {
@@ -46,6 +53,10 @@ public class Section {
 
         song.addParty(party);
         matrix.computeIfAbsent(party, p -> new ArrayList()).add(call);
+    }
+
+    public Length getLength() {
+        return context.getTimeSignature().measuresLength(measures);
     }
 
     @Override

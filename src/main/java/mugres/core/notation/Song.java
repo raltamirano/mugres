@@ -1,14 +1,10 @@
 package mugres.core.notation;
 
 import mugres.core.common.Context;
-import mugres.core.common.Event;
-import mugres.core.common.Length;
-import mugres.core.function.Call;
-import mugres.core.function.Result;
-import mugres.core.performance.Performance;
-import mugres.core.performance.Track;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Song {
     private String title;
@@ -38,11 +34,11 @@ public class Song {
         return context;
     }
 
-    public Section createSection(final String sectionName) {
+    public Section createSection(final String sectionName, final int measures) {
         if (sections.stream().anyMatch(s -> s.getName().equals(sectionName)))
             throw new IllegalArgumentException(String.format("Section '%s' already exists!", sectionName));
 
-        final Section section = new Section(this, sectionName);
+        final Section section = new Section(this, sectionName, measures);
         sections.add(section);
         return section;
     }
@@ -51,8 +47,7 @@ public class Song {
         if (party == null)
             throw new IllegalArgumentException("party");
 
-        if (!parties.contains(party))
-            parties.add(party);
+        parties.add(party);
     }
 
     public Set<Section> getSections() {
@@ -65,45 +60,5 @@ public class Song {
 
     public Arrangement getArrangement() {
         return arrangement;
-    }
-
-    public Performance perform() {
-        final Performance performance = new Performance(title);
-
-        for(Party party : parties) {
-            final Track track = performance.createTrack(party.getName());
-            Length position = Length.ZERO;
-            for(Arrangement.Entry arrangementEntry : arrangement.getEntries()) {
-                for(int arrangementEntryIndex = 1; arrangementEntryIndex <= arrangementEntry.getRepetitions();
-                    arrangementEntryIndex++) {
-                    for (Call call : arrangementEntry.getSection().getMatrix().get(party)) {
-                        final Result functionResult = call.execute(context);
-                        if (functionResult.succeeded()) {
-                            final List<Event> events = sortEventList(functionResult.getEvents());
-                            Length lastPosition = Length.ZERO;
-                            for(Event event : events) {
-                                if (!event.getPosition().equals(lastPosition)) {
-                                    position = position.plus(event.getPosition());
-                                    lastPosition = event.getPosition();
-                                }
-                                track.addEvent(Event.of(position, event.getPitch(),
-                                        event.getValue(), event.getVelocity()));
-                            }
-                        } else {
-                            // TODO: better error handling
-                            throw new RuntimeException(functionResult.getError());
-                        }
-                    }
-                }
-            }
-        }
-
-        return performance;
-    }
-
-    private List<Event> sortEventList(final List<Event> events) {
-        final List<Event> sortedEventList = new ArrayList<>(events);
-        sortedEventList.sort(Comparator.comparing(Event::getPosition));
-        return sortedEventList;
     }
 }

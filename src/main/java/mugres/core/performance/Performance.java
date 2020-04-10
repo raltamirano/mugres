@@ -1,11 +1,15 @@
 package mugres.core.performance;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import mugres.core.common.Key;
+import mugres.core.common.Length;
+import mugres.core.common.TimeSignature;
+import mugres.core.notation.Party;
+
+import java.util.*;
 
 public class Performance {
     private final String song;
+    private final List<Control.ControlEvent> controlEvents = new ArrayList<>();
     private final Set<Track> tracks = new HashSet<>();
 
     public Performance(String song) {
@@ -16,15 +20,28 @@ public class Performance {
         return song;
     }
 
+    public List<Control.ControlEvent> getControlEvents() {
+        return Collections.unmodifiableList(controlEvents);
+    }
+
     public Set<Track> getTracks() {
         return Collections.unmodifiableSet(tracks);
     }
 
-    public Track createTrack(final String party) {
-        if (tracks.stream().anyMatch(t -> t.getParty().equalsIgnoreCase(party)))
+    public void addControlEvent(final Length position, final int tempo,
+                                final Key key, final TimeSignature timeSignature) {
+        addControlEvent(position, Control.of(tempo, key, timeSignature));
+    }
+
+    public void addControlEvent(final Length position, final Control control) {
+        controlEvents.add(Control.ControlEvent.of(position, control));
+    }
+
+    public Track createTrack(final Party party) {
+        if (tracks.stream().anyMatch(t -> t.getParty().equalsIgnoreCase(party.getName())))
             throw new IllegalArgumentException("party");
 
-        final Track track = new Track(party);
+        final Track track = new Track(party.getName(), party.getChannel());
         tracks.add(track);
         return track;
     }
