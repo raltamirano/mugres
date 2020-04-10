@@ -28,7 +28,7 @@ public class Length implements Comparable<Length> {
     }
 
     public long toPPQTicks(final int ppqResolution) {
-        return n / 16 * ppqResolution;
+        return Math.round(n / 16.0 * (double)ppqResolution);
     }
 
     public Length plus(final Length other) {

@@ -1,6 +1,7 @@
 package mugres.core.function;
 
 import mugres.core.common.*;
+import mugres.core.function.builtin.drums.DrumPattern;
 import mugres.core.function.builtin.random.Random;
 
 import java.util.*;
@@ -100,6 +101,7 @@ public abstract class Function {
 
     // Builtin functions
     public static final Random RANDOM = new Random();
+    public static final DrumPattern DRUM_PATTERN = new DrumPattern();
 
     public static class Parameter {
         private final String name;
@@ -108,16 +110,24 @@ public abstract class Function {
         private final boolean optional;
         private final Object defaultValue;
 
-        public Parameter(String name, String documentation, DataType dataType) {
+        private Parameter(String name, String documentation, DataType dataType) {
             this(name, documentation, dataType, false, null);
         }
 
-        public Parameter(String name, String documentation, DataType dataType, boolean optional, Object defaultValue) {
+        private Parameter(String name, String documentation, DataType dataType, boolean optional, Object defaultValue) {
             this.name = name;
             this.documentation = documentation;
             this.dataType = dataType;
             this.optional = optional;
             this.defaultValue = defaultValue;
+        }
+
+        public static Parameter of(String name, String documentation, DataType dataType) {
+            return new Parameter(name, documentation, dataType);
+        }
+
+        public static Parameter of(String name, String documentation, DataType dataType, boolean optional, Object defaultValue) {
+            return new Parameter(name, documentation, dataType, optional, defaultValue);
         }
 
         public String getName() {

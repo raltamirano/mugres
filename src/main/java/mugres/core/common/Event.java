@@ -39,6 +39,6 @@ public class Event {
 
     @Override
     public String toString() {
-        return String.format("%s %s @ %s", pitch, value, position);
+        return String.format("%s %-13s @ %6s (%03d)", pitch, value, position, velocity);
     }
 }

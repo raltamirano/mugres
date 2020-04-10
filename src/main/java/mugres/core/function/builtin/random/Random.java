@@ -13,12 +13,12 @@ import static mugres.core.function.Function.Parameter.DataType.VALUE;
 
 public class Random extends Function {
     public Random() {
-        super("Random", "Generates random pitches",
-                new Parameter("startingOctave", "Starting octave",
+        super("random", "Generates random pitches",
+                Parameter.of("startingOctave", "Starting octave",
                         INTEGER, true, 3),
-                new Parameter("octavesToGenerate", "Octaves to generate",
+                Parameter.of("octavesToGenerate", "Octaves to generate",
                         INTEGER, true, 2),
-                new Parameter("noteValue", "Note value",
+                Parameter.of("noteValue", "Note value",
                         VALUE, true, QUARTER)
         );
     }
@@ -32,10 +32,10 @@ public class Random extends Function {
         final int octavesToGenerate = (int)arguments.get("octavesToGenerate");
         final List<Pitch> pitches = Scale.MAJOR_PENTATONIC.pitches(Note.C, octavesToGenerate, startingOctave);
 
-        Length actualLength = Length.ZERO;
-        while(actualLength.getLength() < length.getLength()) {
-            events.add(Event.of(actualLength, pitches.get(RND.nextInt(pitches.size())), noteValue, 100));
-            actualLength = actualLength.plus(noteValue.length());
+        Length actualPosition = Length.ZERO;
+        while(actualPosition.getLength() < length.getLength()) {
+            events.add(Event.of(actualPosition, pitches.get(RND.nextInt(pitches.size())), noteValue, 100));
+            actualPosition = actualPosition.plus(noteValue.length());
         }
 
         return events;
