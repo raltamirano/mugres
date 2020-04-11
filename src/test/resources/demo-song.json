@@ -1,0 +1,42 @@
+{
+  "title": "The Demo Song",
+  "tempo": 140,
+  "key": "C",
+  "timeSignature": "4/4",
+  "sections": [
+    {
+      "name": "A",
+      "measures": 2,
+      "tempo": 80,
+      "key": "C",
+      "timeSignature": "4/4",
+      "matrix": {
+        "GUITAR1": [
+          "random(len=2)"
+        ]
+      }
+    },
+    {
+      "name": "B",
+      "measures": 4,
+      "tempo": 220,
+      "key": "C",
+      "timeSignature": "4/4",
+      "matrix": {
+        "GUITAR1": [
+          "random(len=4, noteValue=EIGHTH)"
+        ]
+      }
+    }
+  ],
+  "arrangement": [
+    {
+      "section": "A",
+      "repetitions": 1
+    },
+    {
+      "section": "B",
+      "repetitions": 2
+    }
+  ]
+}

@@ -30,6 +30,14 @@ public enum Note {
         throw new IllegalArgumentException("MIDI note number must be 0 (C) <= number <= 11 (B)");
     }
 
+    public static Note of(final String label) {
+        for(Note note : Note.values())
+            if (note.label == label)
+                return note;
+
+        throw new IllegalArgumentException("Invalid note: " + label);
+    }
+
     public String label() {
         return label;
     }

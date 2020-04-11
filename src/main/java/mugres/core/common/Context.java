@@ -36,8 +36,12 @@ public interface Context {
         private final Map<String, Object> data = new HashMap<>();
         private final Set<Context> parents = new HashSet<>();
 
-        public ComposableContext(final Context... parents) {
+        private ComposableContext(final Context... parents) {
             this.parents.addAll(asList(parents));
+        }
+
+        public static ComposableContext of(final Context... parents) {
+            return new ComposableContext(parents);
         }
 
         @Override

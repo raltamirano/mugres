@@ -1,4 +1,4 @@
-package mugres.core.performance.export;
+package mugres.core.performance.exporters;
 
 import mugres.core.performance.Performance;
 import mugres.core.performance.converters.ToMIDISequenceConverter;

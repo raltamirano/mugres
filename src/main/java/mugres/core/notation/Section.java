@@ -18,7 +18,7 @@ public class Section {
         this.song = song;
         this.name = name;
         this.measures = measures;
-        this.context = new ComposableContext(song.getContext());
+        this.context = ComposableContext.of(song.getContext());
     }
 
     public String getName() {

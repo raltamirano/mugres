@@ -70,6 +70,13 @@ public enum Key {
         return defaultScale().harmonize(root, chordRoot, Interval.Type.THIRD, numberOfNotes, baseOctave);
     }
 
+    public static Key fromLabel(String label) {
+        for(Key key : values())
+            if (key.label.equals(label))
+                return key;
+        throw new IllegalArgumentException("Invalid Key label: " + label);
+    }
+
     enum Mode {
         MAJOR,
         MINOR

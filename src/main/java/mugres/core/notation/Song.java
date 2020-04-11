@@ -54,6 +54,14 @@ public class Song {
         return Collections.unmodifiableSet(sections);
     }
 
+    public Section getSection(final String name) {
+        for(Section section : sections)
+            if (section.getName().equals(name))
+                return section;
+
+        return null;
+    }
+
     public Set<Party> getParties() {
         return Collections.unmodifiableSet(parties);
     }

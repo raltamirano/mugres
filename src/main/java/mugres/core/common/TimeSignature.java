@@ -17,6 +17,16 @@ public class TimeSignature {
         return new TimeSignature(numerator, denominator);
     }
 
+    public static TimeSignature of(final String timeSignature) {
+        if ("3/4".equals(timeSignature)) return TS34;
+        if ("4/4".equals(timeSignature)) return TS44;
+        if ("6/8".equals(timeSignature)) return TS68;
+        if ("8/8".equals(timeSignature)) return TS88;
+        if ("12/8".equals(timeSignature)) return TS128;
+
+        throw new RuntimeException("Not implemented: parsing of time signatures!");
+    }
+
     public int getNumerator() {
         return numerator;
     }

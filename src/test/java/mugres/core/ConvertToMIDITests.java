@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import javax.sound.midi.Sequence;
 
 import static mugres.core.common.Context.createBasicContext;
-import static mugres.core.function.Function.RANDOM;
-import static mugres.core.notation.Party.GUITAR1;
+import static mugres.core.function.Function.WellKnownFunctions.RANDOM;
+import static mugres.core.notation.Party.WellKnownParties.GUITAR1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -24,7 +24,7 @@ public class ConvertToMIDITests {
         final Section section = song.createSection("A", 2);
         song.getArrangement().addEntry(section, 1);
 
-        section.addPart(GUITAR1, Call.of(RANDOM, section.getMeasures()));
+        section.addPart(GUITAR1.getParty(), Call.of(RANDOM.getFunction(), section.getMeasures()));
 
         final Performance performance = Performer.perform(song);
         System.out.println(String.format("Performance =>%n%s", performance));
@@ -33,7 +33,7 @@ public class ConvertToMIDITests {
         assertEquals(song.getTitle(), performance.getSong());
         assertEquals(1, performance.getTracks().size());
         final Track track = performance.getTracks().iterator().next();
-        assertEquals(GUITAR1.getName(), track.getParty());
+        assertEquals(GUITAR1.getParty().getName(), track.getParty());
         // 2 measures of random quarter notes (section A repeats once)
         assertEquals(8, track.getEvents().size());
 

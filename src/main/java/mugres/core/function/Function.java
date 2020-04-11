@@ -35,6 +35,13 @@ public abstract class Function {
         return Collections.unmodifiableSet(parameters);
     }
 
+    public Parameter getParameter(final String name) {
+        for(Parameter parameter : parameters)
+            if (parameter.name.equals(name))
+                return parameter;
+        return null;
+    }
+
     private void addParameter(final Parameter parameter) {
         if (parameters.contains(parameter.name))
             throw new IllegalArgumentException(String.format("Parameter '%s' already exists!", parameter.name));
@@ -100,8 +107,29 @@ public abstract class Function {
             Parameter.DataType.INTEGER);
 
     // Builtin functions
-    public static final Random RANDOM = new Random();
-    public static final DrumPattern DRUM_PATTERN = new DrumPattern();
+
+    public enum WellKnownFunctions {
+        RANDOM(new Random()),
+        DRUM_PATTERN(new DrumPattern());
+
+        private final Function function;
+
+        WellKnownFunctions(final Function function) {
+            this.function = function;
+        }
+
+        public static WellKnownFunctions forName(final String name) {
+            for(WellKnownFunctions w : values())
+                if (w.function.name.equals(name))
+                    return w;
+
+            throw new IllegalArgumentException("Unknown function: " + name);
+        }
+
+        public Function getFunction() {
+            return function;
+        }
+    }
 
     public static class Parameter {
         private final String name;
