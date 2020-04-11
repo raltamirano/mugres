@@ -27,7 +27,11 @@ public class DyadDataConverter implements DataConverter<DyadDataConverter.Dyad> 
 
         final Note root = Note.of(matcher.group(1));
         final Interval interval = Interval.forShortName(matcher.group(2));
-        return Dyad.of(root, interval);
+        final String octaveString = matcher.group(3);
+        final Integer octave = octaveString.trim().isEmpty() ?
+                null :
+                Integer.valueOf(octaveString.substring(1, octaveString.length() - 1));
+        return Dyad.of(root, interval, octave);
     }
 
     @Override
@@ -50,15 +54,21 @@ public class DyadDataConverter implements DataConverter<DyadDataConverter.Dyad> 
         private final Note root;
         private final Note next;
         private final Interval interval;
+        private final Integer octave;
 
-        private Dyad(final Note root, final Interval interval) {
+        private Dyad(final Note root, final Interval interval, final Integer octave) {
             this.root = root;
             this.interval = interval;
             this.next = root.up(interval);
+            this.octave = octave;
         }
 
         public static Dyad of(final Note root, final Interval interval) {
-            return new Dyad(root, interval);
+            return of(root, interval, null);
+        }
+
+        public static Dyad of(final Note root, final Interval interval, final Integer octave) {
+            return new Dyad(root, interval, octave);
         }
 
         public Note getRoot() {
@@ -73,12 +83,16 @@ public class DyadDataConverter implements DataConverter<DyadDataConverter.Dyad> 
             return interval;
         }
 
+        public Integer getOctave() {
+            return octave;
+        }
+
         @Override
         public String toString() {
             return String.format("Root: %s - Next: %s (%s)", root, next, interval.shortName());
         }
     }
 
-    private static final Pattern DYAD = Pattern.compile("(C|C#|D|D#|E|F|F#|G|G#|A|A#|B)(b2|2|b3|3|4|#4|b5|5|b6|6|bb7|b7|7|8)");
+    private static final Pattern DYAD = Pattern.compile("(C|C#|D|D#|E|F|F#|G|G#|A|A#|B)(b2|2|b3|3|4|#4|b5|5|b6|6|bb7|b7|7|8)(\\[-?\\d\\])?");
     private static final Pattern DYAD_EVENTS = Pattern.compile("(" + DYAD.pattern() + "|\\s+|-)");
 }

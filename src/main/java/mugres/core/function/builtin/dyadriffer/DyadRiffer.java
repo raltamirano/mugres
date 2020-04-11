@@ -49,8 +49,9 @@ public class DyadRiffer extends Function {
             }
 
             if (dyad != null) {
-                final Pitch root = dyad.getRoot().pitch(baseOctave);
-                final Pitch next = dyad.getRoot().pitch(baseOctave).up(dyad.getInterval());
+                final int octave = dyad.getOctave() != null ? dyad.getOctave() : baseOctave;
+                final Pitch root = dyad.getRoot().pitch(octave);
+                final Pitch next = dyad.getRoot().pitch(octave).up(dyad.getInterval());
                 final int velocity = 100;
 
                 events.add(Event.of(position, root, riffPattern.getDivision(), velocity));

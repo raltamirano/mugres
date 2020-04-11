@@ -1,6 +1,5 @@
 package mugres.core;
 
-import mugres.core.common.Value;
 import mugres.core.common.gridpattern.GridPattern;
 import mugres.core.common.gridpattern.converters.DrumKitHitDataConverter;
 import mugres.core.common.gridpattern.converters.DyadDataConverter;
