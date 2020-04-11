@@ -1,5 +1,6 @@
 package mugres.core.ui;
 
+import mugres.core.notation.Section;
 import mugres.core.notation.Song;
 import mugres.core.notation.readers.JSONReader;
 import mugres.core.performance.Performance;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 public class REPL {
     private static File songFile;
     private static Song song;
-    private static String section;
+    private static Map<Integer, String> sectionsMap = new HashMap<>();
     private static Sequencer sequencer;
 
     private static final Map<String, Function<String[], Boolean>> HANDLERS = new HashMap<>();
@@ -47,6 +48,9 @@ public class REPL {
         HANDLERS.put("status", REPL::status);
         HANDLERS.put("load-song", REPL::loadSong);
         HANDLERS.put("play-song", REPL::playSong);
+        HANDLERS.put("sections", REPL::sections);
+        HANDLERS.put("play-section", REPL::playSection);
+        HANDLERS.put("loop-section", REPL::loopSection);
         HANDLERS.put("stop", REPL::stop);
         HANDLERS.put("quit", REPL::quit);
     }
@@ -129,6 +133,9 @@ public class REPL {
         } else {
             doStop();
             song = null;
+            songFile = null;
+            sectionsMap.clear();
+
             final File file = new File(args[1]);
 
             if (!file.exists()) {
@@ -140,6 +147,10 @@ public class REPL {
                     throw new RuntimeException(e);
                 }
                 songFile = file;
+
+                int sectionId = 1;
+                for(Section section : song.getSections())
+                    sectionsMap.put(sectionId++, section.getName());
 
                 System.out.println(String.format("Successfully loaded song '%s' from '%s'",
                         song.getTitle(), songFile.getAbsolutePath()));
@@ -158,6 +169,62 @@ public class REPL {
             final Performance performance = Performer.perform(song);
             final Sequence songMIDISequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
             playMIDISequence(songMIDISequence, false);
+        }
+
+        return true;
+    }
+
+    private static boolean playSection(final String[] args) {
+        if (!isSongLoaded()) {
+            System.out.println(args[0] + ": no song loaded");
+        } else if (args.length != 2) {
+            System.out.println(args[0] + ": single argument expected: section id (issue command 'sections' to list available sections)");
+        } else {
+            final int sectionId = Integer.parseInt(args[1]);
+            String sectionName = sectionsMap.get(sectionId);
+            if (sectionName == null) {
+                System.out.println("Invalid section id: " + sectionId);
+            } else {
+                doPlaySection(sectionName, false);
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean loopSection(final String[] args) {
+        if (!isSongLoaded()) {
+            System.out.println(args[0] + ": no song loaded");
+        } else if (args.length != 2) {
+            System.out.println(args[0] + ": single argument expected: section id (issue command 'sections' to list available sections)");
+        } else {
+            final int sectionId = Integer.parseInt(args[1]);
+            String sectionName = sectionsMap.get(sectionId);
+            if (sectionName == null) {
+                System.out.println("Invalid section id: " + sectionId);
+            } else {
+                doPlaySection(sectionName, true);
+            }
+        }
+
+        return true;
+    }
+
+    private static void doPlaySection(final String sectionName, final boolean loop) {
+        final Performance performance = Performer.perform(song.createSectionSong(sectionName));
+        final Sequence songMIDISequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
+        playMIDISequence(songMIDISequence, loop);
+
+    }
+
+    private static boolean sections(final String[] args) {
+        if (args.length != 1) {
+            System.out.println(args[0] + ": no arguments expected");
+        } else if (!isSongLoaded()) {
+            System.out.println(args[0] + ": no song loaded");
+        } else {
+            for(Integer sectionId : sectionsMap.keySet())
+                System.out.println(String.format("%-3s\t%s", sectionId, sectionsMap.get(sectionId)));
         }
 
         return true;

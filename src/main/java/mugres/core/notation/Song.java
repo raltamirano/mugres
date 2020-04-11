@@ -43,6 +43,21 @@ public class Song {
         return section;
     }
 
+    /** Creates a song that contains a single section from this songs. That section will be arranged
+     * to be repeated once. */
+    public Song createSectionSong(final String sectionName) {
+        final Section section = getSection(sectionName);
+        if (section == null)
+            throw new IllegalArgumentException("Unknown section: " + sectionName);
+
+        final Song sectionSong = Song.of(sectionName, context);
+        sectionSong.parties.addAll(parties);
+        sectionSong.sections.add(section);
+        sectionSong.arrangement.addEntry(section, 1);
+
+        return sectionSong;
+    }
+
     void addParty(final Party party) {
         if (party == null)
             throw new IllegalArgumentException("party");
