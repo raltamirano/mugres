@@ -1,5 +1,10 @@
 package mugres.core.ui;
 
+import mugres.core.common.Context;
+import mugres.core.common.Key;
+import mugres.core.common.TimeSignature;
+import mugres.core.function.Call;
+import mugres.core.notation.Party;
 import mugres.core.notation.Section;
 import mugres.core.notation.Song;
 import mugres.core.notation.readers.JSONReader;
@@ -20,6 +25,8 @@ public class REPL {
     private static Song song;
     private static Map<Integer, String> sectionsMap = new HashMap<>();
     private static Sequencer sequencer;
+    private static Context functionCallsContext = Context.createBasicContext();
+    private static Party functionCallsParty = Party.WellKnownParties.PIANO.getParty();
 
     private static final Map<String, Function<String[], Boolean>> HANDLERS = new HashMap<>();
     private static final JSONReader SONG_JSON_READER = new JSONReader();
@@ -51,6 +58,13 @@ public class REPL {
         HANDLERS.put("sections", REPL::sections);
         HANDLERS.put("play-section", REPL::playSection);
         HANDLERS.put("loop-section", REPL::loopSection);
+        HANDLERS.put("calls-show-context", REPL::callsShowContext);
+        HANDLERS.put("calls-tempo", REPL::callsSetTempo);
+        HANDLERS.put("calls-key", REPL::callsSetKey);
+        HANDLERS.put("calls-ts", REPL::callsSetTimeSignature);
+        HANDLERS.put("calls-party", REPL::callsSetParty);
+        HANDLERS.put("calls-show-parties", REPL::callsShowAvailableParties);
+        HANDLERS.put("call", REPL::callsExecute);
         HANDLERS.put("stop", REPL::stop);
         HANDLERS.put("quit", REPL::quit);
     }
@@ -214,7 +228,6 @@ public class REPL {
         final Performance performance = Performer.perform(song.createSectionSong(sectionName));
         final Sequence songMIDISequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
         playMIDISequence(songMIDISequence, loop);
-
     }
 
     private static boolean sections(final String[] args) {
@@ -229,6 +242,92 @@ public class REPL {
 
         return true;
     }
+
+    private static boolean callsShowContext(final String[] args) {
+        if (args.length != 1) {
+            System.out.println(args[0] + ": no arguments expected");
+        } else {
+            System.out.println(String.format("Tempo = %d", functionCallsContext.getTempo()));
+            System.out.println(String.format("Key = %s", functionCallsContext.getKey()));
+            System.out.println(String.format("Time Signature = %s", functionCallsContext.getTimeSignature()));
+            System.out.println(String.format("Party = %s", functionCallsParty.getName()));
+        }
+
+        return true;
+    }
+
+    private static boolean callsSetTempo(final String[] args) {
+        if (args.length != 2) {
+            System.out.println(args[0] + ": single argument expected: tempo in BPM");
+        } else {
+            final int tempo = Integer.parseInt(args[1]);
+            if (tempo <= 0) {
+                System.out.println("Invalid tempo: " + tempo);
+            } else {
+                functionCallsContext.setTempo(tempo);
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean callsSetKey(final String[] args) {
+        if (args.length != 2) {
+            System.out.println(args[0] + ": single argument expected: Key");
+        } else {
+            final Key key = Key.fromLabel(args[1]);
+            functionCallsContext.setKey(key);
+        }
+
+        return true;
+    }
+
+    private static boolean callsSetTimeSignature(final String[] args) {
+        if (args.length != 2) {
+            System.out.println(args[0] + ": single argument expected: Time Signature. Format: nn/dd");
+        } else {
+            final TimeSignature timeSignature = TimeSignature.of(args[1]);
+            functionCallsContext.setTimeSignature(timeSignature);
+        }
+
+        return true;
+    }
+
+    private static boolean callsSetParty(final String[] args) {
+        if (args.length != 2) {
+            System.out.println(args[0] + ": single argument expected: Party ID");
+        } else {
+            functionCallsParty = Party.WellKnownParties.valueOf(args[1]).getParty();
+        }
+
+        return true;
+    }
+
+    private static boolean callsShowAvailableParties(final String[] args) {
+        if (args.length != 1) {
+            System.out.println(args[0] + ": no arguments expected");
+        } else {
+            for(Party.WellKnownParties w : Party.WellKnownParties.values())
+                System.out.println(String.format("%-30s\t%s", w.name(), w.getParty().getName()));
+        }
+
+        return true;
+    }
+
+    private static boolean callsExecute(final String[] args) {
+        if (args.length != 2) {
+            System.out.println(args[0] + ": single argument expected: call function specification");
+        } else {
+            final Call call = Call.parse(args[1]);
+            final Song functionCallSong = Song.of(functionCallsContext, functionCallsParty, call);
+            final Performance performance = Performer.perform(functionCallSong);
+            final Sequence songMIDISequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
+            playMIDISequence(songMIDISequence, false);
+        }
+
+        return true;
+    }
+
 
     private static void playMIDISequence(final Sequence midiSequence, final boolean loop) {
         doStop();

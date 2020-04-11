@@ -1,6 +1,7 @@
 package mugres.core.notation;
 
 import mugres.core.common.Context;
+import mugres.core.function.Call;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -20,6 +21,14 @@ public class Song {
 
     public static Song of(final String title, final Context context) {
         return new Song(title, context);
+    }
+
+    public static Song of(final Context functionCallsContext, final Party functionCallsParty, final Call call) {
+        final Song functionCallSong = new Song("Untitled", functionCallsContext);
+        final Section section = functionCallSong.createSection("A", call.getLengthInMeasures());
+        section.addPart(functionCallsParty, call);
+        functionCallSong.arrangement.addEntry(section, 1);
+        return functionCallSong;
     }
 
     public String getTitle() {

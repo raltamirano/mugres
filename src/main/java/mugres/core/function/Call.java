@@ -119,6 +119,10 @@ public class Call {
         return Collections.unmodifiableMap(arguments);
     }
 
+    public int getLengthInMeasures() {
+        return (int)arguments.get(LENGTH_PARAMETER.getName());
+    }
+
     private static final Pattern FUNCTION_CALL = Pattern.compile("([a-z][0-9a-zA-Z_-]+[0-9a-zA-Z])\\((.*)\\)");
-    private static final Pattern NAMED_ARGS_LIST = Pattern.compile("([a-z][0-9a-zA-Z_-]*[0-9a-zA-Z])\\=(\\'(?:[0-9a-zA-Z_-]+)\\'|(?:\\-?\\d+(?:\\.\\d+)?)|true|false|yes|no|y|n)");
+    private static final Pattern NAMED_ARGS_LIST = Pattern.compile("([a-z][0-9a-zA-Z_-]*[0-9a-zA-Z])\\=(\\'(?:[0-9a-zA-Z_-]+)\\'|(?:\\-?\\d+(?:\\.\\d+)?)|true|false|yes|no|y|n|(?:[0-9a-zA-Z_-]+))");
 }

@@ -65,6 +65,11 @@ public class TimeSignature {
         this.denominator = denominator;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%d/%d", numerator, denominator.denominator());
+    }
+
     /** 3/4 */
     public static final TimeSignature TS34 = of(3, Value.QUARTER);
     /** 4/4 */
