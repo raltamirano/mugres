@@ -39,7 +39,7 @@ public class GridPattern<E> {
                 .filter(s -> !s.isEmpty() && !s.startsWith("#"))
                 .collect(Collectors.toList());
 
-        String name = null;
+        String name = "Untitled";
         Value division = null;
         Integer slots = null;
         boolean keepPlaying = false;
@@ -71,8 +71,6 @@ public class GridPattern<E> {
                     final String elementEvents = elementMatcher.group(2);
                     int eventSlot = 1;
                     final List<X> lineEvents = dataConverter.tokenize(elementEvents);
-                    if (lineEvents.size() != slots)
-                        throw new RuntimeException("Invalid Grid Pattern element line (event count mismatch): " + line);
 
                     for (X eventData : lineEvents) {
                         events.add(GridEvent.of(eventSlot, elementName, eventData));
@@ -84,12 +82,27 @@ public class GridPattern<E> {
             }
         }
 
-        if (name == null || name.trim().isEmpty())
-            throw new IllegalArgumentException("Invalid name!");
         if (division == null)
             throw new IllegalArgumentException("Invalid division value!");
-        if (slots == null)
-            throw new IllegalArgumentException("Invalid slots value!");
+
+        final Map<String, List<GridEvent<X>>> eventsByElement = events.stream()
+                .collect(Collectors.groupingBy(GridEvent::getElement));
+        if (slots != null) {
+            for(String element : eventsByElement.keySet()) {
+                final int actualEvents = eventsByElement.get(element).size();
+                if (actualEvents != slots)
+                    throw new RuntimeException(String.format("Event count mismatch for element '%s'. " +
+                            "Expected: %d, actual: %d", element, slots, actualEvents));
+            }
+        } else {
+            final List<Integer> eventSizes = eventsByElement.values().stream().map(List::size).distinct()
+                    .collect(Collectors.toList());
+            if (eventSizes.size() == 1)
+                slots = eventSizes.get(0);
+            else
+                throw new RuntimeException(String.format("Could not infer number of grid pattern slots"));
+        }
+
 
         final GridPattern<X> gridPattern = new GridPattern<>(name, division, slots, keepPlaying, attributes);
 
@@ -148,8 +161,22 @@ public class GridPattern<E> {
         return division.length().multiply(slots);
     }
 
-    public static final String NO_EVENT = "-";
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
 
+        sb.append(String.format("Name: %s%n", name));
+        sb.append(String.format("Division: %s%n", division));
+        sb.append(String.format("Slots: %d%n", slots));
+        sb.append(String.format("Keep playing: %s%n", keepPlaying));
+        sb.append(String.format("Events: %n%n"));
+        for(GridEvent<E> event : events)
+            sb.append(String.format("%s%n", event));
+
+        return sb.toString();
+    }
+
+    public static final String NO_EVENT = "-";
     private static final Pattern ATTRIBUTE_LINE = Pattern.compile("^([a-zA-Z0-9-.]+)=(.*)$");
     private static final Pattern ELEMENT_LINE = Pattern.compile("^([a-zA-Z0-9-.]+)\\s+(.+)$");
 }

@@ -17,7 +17,7 @@ public class DrumKitHitDataConverter implements DataConverter<DrumKitHitDataConv
 
     @Override
     public DrumKitHit convert(final String data) {
-        if (NO_EVENT.equals(data)) return SILENT;
+        if (NO_EVENT.equals(data)) return null;
         if ("X".equals(data)) return NORMAL;
         if ("x".equals(data)) return SOFT;
 
@@ -38,7 +38,6 @@ public class DrumKitHitDataConverter implements DataConverter<DrumKitHitDataConv
 
     public static final DrumKitHit NORMAL = DrumKitHit.of(DrumKitHit.Intensity.NORMAL);
     public static final DrumKitHit SOFT = DrumKitHit.of(DrumKitHit.Intensity.SOFT);
-    public static final DrumKitHit SILENT = DrumKitHit.of(DrumKitHit.Intensity.SILENT);
 
     public static class DrumKitHit {
         private final Intensity intensity;
@@ -57,8 +56,12 @@ public class DrumKitHitDataConverter implements DataConverter<DrumKitHitDataConv
 
         public enum Intensity {
             NORMAL,
-            SOFT,
-            SILENT
+            SOFT
+        }
+
+        @Override
+        public String toString() {
+            return intensity.toString();
         }
     }
 }

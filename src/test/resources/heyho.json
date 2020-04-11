@@ -1,0 +1,25 @@
+{
+  "title": "Hey Ho, Let's Go!",
+  "tempo": 176,
+  "key": "A",
+  "sections": [
+    {
+      "name": "A",
+      "measures": 8,
+      "matrix": {
+        "GUITAR1": [
+          "dyadRiffer(len=2, riff='IN   A5-------D5---E5---')",
+          "dyadRiffer(len=2, riff='IN   A5-------D5---E5---')",
+          "dyadRiffer(len=2, riff='IN   A5-------D5---E5---')",
+          "dyadRiffer(len=2, riff='IN   A5---D5---A5-------')"
+        ]
+      }
+    }
+  ],
+  "arrangement": [
+    {
+      "section": "A",
+      "repetitions": 1
+    }
+  ]
+}

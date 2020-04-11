@@ -27,6 +27,23 @@ public class GridEvent<E> implements Comparable<GridEvent<E>> {
         return data;
     }
 
+    public boolean isEmpty() {
+        return  data == null;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format("Slot: %s%n", slot));
+        sb.append(String.format("Element: %s%n", element));
+        sb.append(String.format("Empty: %s%n", isEmpty()));
+        if (!isEmpty())
+            sb.append(String.format("Data: %s%n", data));
+
+        return sb.toString();
+    }
+
     @Override
     public int compareTo(GridEvent<E> o) {
         return Integer.compare(slot, o.slot);

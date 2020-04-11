@@ -32,10 +32,26 @@ public enum Note {
 
     public static Note of(final String label) {
         for(Note note : Note.values())
-            if (note.label == label)
+            if (note.label.equals(label))
                 return note;
 
         throw new IllegalArgumentException("Invalid note: " + label);
+    }
+
+    public Note up(final Interval interval) {
+        return up(interval.semitonesFromRoot());
+    }
+
+    public Note up(final int semitones) {
+        return of((number + semitones) % 12);
+    }
+
+    public Note down(final Interval interval) {
+        return down(interval.semitonesFromRoot());
+    }
+
+    public Note down(final int semitones) {
+        return of((number - semitones) % 12);
     }
 
     public String label() {

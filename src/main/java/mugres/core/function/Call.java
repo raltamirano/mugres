@@ -54,7 +54,7 @@ public class Call {
 
         while(argumentsMatcher.find()) {
             final String parameterName = argumentsMatcher.group(1);
-            final String argumentString = argumentsMatcher.group(2);
+            final String argumentString = argumentsMatcher.group(2).trim();
 
             final Function.Parameter parameter = function.getParameter(parameterName);
             if (parameter == null)
@@ -62,7 +62,7 @@ public class Call {
                         parameterName, functionName));
 
             Object argument = null;
-            if (argumentString != null && !argumentString.trim().isEmpty()) {
+            if (argumentString != null && !argumentString.isEmpty()) {
                 switch(parameter.getDataType()) {
                     case LENGTH:
                         argument = Length.of(Integer.parseInt(argumentString));
@@ -77,7 +77,10 @@ public class Call {
                         argument = Pitch.of(Integer.parseInt(argumentString));
                         break;
                     case TEXT:
-                        argument = argumentString;
+                        if (!argumentString.startsWith("'") || !argumentString.endsWith("'"))
+                            throw new IllegalArgumentException("TEXT function parameter's values must be " +
+                                    "enclosed in single quotes (')");
+                        argument = argumentString.substring(1, argumentString.length() - 1);
                         break;
                     case INTEGER:
                         argument = Integer.parseInt(argumentString);
@@ -124,5 +127,5 @@ public class Call {
     }
 
     private static final Pattern FUNCTION_CALL = Pattern.compile("([a-z][0-9a-zA-Z_-]+[0-9a-zA-Z])\\((.*)\\)");
-    private static final Pattern NAMED_ARGS_LIST = Pattern.compile("([a-z][0-9a-zA-Z_-]*[0-9a-zA-Z])\\=(\\'(?:[0-9a-zA-Z_-]+)\\'|(?:\\-?\\d+(?:\\.\\d+)?)|true|false|yes|no|y|n|(?:[0-9a-zA-Z_-]+))");
+    private static final Pattern NAMED_ARGS_LIST = Pattern.compile("([a-z][0-9a-zA-Z_-]*[0-9a-zA-Z])\\=(\\'(?:[\\s0-9a-zA-Z_-]+)\\'|(?:\\-?\\d+(?:\\.\\d+)?)|true|false|yes|no|y|n|(?:[0-9a-zA-Z_-]+))");
 }

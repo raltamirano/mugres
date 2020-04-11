@@ -40,6 +40,14 @@ public enum Interval {
         return semitonesFromRoot;
     }
 
+    public static Interval forShortName(final String shortName) {
+        for(Interval interval : values())
+            if (interval.shortName.equals(shortName))
+                return interval;
+
+        throw new IllegalArgumentException("Invalid interval with short name: " + shortName);
+    }
+
     public enum Type {
         UNISON(0),
         SECOND(1),

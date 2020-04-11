@@ -15,6 +15,10 @@ public class Pitch {
         this.octave = octave;
     }
 
+    public Pitch up(final Interval interval) {
+        return up(interval.semitonesFromRoot());
+    }
+
     public Pitch up(final int semitones) {
         final int targetNote = this.midi + semitones;
 
@@ -22,6 +26,10 @@ public class Pitch {
             throw new IllegalArgumentException("Invalid MIDI note number: " + targetNote);
 
         return of(targetNote);
+    }
+
+    public Pitch down(final Interval interval) {
+        return down(interval.semitonesFromRoot());
     }
 
     public Pitch down(final int semitones) {

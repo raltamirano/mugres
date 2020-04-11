@@ -27,14 +27,20 @@ public class Performer {
             for(Arrangement.Entry arrangementEntry : song.getArrangement().getEntries()) {
                 for(int arrangementEntryIndex = 1; arrangementEntryIndex <= arrangementEntry.getRepetitions();
                     arrangementEntryIndex++) {
+                    Length previousCallsOffset = Length.ZERO;
                     for (Call call : arrangementEntry.getSection().getMatrix().get(party)) {
-                        final Result functionResult = call.execute(arrangementEntry.getSection().getContext());
+                        final Context callContext = arrangementEntry.getSection().getContext();
+                        final Result functionResult = call.execute(callContext);
                         if (functionResult.succeeded()) {
                             final List<Event> events = sortEventList(functionResult.getEvents());
                             for(Event event : events) {
-                                track.addEvent(Event.of(event.getPosition().plus(offset), event.getPitch(),
-                                        event.getValue(), event.getVelocity()));
+                                track.addEvent(Event.of(event.getPosition().plus(offset).plus(previousCallsOffset),
+                                        event.getPitch(),
+                                        event.getValue(),
+                                        event.getVelocity()));
                             }
+                            previousCallsOffset = previousCallsOffset.plus(callContext.getTimeSignature()
+                                    .measuresLength(call.getLengthInMeasures()));
                         } else {
                             // TODO: better error handling
                             throw new RuntimeException(functionResult.getError());
