@@ -67,7 +67,9 @@ public class GridPattern<E> {
             } else if (Pattern.matches(ELEMENT_LINE.pattern(), line)) {
                 final Matcher elementMatcher = ELEMENT_LINE.matcher(line);
                 while(elementMatcher.find()) {
-                    final String elementName = elementMatcher.group(1);
+                    final String elementData = elementMatcher.group(1);
+                    final String elementName = elementData == null || elementData.trim().isEmpty() ?
+                            "XXX" : elementData.trim();
                     final String elementEvents = elementMatcher.group(2);
                     int eventSlot = 1;
                     final List<X> lineEvents = dataConverter.tokenize(elementEvents);
@@ -178,5 +180,5 @@ public class GridPattern<E> {
 
     public static final String NO_EVENT = "-";
     private static final Pattern ATTRIBUTE_LINE = Pattern.compile("^([a-zA-Z0-9-.]+)=(.*)$");
-    private static final Pattern ELEMENT_LINE = Pattern.compile("^([a-zA-Z0-9-.]+)\\s+(.+)$");
+    private static final Pattern ELEMENT_LINE = Pattern.compile("^([a-zA-Z0-9-.]+\\s+)?\\s*(.+)$");
 }

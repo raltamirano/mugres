@@ -27,9 +27,8 @@ public class DyadDataConverter implements DataConverter<DyadDataConverter.Dyad> 
 
         final Note root = Note.of(matcher.group(1));
         final Interval interval = Interval.forShortName(matcher.group(2));
-        final String octaveString = matcher.group(3);
-        final Integer octave = octaveString.trim().isEmpty() ?
-                null :
+        final String octaveString = matcher.group(3) == null ? "" : matcher.group(3).trim();
+        final Integer octave = octaveString.isEmpty() ? null :
                 Integer.valueOf(octaveString.substring(1, octaveString.length() - 1));
         return Dyad.of(root, interval, octave);
     }
