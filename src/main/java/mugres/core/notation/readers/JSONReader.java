@@ -14,7 +14,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -40,7 +42,16 @@ public class JSONReader implements Reader {
             // Party/function calls matrix
             for(String partyName : sectionData.getJSONObject("matrix").keySet()) {
                 final Party party = Party.WellKnownParties.valueOf(partyName).getParty();
-                for(Object callDataObject : sectionData.getJSONObject("matrix").getJSONArray(partyName)) {
+                final Object partyCallsObject = sectionData.getJSONObject("matrix").get(partyName);
+                final List<Object> partyCalls = new ArrayList<>();
+                if (partyCallsObject instanceof JSONArray) {
+                    final JSONArray partyCallsArray = (JSONArray) partyCallsObject;
+                    for(int index=0; index < partyCallsArray.length(); index++)
+                        partyCalls.add(partyCallsArray.get(index));
+                } else
+                    partyCalls.add(partyCallsObject);
+
+                for(Object callDataObject : partyCalls) {
                     if (callDataObject instanceof JSONObject) {
                         final JSONObject callData = (JSONObject)callDataObject;
                         final Map<String, String> arguments = new HashMap<>();
