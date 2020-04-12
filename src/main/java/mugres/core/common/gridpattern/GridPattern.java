@@ -33,6 +33,11 @@ public class GridPattern<E> {
     }
 
     public static <X> GridPattern<X> parse(final String pattern, final DataConverter<X> dataConverter) {
+        return parse(pattern, dataConverter, null);
+    }
+
+    public static <X> GridPattern<X> parse(final String pattern, final DataConverter<X> dataConverter,
+                                           final Value noteValue) {
         final List<String> lines =
                 stream(pattern.split("\n"))
                 .map(String::trim)
@@ -40,7 +45,7 @@ public class GridPattern<E> {
                 .collect(Collectors.toList());
 
         String name = "Untitled";
-        Value division = null;
+        Value division = noteValue;
         Integer slots = null;
         boolean keepPlaying = false;
         final Map<String, String> attributes = new HashMap<>();

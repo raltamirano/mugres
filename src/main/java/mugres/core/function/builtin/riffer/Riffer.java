@@ -1,9 +1,6 @@
 package mugres.core.function.builtin.riffer;
 
-import mugres.core.common.Context;
-import mugres.core.common.Event;
-import mugres.core.common.Length;
-import mugres.core.common.Pitch;
+import mugres.core.common.*;
 import mugres.core.common.gridpattern.GridEvent;
 import mugres.core.common.gridpattern.GridPattern;
 import mugres.core.common.gridpattern.converters.DyadDataConverter;
@@ -14,23 +11,27 @@ import java.util.List;
 import java.util.Map;
 
 import static mugres.core.common.Interval.UNISON;
+import static mugres.core.common.Value.QUARTER;
 
 public class Riffer extends Function {
     public Riffer() {
         super("riffer", "Reproduces a predefined riff",
                 Parameter.of("riff", "The riff to play", Parameter.DataType.TEXT),
-                Parameter.of("baseOctave", "Base octave", Parameter.DataType.INTEGER,
-                        true, 3));
+                Parameter.of("octave", "Base octave", Parameter.DataType.INTEGER,
+                        true, 3),
+                Parameter.of("value", "Note value for events", Parameter.DataType.VALUE,
+                        true, QUARTER));
     }
 
     @Override
     protected List<Event> doExecute(final Context context, final Map<String, Object> arguments) {
         final Length length = readMeasuresLength(context, arguments);
         final String riff = (String)arguments.get("riff");
-        final int baseOctave = (int)arguments.get("baseOctave");
+        final int baseOctave = (int)arguments.get("octave");
+        final Value value = (Value)arguments.get("value");
 
         final GridPattern<DyadDataConverter.Dyad> riffPattern =
-                GridPattern.parse(riff, DyadDataConverter.getInstance());
+                GridPattern.parse(riff, DyadDataConverter.getInstance(), value);
 
         if (!length.equals(riffPattern.getLength()))
             throw new RuntimeException("Riff's length does not match function call's length!");

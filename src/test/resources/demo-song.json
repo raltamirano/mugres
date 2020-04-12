@@ -36,15 +36,7 @@
       "timeSignature": "4/4",
       "matrix": {
         "GUITAR1": [
-          {
-            "arguments": {
-              "riff": [
-                "Division=QUARTER\n",
-                "A5{8} F5{8}"
-              ]
-            },
-            "call": "riffer()"
-          }
+          "riffer(riff='A5{16} F5{16}', value=EIGHTH)"
         ]
       }
     }
