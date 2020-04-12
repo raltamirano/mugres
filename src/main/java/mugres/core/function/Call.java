@@ -34,6 +34,10 @@ public class Call {
     }
 
     public static Call parse(final String input) {
+        return parse(input, Collections.emptyMap());
+    }
+
+    public static Call parse(final String input, final Map<String, String> argumentsMap) {
         if (input == null || input.trim().isEmpty())
             throw new IllegalArgumentException("input");
 
@@ -50,11 +54,20 @@ public class Call {
         // Get arguments
         final String functionArguments = functionCallMatcher.group(2).trim();
         final Matcher argumentsMatcher = NAMED_ARGS_LIST.matcher(functionArguments);
-        final Map<String, Object> arguments = new HashMap<>();
 
+        final Map<String, String> allArguments = new HashMap<>(argumentsMap);
+        // Override any arguments provided with the arguments map with those
+        // provided inline in the call specification itself.
         while(argumentsMatcher.find()) {
             final String parameterName = argumentsMatcher.group(1);
             final String argumentString = argumentsMatcher.group(2).trim();
+            allArguments.put(parameterName, argumentString);
+        }
+
+        final Map<String, Object> arguments = new HashMap<>();
+        for(Map.Entry<String, String> entry : allArguments.entrySet()) {
+            final String parameterName = entry.getKey();
+            final String argumentString = entry.getValue().trim();
 
             final Function.Parameter parameter = function.getParameter(parameterName);
             if (parameter == null)

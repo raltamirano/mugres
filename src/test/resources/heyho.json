@@ -8,15 +8,61 @@
       "measures": 8,
       "matrix": {
         "GUITAR1": [
-          "dyadRiffer(len=2, riff='IN   A5[3]-------D5[4]---E5[4]---')",
-          "dyadRiffer(len=2, riff='IN   A5[3]-------D5[4]---E5[4]---')",
-          "dyadRiffer(len=2, riff='IN   A5[3]-------D5[4]---E5[4]---')",
-          "dyadRiffer(len=2, riff='IN   A5[3]---D5[4]---A5[3]-------')"
+          {
+            "arguments": {
+              "riff": [
+                "Division=EIGHTH\n",
+                "KeepPlaying=true\n",
+                "IN A5[2]---    ----    ",
+                "   D5[3]---    E5[3]---",
+                "   A5[2]---    ----    ",
+                "   D5[3]---    E5[3]---",
+                "   A5[2]---    ----    ",
+                "   D5[3]---    E5[3]---",
+                "   A5[2]---    D5[3]---",
+                "   A5[2]---    ----    "
+              ]
+            },
+            "call": "dyadRiffer(len=8)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "B",
+      "measures": 8,
+      "matrix": {
+        "GUITAR1": [
+          {
+            "arguments": {
+              "riff": [
+                "Division=EIGHTH\n",
+                "KeepPlaying=true\n",
+                "IN D5[3]---    ----    ",
+                "   ----        ----    ",
+                "   A5[2]---    ----    ",
+                "   D5[3]---    A5[2]---",
+                "   D5[3]---    ----    ",
+                "   ----        ----    ",
+                "   B5[2]---    ----    ",
+                "   D5[3]---    E5[3]---"
+              ]
+            },
+            "call": "dyadRiffer(len=8)"
+          }
         ]
       }
     }
   ],
   "arrangement": [
+    {
+      "section": "A",
+      "repetitions": 2
+    },
+    {
+      "section": "B",
+      "repetitions": 1
+    },
     {
       "section": "A",
       "repetitions": 1

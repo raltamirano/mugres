@@ -41,10 +41,12 @@ public class DyadDataConverter implements DataConverter<DyadDataConverter.Dyad> 
         final Matcher matcher = DYAD_EVENTS.matcher(line);
         while(matcher.find()) {
             final String data = matcher.group().trim();
-            if (data.isEmpty() || NO_EVENT.equals(data))
-                events.add(null);
-            else
-                events.add(convert(data));
+            if (!data.isEmpty()) {
+                if (NO_EVENT.equals(data))
+                    events.add(null);
+                else
+                    events.add(convert(data));
+            }
         }
 
         return events;

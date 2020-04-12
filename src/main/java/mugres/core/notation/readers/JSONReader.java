@@ -8,11 +8,15 @@ import mugres.core.notation.Party;
 import mugres.core.notation.Section;
 import mugres.core.notation.Song;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class JSONReader implements Reader {
     @Override
@@ -37,8 +41,35 @@ public class JSONReader implements Reader {
             for(String partyName : sectionData.getJSONObject("matrix").keySet()) {
                 final Party party = Party.WellKnownParties.valueOf(partyName).getParty();
                 for(Object callDataObject : sectionData.getJSONObject("matrix").getJSONArray(partyName)) {
-                    final Call call = Call.parse(callDataObject.toString());
-                    section.addPart(party, call);
+                    if (callDataObject instanceof JSONObject) {
+                        final JSONObject callData = (JSONObject)callDataObject;
+                        final Map<String, String> arguments = new HashMap<>();
+                        if (callData.has("arguments")) {
+                            for(String argumentName : callData.getJSONObject("arguments").keySet()) {
+                                final Object argumentDataObject = callData.getJSONObject("arguments").get(argumentName);
+                                if (argumentDataObject instanceof JSONArray) {
+                                    final String argumentValue = ((JSONArray)argumentDataObject).toList()
+                                            .stream()
+                                            .map(Object::toString)
+                                            .collect(Collectors.joining());
+
+                                    arguments.put(argumentName, "'" +  argumentValue + "'");
+                                } else if (argumentDataObject instanceof JSONObject) {
+                                    throw new IllegalArgumentException("Expected either a primitive value or " +
+                                            "an array of string as argument values");
+                                } else {
+                                    arguments.put(argumentName, argumentDataObject.toString());
+                                }
+                            }
+                        }
+
+                        final String callSpec = callData.getString("call");
+                        final Call call = Call.parse(callSpec, arguments);
+                        section.addPart(party, call);
+                    } else {
+                        final Call call = Call.parse(callDataObject.toString());
+                        section.addPart(party, call);
+                    }
                 }
             }
         }
