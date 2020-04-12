@@ -27,6 +27,26 @@
           "random(len=4, noteValue=EIGHTH)"
         ]
       }
+    },
+    {
+      "name": "C",
+      "measures": 4,
+      "tempo": 220,
+      "key": "C",
+      "timeSignature": "4/4",
+      "matrix": {
+        "GUITAR1": [
+          {
+            "arguments": {
+              "riff": [
+                "Division=QUARTER\n",
+                "A5{8} F5{8}"
+              ]
+            },
+            "call": "riffer()"
+          }
+        ]
+      }
     }
   ],
   "arrangement": [

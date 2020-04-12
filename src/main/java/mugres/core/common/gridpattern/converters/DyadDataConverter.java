@@ -32,7 +32,10 @@ public class DyadDataConverter implements DataConverter<DyadDataConverter.Dyad> 
         final String octaveString = matcher.group(3) == null ? "" : matcher.group(3).trim();
         final Integer octave = octaveString.isEmpty() ? null :
                 Integer.valueOf(octaveString.substring(1, octaveString.length() - 1));
-        return Dyad.of(root, interval, octave);
+        final String repetitionsString = matcher.group(4) == null ? "" : matcher.group(4).trim();
+        final Integer repetitions = repetitionsString.isEmpty() ? 1 :
+                Integer.valueOf(repetitionsString.substring(1, repetitionsString.length() - 1));
+        return Dyad.of(root, interval, octave, repetitions);
     }
 
     @Override
@@ -43,10 +46,13 @@ public class DyadDataConverter implements DataConverter<DyadDataConverter.Dyad> 
         while(matcher.find()) {
             final String data = matcher.group().trim();
             if (!data.isEmpty()) {
-                if (NO_EVENT.equals(data))
+                if (NO_EVENT.equals(data)) {
                     events.add(null);
-                else
-                    events.add(convert(data));
+                } else {
+                    final Dyad dyad = convert(data);
+                    for(int i=0; i < dyad.repetitions; i++)
+                        events.add(dyad);
+                }
             }
         }
 
@@ -58,20 +64,28 @@ public class DyadDataConverter implements DataConverter<DyadDataConverter.Dyad> 
         private final Note next;
         private final Interval interval;
         private final Integer octave;
+        private final Integer repetitions;
 
-        private Dyad(final Note root, final Interval interval, final Integer octave) {
+        private Dyad(final Note root, final Interval interval, final Integer octave, final Integer repetitions) {
             this.root = root;
             this.interval = interval;
             this.next = root.up(interval);
             this.octave = octave;
+            this.repetitions = repetitions;
         }
 
         public static Dyad of(final Note root, final Interval interval) {
             return of(root, interval, null);
         }
 
-        public static Dyad of(final Note root, final Interval interval, final Integer octave) {
-            return new Dyad(root, interval, octave);
+        public static Dyad of(final Note root, final Interval interval,
+                              final Integer octave) {
+            return new Dyad(root, interval, octave, null);
+        }
+
+        public static Dyad of(final Note root, final Interval interval,
+                              final Integer octave, final Integer repetitions) {
+            return new Dyad(root, interval, octave, repetitions);
         }
 
         public Note getRoot() {
@@ -96,6 +110,6 @@ public class DyadDataConverter implements DataConverter<DyadDataConverter.Dyad> 
         }
     }
 
-    private static final Pattern DYAD = Pattern.compile("(C|C#|D|D#|E|F|F#|G|G#|A|A#|B)(b2|2|b3|3|4|#4|b5|5|b6|6|bb7|b7|7|8)?(\\[-?\\d\\])?");
+    private static final Pattern DYAD = Pattern.compile("(C|C#|D|D#|E|F|F#|G|G#|A|A#|B)(b2|2|b3|3|4|#4|b5|5|b6|6|bb7|b7|7|8)?(\\[-?\\d\\])?(\\{[1-9][0-9]*\\})?");
     private static final Pattern DYAD_EVENTS = Pattern.compile("(" + DYAD.pattern() + "|\\s+|-)");
 }
