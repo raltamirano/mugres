@@ -7,6 +7,8 @@ import mugres.core.function.builtin.random.Random;
 
 import java.util.*;
 
+import static mugres.core.common.Context.SECTION_LENGTH;
+
 /** Function that generates musical artifacts. */
 public abstract class Function {
     private final String name;
@@ -51,8 +53,12 @@ public abstract class Function {
     }
 
     public List<Event> execute(final Context context, final Map<String, Object> arguments) {
+        if (!arguments.containsKey(LENGTH_PARAMETER.getName()))
+            if (context.has(SECTION_LENGTH))
+                arguments.put(LENGTH_PARAMETER.getName(), context.get(SECTION_LENGTH));
+
         final List<Event> events = doExecute(context, prepareArguments(arguments));
-        // TODO: Validate length/complete to lenght with rests / etc.
+        // TODO: Validate length/complete to length with rests / etc.
         return events;
     }
 

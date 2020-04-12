@@ -23,7 +23,7 @@
                 "   A5[2]---    ----    "
               ]
             },
-            "call": "dyadRiffer(len=8)"
+            "call": "dyadRiffer()"
           }
         ]
       }
@@ -48,7 +48,7 @@
                 "   D5[3]---    E5[3]---"
               ]
             },
-            "call": "dyadRiffer(len=8)"
+            "call": "dyadRiffer()"
           }
         ]
       }

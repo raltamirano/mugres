@@ -7,6 +7,8 @@ import mugres.core.function.Call;
 
 import java.util.*;
 
+import static mugres.core.common.Context.SECTION_LENGTH;
+
 public class Section {
     private String name;
     private final int measures;
@@ -19,6 +21,7 @@ public class Section {
         this.name = name;
         this.measures = measures;
         this.context = ComposableContext.of(song.getContext());
+        this.context.put(SECTION_LENGTH, measures);
     }
 
     public String getName() {

@@ -18,6 +18,7 @@ public interface Context {
 
     void put(final String key, Object value);
     <X> X get(final String key);
+    boolean has(final String key);
 
     static Context createBasicContext() {
         final Context context = new Context.ComposableContext();
@@ -30,6 +31,7 @@ public interface Context {
     String TEMPO = "tempo";
     String KEY = "key";
     String TIME_SIGNATURE = "time-signature";
+    String SECTION_LENGTH = "section-length";
 
     final class ComposableContext implements Context
     {
@@ -62,6 +64,18 @@ public interface Context {
             }
 
             return (X)found;
+        }
+
+        @Override
+        public boolean has(final String key) {
+            if (data.containsKey(key))
+                return true;
+
+            for(Context parent : parents)
+                if (parent.has(key))
+                    return true;
+
+            return false;
         }
     }
 }
