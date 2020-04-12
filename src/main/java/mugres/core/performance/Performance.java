@@ -3,7 +3,7 @@ package mugres.core.performance;
 import mugres.core.common.Key;
 import mugres.core.common.Length;
 import mugres.core.common.TimeSignature;
-import mugres.core.notation.Party;
+import mugres.core.common.Party;
 
 import java.util.*;
 

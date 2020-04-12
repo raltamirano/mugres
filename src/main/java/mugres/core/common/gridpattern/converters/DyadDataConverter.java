@@ -26,7 +26,9 @@ public class DyadDataConverter implements DataConverter<DyadDataConverter.Dyad> 
             throw new IllegalArgumentException("Invalid dyad specification: " + data);
 
         final Note root = Note.of(matcher.group(1));
-        final Interval interval = Interval.forShortName(matcher.group(2));
+        final Interval interval = matcher.group(2) == null ?
+                Interval.UNISON :
+                Interval.forShortName(matcher.group(2));
         final String octaveString = matcher.group(3) == null ? "" : matcher.group(3).trim();
         final Integer octave = octaveString.isEmpty() ? null :
                 Integer.valueOf(octaveString.substring(1, octaveString.length() - 1));
@@ -94,6 +96,6 @@ public class DyadDataConverter implements DataConverter<DyadDataConverter.Dyad> 
         }
     }
 
-    private static final Pattern DYAD = Pattern.compile("(C|C#|D|D#|E|F|F#|G|G#|A|A#|B)(b2|2|b3|3|4|#4|b5|5|b6|6|bb7|b7|7|8)(\\[-?\\d\\])?");
+    private static final Pattern DYAD = Pattern.compile("(C|C#|D|D#|E|F|F#|G|G#|A|A#|B)(b2|2|b3|3|4|#4|b5|5|b6|6|bb7|b7|7|8)?(\\[-?\\d\\])?");
     private static final Pattern DYAD_EVENTS = Pattern.compile("(" + DYAD.pattern() + "|\\s+|-)");
 }

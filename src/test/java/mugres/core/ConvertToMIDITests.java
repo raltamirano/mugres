@@ -13,7 +13,7 @@ import javax.sound.midi.Sequence;
 
 import static mugres.core.common.Context.createBasicContext;
 import static mugres.core.function.Function.WellKnownFunctions.RANDOM;
-import static mugres.core.notation.Party.WellKnownParties.GUITAR1;
+import static mugres.core.common.Party.WellKnownParties.GUITAR1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

@@ -4,7 +4,7 @@ import mugres.core.common.Context;
 import mugres.core.common.Key;
 import mugres.core.common.TimeSignature;
 import mugres.core.function.Call;
-import mugres.core.notation.Party;
+import mugres.core.common.Party;
 import mugres.core.notation.Section;
 import mugres.core.notation.Song;
 import org.apache.commons.io.IOUtils;

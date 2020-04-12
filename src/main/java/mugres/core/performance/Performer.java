@@ -6,7 +6,7 @@ import mugres.core.common.Length;
 import mugres.core.function.Call;
 import mugres.core.function.Result;
 import mugres.core.notation.Arrangement;
-import mugres.core.notation.Party;
+import mugres.core.common.Party;
 import mugres.core.notation.Song;
 
 import java.util.ArrayList;

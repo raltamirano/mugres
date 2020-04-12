@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static mugres.core.common.Interval.UNISON;
+
 public class Riffer extends Function {
     public Riffer() {
         super("riffer", "Reproduces a predefined riff",
@@ -51,11 +53,13 @@ public class Riffer extends Function {
             if (dyad != null) {
                 final int octave = dyad.getOctave() != null ? dyad.getOctave() : baseOctave;
                 final Pitch root = dyad.getRoot().pitch(octave);
-                final Pitch next = dyad.getRoot().pitch(octave).up(dyad.getInterval());
+                final Pitch next = dyad.getInterval() != UNISON ?
+                        dyad.getRoot().pitch(octave).up(dyad.getInterval()) : root;
                 final int velocity = 100;
 
                 events.add(Event.of(position, root, riffPattern.getDivision(), velocity));
-                events.add(Event.of(position, next, riffPattern.getDivision(), velocity));
+                if (dyad.getInterval() != UNISON)
+                    events.add(Event.of(position, next, riffPattern.getDivision(), velocity));
             }
         }
 

@@ -1,6 +1,4 @@
-package mugres.core.notation;
-
-import mugres.core.common.Instrument;
+package mugres.core.common;
 
 import java.util.Objects;
 
