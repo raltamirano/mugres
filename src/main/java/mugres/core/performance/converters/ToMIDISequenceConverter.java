@@ -53,8 +53,7 @@ public class ToMIDISequenceConverter implements Converter<Sequence> {
 
         // Time signature
         final int numerator = controlEvent.getControl().getTimeSignature().getNumerator();
-        // FIXME 64...Too much assumption/reliance on the MUGRES chosen resolution mechanism.
-        int notatedDenominator = 64 / controlEvent.getControl().getTimeSignature().getDenominator().length().getLength();
+        int notatedDenominator = controlEvent.getControl().getTimeSignature().getDenominator().denominator();
         int denominator = 0;
         while (notatedDenominator != 1) {
             notatedDenominator /= 2;
