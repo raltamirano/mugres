@@ -1,4 +1,4 @@
-package mugres.core.function.builtin.dyadriffer;
+package mugres.core.function.builtin.riffer;
 
 import mugres.core.common.Context;
 import mugres.core.common.Event;
@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DyadRiffer extends Function {
-    public DyadRiffer() {
-        super("dyadRiffer", "Reproduces a predefined dyads riff",
-                Parameter.of("riff", "The dyad riff to play", Parameter.DataType.TEXT),
+public class Riffer extends Function {
+    public Riffer() {
+        super("riffer", "Reproduces a predefined riff",
+                Parameter.of("riff", "The riff to play", Parameter.DataType.TEXT),
                 Parameter.of("baseOctave", "Base octave", Parameter.DataType.INTEGER,
                         true, 3));
     }

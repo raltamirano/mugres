@@ -1,8 +1,8 @@
 package mugres.core.function;
 
 import mugres.core.common.*;
-import mugres.core.function.builtin.drums.DrumPattern;
-import mugres.core.function.builtin.dyadriffer.DyadRiffer;
+import mugres.core.function.builtin.drums.Drums;
+import mugres.core.function.builtin.riffer.Riffer;
 import mugres.core.function.builtin.random.Random;
 
 import java.util.*;
@@ -117,8 +117,8 @@ public abstract class Function {
 
     public enum WellKnownFunctions {
         RANDOM(new Random()),
-        DRUM_PATTERN(new DrumPattern()),
-        DYAD_RIFFER(new DyadRiffer());
+        DRUM_PATTERN(new Drums()),
+        DYAD_RIFFER(new Riffer());
 
         private final Function function;
 

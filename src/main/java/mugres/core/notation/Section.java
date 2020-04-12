@@ -58,6 +58,10 @@ public class Section {
         matrix.computeIfAbsent(party, p -> new ArrayList()).add(call);
     }
 
+    public boolean hasPartsFor(final Party party) {
+        return matrix.containsKey(party);
+    }
+
     public Length getLength() {
         return context.getTimeSignature().measuresLength(measures);
     }

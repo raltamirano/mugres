@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DrumPattern extends Function {
-    public DrumPattern() {
-        super("drumPattern", "Reproduces a predefined drums pattern",
+public class Drums extends Function {
+    public Drums() {
+        super("drums", "Reproduces a predefined drums pattern",
                 Parameter.of("pattern", "The pattern to play", Parameter.DataType.TEXT));
     }
 
@@ -31,6 +31,9 @@ public class DrumPattern extends Function {
         final List<Event> events = new ArrayList<>();
 
         for(GridEvent<DrumKitHitDataConverter.DrumKitHit> hit : drumPattern.getEvents()) {
+            if (hit.isEmpty())
+                continue;
+
             final Length position = drumPattern.getDivision().length().multiply(hit.getSlot() - 1);
             final Intensity intensity = hit.getData().getIntensity();
             final DrumKit drumKitElement = DrumKit.valueOf(hit.getElement());

@@ -7,6 +7,20 @@
       "name": "A",
       "measures": 8,
       "matrix": {
+        "DRUMS": [
+          {
+            "arguments": {
+              "pattern": [
+                "Division=EIGHTH\n",
+                "OHH xxxxxxxx  -xxxxxxx  xxxxxxxx  -xxxxxxx  xxxxxxxx  -xxxxxxx  xxxxxxxx  -xxxxxxx \n",
+                "CR1 --------  X-------  --------  X-------  --------  X-------  --------  X------- \n",
+                "SD  --X---X-  --X---X-  --X---X-  --X---X-  --X---X-  --X---X-  --X---X-  --X---X- \n",
+                "BD  X---XX--  X---XX--  X---XX--  X---XX--  X---XX--  X---XX--  X---XX--  X---XX-- \n"
+              ]
+            },
+            "call": "drums()"
+          }
+        ],
         "GUITAR1": [
           {
             "arguments": {
@@ -23,7 +37,7 @@
                 "A5[2]---    ----    "
               ]
             },
-            "call": "dyadRiffer()"
+            "call": "riffer()"
           }
         ]
       }
@@ -32,6 +46,21 @@
       "name": "B",
       "measures": 8,
       "matrix": {
+        "DRUMS": [
+          {
+            "arguments": {
+              "pattern": [
+                "Division=EIGHTH\n",
+                "RD1  -xxxxxxx  xxxxxxxx  -xxxxxxx  -xxxxxxx  xxxxxxxx  -xxxxxxx  -xxxxxxx  -xxxxxxx \n",
+                "CR1 X-------  --------  --------  X-------  --------  --------  --------  X------- \n",
+                "CR2 --------  --------  X-------  --------  --------  --------  X-------  -------- \n",
+                "SD  --X---X-  --X---X-  --X---X-  --X---X-  --X---X-  --X---X-  --X---X-  --X---X- \n",
+                "BD  X---XX--  X---XX--  X---XX--  X---XX--  X---XX--  X---XX--  X---XX--  X---XX-- \n"
+              ]
+            },
+            "call": "drums()"
+          }
+        ],
         "GUITAR1": [
           {
             "arguments": {
@@ -48,7 +77,7 @@
                 "D5[3]---    E5[3]---"
               ]
             },
-            "call": "dyadRiffer()"
+            "call": "riffer()"
           }
         ]
       }

@@ -32,6 +32,7 @@ public class DrumKitHitDataConverter implements DataConverter<DrumKitHitDataConv
             strings.add(String.valueOf(chars[index]));
 
         return strings.stream()
+                .filter(s -> !s.trim().isEmpty())
                 .map(this::convert)
                 .collect(Collectors.toList());
     }
