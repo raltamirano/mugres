@@ -42,8 +42,4 @@ public class Utils {
 
         return events;
     }
-
-    public static void offsetEvents(final List<Event> events, int remainingMeasures) {
-        throw new RuntimeException("offsetEvents: Not implemented!");
-    }
 }

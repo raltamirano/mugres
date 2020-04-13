@@ -1,7 +1,9 @@
 package mugres.core.common.gridpattern;
 
-import mugres.core.common.*;
-import mugres.core.common.gridpattern.converters.DrumKitHitElementPatternParser;
+import mugres.core.common.Context;
+import mugres.core.common.Length;
+import mugres.core.common.TimeSignature;
+import mugres.core.common.Value;
 import mugres.core.common.gridpattern.converters.ElementPatternParser;
 
 import java.util.*;
@@ -159,7 +161,11 @@ public class GridPattern<E> {
     }
 
     public int getLengthInMeasures() {
-        return division.length().multiply(slots).getLength() / division.denominator();
+        if (timeSignature == null)
+            throw new RuntimeException("Could not calculate length in measures when no Time Signature was set!");
+
+        return division.length().multiply(slots).getLength() /
+                (timeSignature.getNumerator() * timeSignature.getDenominator().length().getLength());
     }
 
     @Override

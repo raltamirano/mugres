@@ -41,34 +41,57 @@ public abstract class PreRecordedDrums extends Function {
                 context.getTimeSignature().getNumerator(),
                 context.getTimeSignature().getDenominator().denominator());
 
+        final List<Event> mainEvents = new ArrayList<>();
+        final List<Event> fillEvents = new ArrayList<>();
         final List<Event> events = new ArrayList<>();
 
         final GridPattern<DrumKitHitElementPatternParser.DrumKitHit> fillPattern;
         if (fill != NONE) {
             final String fillVariant = String.format("%s/%s-%s-%s",
-                    getName(), timeSignatureId, FILL, variant.name().toLowerCase());
+                    getName(), timeSignatureId, FILL, fill.name().toLowerCase());
 
             fillPattern = loadPattern(context, fillVariant);
             if (fillPattern.getLength().getLength() > length.getLength())
                 throw new RuntimeException("Requested fill is larger than the requested length!");
 
-            events.addAll(Utils.extractEvents(fillPattern));
+            fillEvents.addAll(Utils.extractEvents(fillPattern));
         } else
             fillPattern = null;
 
+        // If there's room for the main part of the pattern...
         if (fill == NONE || fillPattern.getLength().getLength() < length.getLength()) {
             final String mainVariant = String.format("%s/%s-%s-%s",
                     getName(), timeSignatureId, MAIN, variant.name().toLowerCase());
             final GridPattern<DrumKitHitElementPatternParser.DrumKitHit> mainPattern =
                     loadPattern(context, mainVariant);
 
+            if (fill != NONE && fillPattern.getDivision() != mainPattern.getDivision())
+                throw new RuntimeException("Main and fill pattern must have the same 'Division' value!");
+
+            final int remainingMeasures = lengthInMeasures - (fill == NONE ? 0 : fillPattern.getLengthInMeasures());
+            final Length fillOffset =  context.getTimeSignature().measuresLength(remainingMeasures);
+            fillEvents.forEach(event -> event.offset(fillOffset));
+
+            final int wholeRepeats = remainingMeasures / mainPattern.getLengthInMeasures();
+            for ( int i = 0; i < wholeRepeats; i++) {
+                final List<Event> newEvents = Utils.extractEvents(mainPattern);
+                final Length mainOffset = mainPattern.getLength().multiply(i);
+                newEvents.forEach(event -> event.offset(mainOffset));
+                mainEvents.addAll(newEvents);
+            }
+
+            final int addMeasures = remainingMeasures % mainPattern.getLengthInMeasures();
+            final List<Event> moreEvents = Utils.extractEvents(mainPattern, 1, addMeasures);
+            final Length moreOffset = mainPattern.getLength().multiply(wholeRepeats);
+            moreEvents.forEach(event -> event.offset(moreOffset));
+            mainEvents.addAll(moreEvents);
+
+            events.addAll(mainEvents);
+            events.addAll(fillEvents);
+
             if (startingHit != null) {
                 // TODO: replace starting cymbal
             }
-
-            final int remainingMeasures = lengthInMeasures - (fill == NONE ? 0 : fillPattern.getLengthInMeasures());
-            Utils.offsetEvents(events, remainingMeasures);
-            events.addAll(0, Utils.extractEvents(mainPattern, 1, remainingMeasures));
         }
 
         return events;
@@ -77,7 +100,7 @@ public abstract class PreRecordedDrums extends Function {
     private GridPattern<DrumKitHitElementPatternParser.DrumKitHit> loadPattern(final Context context,
                                                                                final String id)  {
         try {
-            final String pattern = IOUtils.resourceToString("drum-patterns/" + id, Charset.defaultCharset());
+            final String pattern = IOUtils.resourceToString("/drum-patterns/" + id, Charset.defaultCharset());
             return GridPattern.parse(pattern, DrumKitHitElementPatternParser.getInstance(), context);
         } catch (final IOException e) {
             throw new RuntimeException(e);

@@ -1,5 +1,6 @@
-Division=QUARTER
+Division=EIGHTH
 TimeSignature=4/4
 
-HT  X---
-LT  -xxx
+HT  X-------
+LT  --x-x-x-
+RD1 x-------

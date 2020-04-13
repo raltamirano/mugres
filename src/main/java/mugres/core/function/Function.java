@@ -2,6 +2,7 @@ package mugres.core.function;
 
 import mugres.core.common.*;
 import mugres.core.function.builtin.drums.Drums;
+import mugres.core.function.builtin.drums.HalfTime;
 import mugres.core.function.builtin.riffer.Riffer;
 import mugres.core.function.builtin.random.Random;
 
@@ -117,8 +118,9 @@ public abstract class Function {
 
     public enum WellKnownFunctions {
         RANDOM(new Random()),
-        DRUM_PATTERN(new Drums()),
-        DYAD_RIFFER(new Riffer());
+        DRUMS(new Drums()),
+        RIFFER(new Riffer()),
+        HALFTIME(new HalfTime());
 
         private final Function function;
 

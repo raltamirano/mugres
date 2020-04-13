@@ -12,6 +12,7 @@
             "arguments": {
               "pattern": [
                 "Division=EIGHTH\n",
+                "TimeSignature=4/4\n",
                 "OHH xxxxxxxx  -xxxxxxx  xxxxxxxx  -xxxxxxx  xxxxxxxx  -xxxxxxx  xxxxxxxx  -xxxxxxx \n",
                 "CR1 --------  X-------  --------  X-------  --------  X-------  --------  X------- \n",
                 "SD  --X---X-  --X---X-  --X---X-  --X---X-  --X---X-  --X---X-  --X---X-  --X---X- \n",
@@ -34,6 +35,7 @@
             "arguments": {
               "pattern": [
                 "Division=EIGHTH\n",
+                "TimeSignature=4/4\n",
                 "RD1 -xxxxxxx  xxxxxxxx  -xxxxxxx  -xxxxxxx  xxxxxxxx  -xxxxxxx  -xxxxxxx  -xxxxxxx \n",
                 "CR1 X-------  --------  --------  X-------  --------  --------  --------  X------- \n",
                 "CR2 --------  --------  X-------  --------  --------  --------  X-------  -------- \n",

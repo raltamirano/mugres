@@ -1,6 +1,6 @@
-Division=QUARTER
+Division=EIGHTH
 TimeSignature=4/4
 
-RD1 xxxx
-SD  --X-
-BD  X---
+RD1 x-x-x-x-
+SD  ----X---
+BD  X-------
