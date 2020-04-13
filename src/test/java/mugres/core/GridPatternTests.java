@@ -1,8 +1,9 @@
 package mugres.core;
 
+import mugres.core.common.Context;
 import mugres.core.common.gridpattern.GridPattern;
-import mugres.core.common.gridpattern.converters.DrumKitHitDataConverter;
-import mugres.core.common.gridpattern.converters.DyadDataConverter;
+import mugres.core.common.gridpattern.converters.DrumKitHitElementPatternParser;
+import mugres.core.common.gridpattern.converters.DyadElementPatternParser;
 import org.junit.jupiter.api.Test;
 
 import static mugres.core.common.Value.EIGHTH;
@@ -23,8 +24,9 @@ public class GridPatternTests {
                 "OHH  -xxxxxxxxxxxxxxx\n" +
                 "CR1  x---------------";
 
-        final GridPattern<DrumKitHitDataConverter.DrumKitHit> drumPattern =
-                GridPattern.parse(pattern, DrumKitHitDataConverter.getInstance());
+        final GridPattern<DrumKitHitElementPatternParser.DrumKitHit> drumPattern =
+                GridPattern.parse(pattern, DrumKitHitElementPatternParser.getInstance(),
+                        Context.createBasicContext());
 
         assertNotNull(drumPattern);
         System.out.println(drumPattern);
@@ -40,8 +42,9 @@ public class GridPatternTests {
                 "Division=EIGHTH\n" +
                 "IN   A5---------------D5-------E5-------";
 
-        final GridPattern<DyadDataConverter.Dyad> riff =
-                GridPattern.parse(pattern, DyadDataConverter.getInstance());
+        final GridPattern<DyadElementPatternParser.Dyad> riff =
+                GridPattern.parse(pattern, DyadElementPatternParser.getInstance(),
+                        Context.createBasicContext());
 
         assertNotNull(riff);
         System.out.println(riff);

@@ -1,8 +1,9 @@
 package mugres.core.common.gridpattern;
 
+import mugres.core.common.Context;
 import mugres.core.common.Length;
 import mugres.core.common.Value;
-import mugres.core.common.gridpattern.converters.DataConverter;
+import mugres.core.common.gridpattern.converters.ElementPatternParser;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -32,12 +33,13 @@ public class GridPattern<E> {
         this.attributes.putAll(attributes);
     }
 
-    public static <X> GridPattern<X> parse(final String pattern, final DataConverter<X> dataConverter) {
-        return parse(pattern, dataConverter, null);
+    public static <X> GridPattern<X> parse(final String pattern, final ElementPatternParser<X> elementPatternParser,
+                                           final Context context) {
+        return parse(pattern, elementPatternParser, context, null);
     }
 
-    public static <X> GridPattern<X> parse(final String pattern, final DataConverter<X> dataConverter,
-                                           final Value noteValue) {
+    public static <X> GridPattern<X> parse(final String pattern, final ElementPatternParser<X> elementPatternParser,
+                                           final Context context, final Value noteValue) {
         final List<String> lines =
                 stream(pattern.split("\n"))
                 .map(String::trim)
@@ -51,10 +53,11 @@ public class GridPattern<E> {
         final Map<String, String> attributes = new HashMap<>();
         final List<GridEvent<X>> events = new ArrayList<>();
 
+        // First we get all attributes
         for(String line : lines) {
             if (Pattern.matches(ATTRIBUTE_LINE.pattern(), line)) {
                 final Matcher attributeMatcher = ATTRIBUTE_LINE.matcher(line);
-                while(attributeMatcher.find()) {
+                while (attributeMatcher.find()) {
                     final String attributeName = attributeMatcher.group(1);
                     final String attributeValue = attributeMatcher.group(2);
 
@@ -69,23 +72,15 @@ public class GridPattern<E> {
                     else
                         attributes.put(attributeName, attributeValue);
                 }
-            } else if (Pattern.matches(ELEMENT_LINE.pattern(), line)) {
-                final Matcher elementMatcher = ELEMENT_LINE.matcher(line);
-                while(elementMatcher.find()) {
-                    final String elementData = elementMatcher.group(1);
-                    final String elementName = elementData == null || elementData.trim().isEmpty() ?
-                            "XXX" : elementData.trim();
-                    final String elementEvents = elementMatcher.group(2);
-                    int eventSlot = 1;
-                    final List<X> lineEvents = dataConverter.tokenize(elementEvents);
-
-                    for (X eventData : lineEvents) {
-                        events.add(GridEvent.of(eventSlot, elementName, eventData));
-                        eventSlot++;
-                    }
-                }
             } else {
-                throw new RuntimeException("Invalid Grid Pattern line: " + line);
+                final ElementPatternParser.ElementPattern<X>
+                        elementPattern = elementPatternParser.parse(context, division, line);
+
+                int eventSlot = 1;
+                for (X eventData : elementPattern.getEvents()) {
+                    events.add(GridEvent.of(eventSlot, elementPattern.getElement(), eventData));
+                    eventSlot++;
+                }
             }
         }
 
@@ -183,7 +178,5 @@ public class GridPattern<E> {
         return sb.toString();
     }
 
-    public static final String NO_EVENT = "-";
-    private static final Pattern ATTRIBUTE_LINE = Pattern.compile("^([a-zA-Z0-9-.]+)=(.*)$");
-    private static final Pattern ELEMENT_LINE = Pattern.compile("^([a-zA-Z0-9-.]+\\s+)?\\s*(.+)$");
+    private static final Pattern ATTRIBUTE_LINE = Pattern.compile("^([a-zA-Z0-9-\\.]+)=(.*)$");
 }

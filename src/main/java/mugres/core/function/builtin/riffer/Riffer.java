@@ -3,7 +3,7 @@ package mugres.core.function.builtin.riffer;
 import mugres.core.common.*;
 import mugres.core.common.gridpattern.GridEvent;
 import mugres.core.common.gridpattern.GridPattern;
-import mugres.core.common.gridpattern.converters.DyadDataConverter;
+import mugres.core.common.gridpattern.converters.DyadElementPatternParser;
 import mugres.core.function.Function;
 
 import java.util.ArrayList;
@@ -30,8 +30,8 @@ public class Riffer extends Function {
         final int baseOctave = (int)arguments.get("octave");
         final Value value = (Value)arguments.get("value");
 
-        final GridPattern<DyadDataConverter.Dyad> riffPattern =
-                GridPattern.parse(riff, DyadDataConverter.getInstance(), value);
+        final GridPattern<DyadElementPatternParser.Dyad> riffPattern =
+                GridPattern.parse(riff, DyadElementPatternParser.getInstance(), context, value);
 
         if (!length.equals(riffPattern.getLength()))
             throw new RuntimeException("Riff's length does not match function call's length!");
@@ -39,11 +39,11 @@ public class Riffer extends Function {
         final List<Event> events = new ArrayList<>();
 
 
-        DyadDataConverter.Dyad lastDyad = null;
-        for(GridEvent<DyadDataConverter.Dyad> dyadEvent : riffPattern.getEvents()) {
+        DyadElementPatternParser.Dyad lastDyad = null;
+        for(GridEvent<DyadElementPatternParser.Dyad> dyadEvent : riffPattern.getEvents()) {
             final Length position = riffPattern.getDivision().length().multiply(dyadEvent.getSlot() - 1);
 
-            DyadDataConverter.Dyad dyad = dyadEvent.getData();
+            DyadElementPatternParser.Dyad dyad = dyadEvent.getData();
             if (dyad != null) {
                 lastDyad = dyad;
             } else {

@@ -31,11 +31,11 @@
     {
       "name": "C",
       "measures": 4,
-      "tempo": 220,
-      "key": "C",
+      "tempo": 130,
+      "key": "A min",
       "timeSignature": "4/4",
       "matrix": {
-        "GUITAR1": "riffer(riff='A5{16} F5{16}', value=EIGHTH)"
+        "GUITAR1": "riffer(riff='A5 | F5 | C5[3] | G5', value=EIGHTH, octave=2)"
       }
     }
   ],

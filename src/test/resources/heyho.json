@@ -21,44 +21,8 @@
             "call": "drums()"
           }
         ],
-        "GUITAR1": [
-          {
-            "arguments": {
-              "riff": [
-                "Division=EIGHTH\n",
-                "KeepPlaying=true\n",
-                "A5[2]---    ----    ",
-                "D5[3]---    E5[3]---",
-                "A5[2]---    ----    ",
-                "D5[3]---    E5[3]---",
-                "A5[2]---    ----    ",
-                "D5[3]---    E5[3]---",
-                "A5[2]---    D5[3]---",
-                "A5[2]---    ----    "
-              ]
-            },
-            "call": "riffer()"
-          }
-        ],
-        "BASS": [
-          {
-            "arguments": {
-              "riff": [
-                "Division=EIGHTH\n",
-                "KeepPlaying=true\n",
-                "A[1]---    ----   ",
-                "D[2]---    E[2]---",
-                "A[1]---    ----   ",
-                "D[2]---    E[2]---",
-                "A[1]---    ----   ",
-                "D[2]---    E[2]---",
-                "A[1]---    D[2]---",
-                "A[1]---    ----   "
-              ]
-            },
-            "call": "riffer()"
-          }
-        ]
+        "GUITAR1": "riffer(riff='A5[2] | D5[3] E5[3] | A5[2] | D5[3] E5[3] | A5[2] | D5[3] E5[3] | A5[2] D5[3] | A5[2]', value=EIGHTH)",
+        "BASS": "riffer(riff='A[1] | D[2] E[2] | A[1] | D[2] E[2] | A[1] | D[2] E[2] | A[1] D[2] | A[1]', value=EIGHTH)"
       }
     },
     {
@@ -70,7 +34,7 @@
             "arguments": {
               "pattern": [
                 "Division=EIGHTH\n",
-                "RD1  -xxxxxxx  xxxxxxxx  -xxxxxxx  -xxxxxxx  xxxxxxxx  -xxxxxxx  -xxxxxxx  -xxxxxxx \n",
+                "RD1 -xxxxxxx  xxxxxxxx  -xxxxxxx  -xxxxxxx  xxxxxxxx  -xxxxxxx  -xxxxxxx  -xxxxxxx \n",
                 "CR1 X-------  --------  --------  X-------  --------  --------  --------  X------- \n",
                 "CR2 --------  --------  X-------  --------  --------  --------  X-------  -------- \n",
                 "SD  --X---X-  --X---X-  --X---X-  --X---X-  --X---X-  --X---X-  --X---X-  --X---X- \n",

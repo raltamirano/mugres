@@ -3,8 +3,8 @@ package mugres.core.function.builtin.drums;
 import mugres.core.common.*;
 import mugres.core.common.gridpattern.GridEvent;
 import mugres.core.common.gridpattern.GridPattern;
-import mugres.core.common.gridpattern.converters.DrumKitHitDataConverter;
-import mugres.core.common.gridpattern.converters.DrumKitHitDataConverter.DrumKitHit.Intensity;
+import mugres.core.common.gridpattern.converters.DrumKitHitElementPatternParser;
+import mugres.core.common.gridpattern.converters.DrumKitHitElementPatternParser.DrumKitHit.Intensity;
 import mugres.core.function.Function;
 
 import java.util.ArrayList;
@@ -22,15 +22,15 @@ public class Drums extends Function {
         final Length length = readMeasuresLength(context, arguments);
         final String pattern = (String)arguments.get("pattern");
 
-        final GridPattern<DrumKitHitDataConverter.DrumKitHit> drumPattern =
-                GridPattern.parse(pattern, DrumKitHitDataConverter.getInstance());
+        final GridPattern<DrumKitHitElementPatternParser.DrumKitHit> drumPattern =
+                GridPattern.parse(pattern, DrumKitHitElementPatternParser.getInstance(), context);
 
         if (!length.equals(drumPattern.getLength()))
             throw new RuntimeException("Drum pattern's length does not match function call's length!");
 
         final List<Event> events = new ArrayList<>();
 
-        for(GridEvent<DrumKitHitDataConverter.DrumKitHit> hit : drumPattern.getEvents()) {
+        for(GridEvent<DrumKitHitElementPatternParser.DrumKitHit> hit : drumPattern.getEvents()) {
             if (hit.isEmpty())
                 continue;
 
