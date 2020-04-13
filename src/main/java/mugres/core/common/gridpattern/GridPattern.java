@@ -1,8 +1,7 @@
 package mugres.core.common.gridpattern;
 
-import mugres.core.common.Context;
-import mugres.core.common.Length;
-import mugres.core.common.Value;
+import mugres.core.common.*;
+import mugres.core.common.gridpattern.converters.DrumKitHitElementPatternParser;
 import mugres.core.common.gridpattern.converters.ElementPatternParser;
 
 import java.util.*;
@@ -13,23 +12,27 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.stream;
 
 public class GridPattern<E> {
-    private String name;
-    private Value division;
+    private final String name;
+    private final Value division;
+    private final TimeSignature timeSignature;
     private final int slots;
-    private boolean keepPlaying;
+    private final boolean keepPlaying;
     private final List<GridEvent<E>> events = new ArrayList<>();
     private final Map<String, String> attributes = new HashMap<>();
 
-    public GridPattern(final String name, final Value division, final int slots, final boolean keepPlaying) {
+    public GridPattern(final String name, final Value division, final int slots,
+                       final boolean keepPlaying, final TimeSignature timeSignature) {
         this.name = name;
         this.division = division;
         this.slots = slots;
         this.keepPlaying = keepPlaying;
+        this.timeSignature = timeSignature;
     }
 
-    public GridPattern(final String name, final Value division, final int slots, final boolean keepPlaying,
+    public GridPattern(final String name, final Value division, final int slots,
+                       final boolean keepPlaying, final TimeSignature timeSignature,
                        final Map<String, String> attributes) {
-        this(name, division, slots, keepPlaying);
+        this(name, division, slots, keepPlaying, timeSignature);
         this.attributes.putAll(attributes);
     }
 
@@ -50,6 +53,7 @@ public class GridPattern<E> {
         Value division = noteValue;
         Integer slots = null;
         boolean keepPlaying = false;
+        TimeSignature timeSignature = null;
         final Map<String, String> attributes = new HashMap<>();
         final List<GridEvent<X>> events = new ArrayList<>();
 
@@ -69,6 +73,8 @@ public class GridPattern<E> {
                         slots = Integer.parseInt(attributeValue);
                     else if ("KeepPlaying".equals(attributeName))
                         keepPlaying = Boolean.parseBoolean(attributeValue);
+                    else if ("TimeSignature".equals(attributeName))
+                        timeSignature = TimeSignature.of(attributeValue);
                     else
                         attributes.put(attributeName, attributeValue);
                 }
@@ -106,7 +112,8 @@ public class GridPattern<E> {
         }
 
 
-        final GridPattern<X> gridPattern = new GridPattern<>(name, division, slots, keepPlaying, attributes);
+        final GridPattern<X> gridPattern = new GridPattern<>(name, division, slots,
+                keepPlaying, timeSignature, attributes);
 
         final List<GridEvent<X>> sortedEvents = new ArrayList<>(events);
         sortedEvents.sort(Comparator.naturalOrder());
@@ -119,24 +126,16 @@ public class GridPattern<E> {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Value getDivision() {
         return division;
-    }
-
-    public void setDivision(Value division) {
-        this.division = division;
     }
 
     public boolean isKeepPlaying() {
         return keepPlaying;
     }
 
-    public void setKeepPlaying(boolean keepPlaying) {
-        this.keepPlaying = keepPlaying;
+    public TimeSignature getTimeSignature() {
+        return timeSignature;
     }
 
     public Map<String, String> getAttributes() {
@@ -145,10 +144,6 @@ public class GridPattern<E> {
 
     public List<GridEvent<E>> getEvents() {
         return Collections.unmodifiableList(events);
-    }
-
-    public void setAttribute(final String name, final String value) {
-        attributes.put(name, value);
     }
 
     public void addEvent(final GridEvent<E> event) {
@@ -161,6 +156,10 @@ public class GridPattern<E> {
 
     public Length getLength() {
         return division.length().multiply(slots);
+    }
+
+    public int getLengthInMeasures() {
+        return division.length().multiply(slots).getLength() / division.denominator();
     }
 
     @Override

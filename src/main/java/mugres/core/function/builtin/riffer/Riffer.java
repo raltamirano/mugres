@@ -25,7 +25,7 @@ public class Riffer extends Function {
 
     @Override
     protected List<Event> doExecute(final Context context, final Map<String, Object> arguments) {
-        final Length length = readMeasuresLength(context, arguments);
+        final Length length = lengthFromNumberOfMeasures(context, arguments);
         final String riff = (String)arguments.get("riff");
         final int baseOctave = (int)arguments.get("octave");
         final Value value = (Value)arguments.get("value");

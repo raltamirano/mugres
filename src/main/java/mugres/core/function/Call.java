@@ -1,6 +1,7 @@
 package mugres.core.function;
 
 import mugres.core.common.*;
+import mugres.core.function.Function.Parameter.Variant;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -97,6 +98,12 @@ public class Call {
                         break;
                     case INTEGER:
                         argument = Integer.parseInt(argumentString);
+                        break;
+                    case DRUM_KIT:
+                        argument = DrumKit.valueOf(argumentString);
+                        break;
+                    case VARIANT:
+                        argument = Variant.valueOf(argumentString);
                         break;
                 }
             }

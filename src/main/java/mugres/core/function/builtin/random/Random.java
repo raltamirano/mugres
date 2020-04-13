@@ -26,7 +26,7 @@ public class Random extends Function {
     @Override
     protected List<Event> doExecute(final Context context, final Map<String, Object> arguments) {
         final List<Event> events = new ArrayList<>();
-        final Length length = readMeasuresLength(context, arguments);
+        final Length length = lengthFromNumberOfMeasures(context, arguments);
         final Value noteValue = (Value)arguments.get("noteValue");
         final int startingOctave = (int)arguments.get("startingOctave");
         final int octavesToGenerate = (int)arguments.get("octavesToGenerate");
