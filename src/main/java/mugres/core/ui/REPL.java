@@ -28,9 +28,13 @@ public class REPL {
     private static Context functionCallsContext = Context.createBasicContext();
     private static Party functionCallsParty = Party.WellKnownParties.PIANO.getParty();
 
+    private static String loopingSection = null;
+    private static Sequence loopingSectionMIDISequence = null;
+
     private static final Map<String, Function<String[], Boolean>> HANDLERS = new HashMap<>();
     private static final JSONReader SONG_JSON_READER = new JSONReader();
     private static final ToMIDISequenceConverter TO_MIDI_SEQUENCE_CONVERTER = new ToMIDISequenceConverter();
+    private static FileWatcher songFileWatcher = null;
 
     public static void main(String[] args) {
         loadCommandHandlers();
@@ -131,6 +135,7 @@ public class REPL {
             if (isSongLoaded()) {
                 System.out.println("Song: " + song.getTitle());
                 System.out.println("Source file: " + songFile.getAbsolutePath());
+                System.out.println("Looping section: " + loopingSection == null ? "No" : loopingSection);
             }
         }
 
@@ -145,33 +150,61 @@ public class REPL {
         if (args.length != 2) {
             System.out.println(args[0] + ": single argument expected: path to file to load the song from");
         } else {
-            doStop();
-            song = null;
-            songFile = null;
-            sectionsMap.clear();
-
-            final File file = new File(args[1]);
-
-            if (!file.exists()) {
-                System.out.println("Source file doesn't exists: " + file.getAbsolutePath());
-            } else {
-                try {
-                    song = SONG_JSON_READER.readSong(new FileInputStream(file));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                songFile = file;
-
-                int sectionId = 1;
-                for(Section section : song.getSections())
-                    sectionsMap.put(sectionId++, section.getName());
-
-                System.out.println(String.format("Successfully loaded song '%s' from '%s'",
-                        song.getTitle(), songFile.getAbsolutePath()));
-            }
+            doLoadSong(args[1], false);
         }
 
         return true;
+    }
+
+    private static void doLoadSong(final String filePath, final boolean reload) {
+        if (!reload)
+            doStop();
+
+        song = null;
+        songFile = null;
+        sectionsMap.clear();
+
+        final File file = new File(filePath);
+
+        if (!file.exists()) {
+            System.out.println("Source file doesn't exists: " + file.getAbsolutePath());
+        } else {
+            try {
+                song = SONG_JSON_READER.readSong(new FileInputStream(file));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            songFile = file;
+            if (songFileWatcher != null)
+                try { songFileWatcher.stopThread(); } catch (final Throwable t) {}
+            songFileWatcher = new FileWatcher(songFile, REPL::onSongFileChanged);
+            songFileWatcher.start();
+
+            int sectionId = 1;
+            final List<Section> sections =new ArrayList<>(song.getSections());
+            sections.sort(Comparator.comparing(Section::getName));
+            for(final Section section : sections)
+                sectionsMap.put(sectionId++, section.getName());
+
+            if (!reload)
+                System.out.println(String.format("Successfully loaded song '%s' from '%s'",
+                        song.getTitle(), songFile.getAbsolutePath()));
+        }
+    }
+
+    private static void onSongFileChanged(final File changed) {
+        final String loopedSection = loopingSection;
+
+        doLoadSong(changed.getAbsolutePath(), true);
+        if (loopedSection != null && song.getSection(loopingSection) != null) {
+            loopingSectionMIDISequence = createSectionSongMIDISequence(loopedSection);
+            try {
+                System.out.println("X");
+                sequencer.setSequence(loopingSectionMIDISequence);
+            } catch (InvalidMidiDataException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static boolean playSong(final String[] args) {
@@ -225,9 +258,18 @@ public class REPL {
     }
 
     private static void doPlaySection(final String sectionName, final boolean loop) {
+        final Sequence sequence = createSectionSongMIDISequence(sectionName);
+        playMIDISequence(sequence, loop);
+
+        if (loop) {
+            loopingSection = sectionName;
+            loopingSectionMIDISequence = sequence;
+        }
+    }
+
+    private static Sequence createSectionSongMIDISequence(String sectionName) {
         final Performance performance = Performer.perform(song.createSectionSong(sectionName));
-        final Sequence songMIDISequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
-        playMIDISequence(songMIDISequence, loop);
+        return TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
     }
 
     private static boolean sections(final String[] args) {
@@ -356,6 +398,9 @@ public class REPL {
     }
 
     private static void doStop() {
+        loopingSection = null;
+        loopingSectionMIDISequence = null;
+
         if (sequencer.isRunning())
             sequencer.stop();
     }
