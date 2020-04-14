@@ -1,9 +1,6 @@
 package mugres.core.function.builtin.drums;
 
-import mugres.core.common.Context;
-import mugres.core.common.DrumKit;
-import mugres.core.common.Event;
-import mugres.core.common.Length;
+import mugres.core.common.*;
 import mugres.core.common.gridpattern.GridPattern;
 import mugres.core.common.gridpattern.converters.DrumKitHitElementPatternParser;
 import mugres.core.function.Function;
@@ -12,10 +9,12 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import static mugres.core.common.DrumKit.BD;
+import static mugres.core.common.DrumKit.SD;
+import static mugres.core.common.gridpattern.converters.DrumKitHitElementPatternParser.DrumKitHit.Intensity.HARD;
 import static mugres.core.function.Function.Parameter.Variant.NONE;
 import static mugres.core.function.Function.Parameter.Variant.V0;
 
@@ -73,7 +72,7 @@ public abstract class PreRecordedDrums extends Function {
             fillEvents.forEach(event -> event.offset(fillOffset));
 
             final int wholeRepeats = remainingMeasures / mainPattern.getLengthInMeasures();
-            for ( int i = 0; i < wholeRepeats; i++) {
+            for (int i = 0; i < wholeRepeats; i++) {
                 final List<Event> newEvents = Utils.extractEvents(mainPattern);
                 final Length mainOffset = mainPattern.getLength().multiply(i);
                 newEvents.forEach(event -> event.offset(mainOffset));
@@ -85,12 +84,30 @@ public abstract class PreRecordedDrums extends Function {
             final Length moreOffset = mainPattern.getLength().multiply(wholeRepeats);
             moreEvents.forEach(event -> event.offset(moreOffset));
             mainEvents.addAll(moreEvents);
+        }
 
-            events.addAll(mainEvents);
-            events.addAll(fillEvents);
+        events.addAll(mainEvents);
+        events.addAll(fillEvents);
 
-            if (startingHit != null) {
-                // TODO: replace starting cymbal
+        if (startingHit != null && startingHit != BD && startingHit != SD) {
+            final AtomicBoolean replaced = new AtomicBoolean();
+            final Set<Event> toRemove = new HashSet<>();
+            events.forEach(event -> {
+                if (event.getPosition().equals(Length.ZERO) &&
+                        (event.getPitch().getMidi() != BD.getMidi() && event.getPitch().getMidi() != SD.getMidi())) {
+                    if (event.getPitch().getMidi() == startingHit.getMidi()) {
+                        event.setVelocity(HARD.getVelocity());
+                        replaced.set(true);
+                    } else {
+                        toRemove.add(event);
+                    }
+                }
+            });
+
+            toRemove.forEach(event -> events.remove(event));
+            if (!replaced.get()) {
+                events.add(0, Event.of(Length.ZERO, Pitch.of(startingHit.getMidi()),
+                        Value.QUARTER, HARD.getVelocity()));
             }
         }
 

@@ -2,6 +2,7 @@ package mugres.core.common.gridpattern.converters;
 
 import mugres.core.common.Context;
 import mugres.core.common.Value;
+import mugres.core.common.gridpattern.converters.DrumKitHitElementPatternParser.DrumKitHit.Intensity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +21,7 @@ public class DrumKitHitElementPatternParser implements ElementPatternParser<Drum
 
     private DrumKitHit convert(final String data) {
         if (NO_EVENT.equals(data)) return null;
-        if ("X".equals(data)) return NORMAL;
-        if ("x".equals(data)) return SOFT;
-
-        throw new IllegalArgumentException("Invalid DrumKit hit specification: " + data);
+        return DrumKitHit.of(Intensity.forSymbol(data));
     }
 
     @Override
@@ -46,8 +44,6 @@ public class DrumKitHitElementPatternParser implements ElementPatternParser<Drum
                 .collect(Collectors.toList()));
     }
 
-    public static final DrumKitHit NORMAL = DrumKitHit.of(DrumKitHit.Intensity.NORMAL);
-    public static final DrumKitHit SOFT = DrumKitHit.of(DrumKitHit.Intensity.SOFT);
     private static final Pattern ELEMENT_LINE = Pattern.compile("^([a-zA-Z0-9-\\.]+\\s+)\\s*(.+)$");
 
     public static class DrumKitHit {
@@ -66,8 +62,48 @@ public class DrumKitHitElementPatternParser implements ElementPatternParser<Drum
         }
 
         public enum Intensity {
-            NORMAL,
-            SOFT
+            HARD("H", 127),
+            NORMAL_A("X", 100),
+            NORMAL_B("x", 80),
+            I1("1", 1),
+            I2("2", 9),
+            I3("3", 18),
+            I4("4", 27),
+            I5("5", 36),
+            I6("6", 45),
+            I7("7", 54),
+            I8("8", 63),
+            I9("9", 72),
+            IA("A", 81),
+            IB("B", 90),
+            IC("C", 99),
+            ID("D", 108),
+            IE("E", 117),
+            IF("F", 127);
+
+            private final String symbol;
+            private final int velocity;
+
+            Intensity(final String symbol, final int velocity) {
+                this.symbol = symbol;
+                this.velocity = velocity;
+            }
+
+            public static Intensity forSymbol(final String symbol) {
+                for(final Intensity intensity : values())
+                    if (intensity.symbol.equals(symbol))
+                        return intensity;
+
+                throw new IllegalArgumentException("Unknown hit intensity with symbol: " + symbol);
+            }
+
+            public String getSymbol() {
+                return symbol;
+            }
+
+            public int getVelocity() {
+                return velocity;
+            }
         }
 
         @Override

@@ -33,10 +33,10 @@ public class Utils {
                 final Length position = source.getDivision().length().multiply(hit.getSlot() - startingSlot);
                 final DrumKitHit.Intensity intensity = hit.getData().getIntensity();
                 final DrumKit drumKitElement = DrumKit.valueOf(hit.getElement());
-                final int velocity = intensity == DrumKitHit.Intensity.NORMAL ? 100 :
-                        intensity == DrumKitHit.Intensity.SOFT ? 60 : 0;
+                final int velocity = hit.getData().getIntensity().getVelocity();
 
-                events.add(Event.of(position, Pitch.of(drumKitElement.getMidi()), source.getDivision(), velocity));
+                events.add(Event.of(position, Pitch.of(drumKitElement.getMidi()),
+                        source.getDivision(), velocity));
             }
         }
 
