@@ -2,9 +2,9 @@ package mugres.core.ui;
 
 import mugres.core.common.Context;
 import mugres.core.common.Key;
+import mugres.core.common.Party;
 import mugres.core.common.TimeSignature;
 import mugres.core.function.Call;
-import mugres.core.common.Party;
 import mugres.core.notation.Section;
 import mugres.core.notation.Song;
 import mugres.core.notation.readers.JSONReader;
@@ -15,7 +15,6 @@ import mugres.core.performance.converters.ToMIDISequenceConverter;
 import javax.sound.midi.*;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -157,53 +156,59 @@ public class REPL {
     }
 
     private static void doLoadSong(final String filePath, final boolean reload) {
-        if (!reload)
-            doStop();
-
-        song = null;
-        songFile = null;
-        sectionsMap.clear();
-
-        final File file = new File(filePath);
-
-        if (!file.exists()) {
-            System.out.println("Source file doesn't exists: " + file.getAbsolutePath());
-        } else {
-            try {
-                song = SONG_JSON_READER.readSong(new FileInputStream(file));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            songFile = file;
-            if (songFileWatcher != null)
-                try { songFileWatcher.stopThread(); } catch (final Throwable t) {}
-            songFileWatcher = new FileWatcher(songFile, REPL::onSongFileChanged);
-            songFileWatcher.start();
-
-            int sectionId = 1;
-            final List<Section> sections =new ArrayList<>(song.getSections());
-            sections.sort(Comparator.comparing(Section::getName));
-            for(final Section section : sections)
-                sectionsMap.put(sectionId++, section.getName());
-
+        try {
             if (!reload)
-                System.out.println(String.format("Successfully loaded song '%s' from '%s'",
-                        song.getTitle(), songFile.getAbsolutePath()));
+                doStop();
+
+            song = null;
+            songFile = null;
+            sectionsMap.clear();
+
+            final File file = new File(filePath);
+
+            if (!file.exists()) {
+                System.out.println("Source file doesn't exists: " + file.getAbsolutePath());
+            } else {
+                song = SONG_JSON_READER.readSong(new FileInputStream(file));
+                songFile = file;
+                if (songFileWatcher != null)
+                    try {
+                        songFileWatcher.stopThread();
+                    } catch (final Throwable t) {
+                    }
+                songFileWatcher = new FileWatcher(songFile, REPL::onSongFileChanged);
+                songFileWatcher.start();
+
+                int sectionId = 1;
+                final List<Section> sections = new ArrayList<>(song.getSections());
+                sections.sort(Comparator.comparing(Section::getName));
+                for (final Section section : sections)
+                    sectionsMap.put(sectionId++, section.getName());
+
+                if (!reload)
+                    System.out.println(String.format("Successfully loaded song '%s' from '%s'",
+                            song.getTitle(), songFile.getAbsolutePath()));
+            }
+        } catch(final Throwable t) {
+            t.printStackTrace();
         }
     }
 
     private static void onSongFileChanged(final File changed) {
-        final String loopedSection = loopingSection;
+        try {
+            final String loopedSection = loopingSection;
 
-        doLoadSong(changed.getAbsolutePath(), true);
-        if (loopedSection != null && song.getSection(loopingSection) != null) {
-            loopingSectionMIDISequence = createSectionSongMIDISequence(loopedSection);
-            try {
-                System.out.println("X");
-                sequencer.setSequence(loopingSectionMIDISequence);
-            } catch (InvalidMidiDataException e) {
-                e.printStackTrace();
+            doLoadSong(changed.getAbsolutePath(), true);
+            if (loopedSection != null && song.getSection(loopingSection) != null) {
+                loopingSectionMIDISequence = createSectionSongMIDISequence(loopedSection);
+                try {
+                    sequencer.setSequence(loopingSectionMIDISequence);
+                } catch (InvalidMidiDataException e) {
+                    e.printStackTrace();
+                }
             }
+        } catch (final Throwable t) {
+            t.printStackTrace();
         }
     }
 
