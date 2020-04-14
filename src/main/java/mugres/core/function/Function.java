@@ -1,6 +1,7 @@
 package mugres.core.function;
 
 import mugres.core.common.*;
+import mugres.core.function.builtin.drums.BlastBeat;
 import mugres.core.function.builtin.drums.Drums;
 import mugres.core.function.builtin.drums.HalfTime;
 import mugres.core.function.builtin.riffer.Riffer;
@@ -120,7 +121,8 @@ public abstract class Function {
         RANDOM(new Random()),
         DRUMS(new Drums()),
         RIFFER(new Riffer()),
-        HALFTIME(new HalfTime());
+        HALF_TIME(new HalfTime()),
+        BLAST_BEAT(new BlastBeat());
 
         private final Function function;
 
