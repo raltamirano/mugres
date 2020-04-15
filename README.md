@@ -1,2 +1,2 @@
 # mugres-core
-MUGRES is a tool to ease music composition
+MUGRES is a tool to ease music composition and performance
