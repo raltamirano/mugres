@@ -23,7 +23,7 @@ public class Pitch {
         final int targetNote = this.midi + semitones;
 
         if (!isValidMidiNoteNumber(midi))
-            throw new IllegalArgumentException("Invalid MIDI note number: " + targetNote);
+            throw new IllegalArgumentException("Invalid Midi note number: " + targetNote);
 
         return of(targetNote);
     }
@@ -50,7 +50,7 @@ public class Pitch {
 
     public synchronized static Pitch of(final int midi) {
         if (!isValidMidiNoteNumber(midi))
-            throw new IllegalArgumentException("Invalid MIDI note number: " + midi);
+            throw new IllegalArgumentException("Invalid Midi note number: " + midi);
 
         if (!CACHE.containsKey(midi))
             CACHE.put(midi, new Pitch(midi, Note.of(midi % 12), (midi / 12) - 2));

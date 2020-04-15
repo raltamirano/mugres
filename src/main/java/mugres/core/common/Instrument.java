@@ -157,7 +157,7 @@ public enum Instrument {
         return drumKit;
     }
 
-    public int getMIDI() {
+    public int getMidi() {
         return drumKit ?
                 Math.abs(id) - 1 :
                 id;

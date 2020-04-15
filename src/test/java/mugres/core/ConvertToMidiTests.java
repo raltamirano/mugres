@@ -6,7 +6,7 @@ import mugres.core.notation.Song;
 import mugres.core.performance.Performance;
 import mugres.core.performance.Performer;
 import mugres.core.performance.Track;
-import mugres.core.performance.converters.ToMIDISequenceConverter;
+import mugres.core.performance.converters.ToMidiSequenceConverter;
 import org.junit.jupiter.api.Test;
 
 import javax.sound.midi.Sequence;
@@ -17,7 +17,7 @@ import static mugres.core.common.Party.WellKnownParties.GUITAR1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class ConvertToMIDITests {
+public class ConvertToMidiTests {
     @Test
     public void convertSimpleSong() {
         final Song song = Song.of("We will unit test you", createBasicContext());
@@ -38,11 +38,11 @@ public class ConvertToMIDITests {
         assertEquals(8, track.getEvents().size());
 
         // Conversion
-        final ToMIDISequenceConverter converter = new ToMIDISequenceConverter();
+        final ToMidiSequenceConverter converter = new ToMidiSequenceConverter();
         final Sequence sequence = converter.convert(performance);
 
         assertNotNull(sequence);
-        // # tracks for a type 1 MIDI file = one for control of tempo, key, etc + one per party
+        // # tracks for a type 1 Midi file = one for control of tempo, key, etc + one per party
         assertEquals(song.getParties().size() + 1, sequence.getTracks().length);
         // Expected events: set track name, tempo, time signature, and end-of-track
         assertEquals(4, sequence.getTracks()[0].size());

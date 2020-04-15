@@ -1,5 +1,6 @@
 package mugres.core.ui;
 
+import mugres.core.MUGRES;
 import mugres.core.common.Context;
 import mugres.core.common.Key;
 import mugres.core.common.Party;
@@ -10,14 +11,13 @@ import mugres.core.notation.Song;
 import mugres.core.notation.readers.JSONReader;
 import mugres.core.performance.Performance;
 import mugres.core.performance.Performer;
-import mugres.core.performance.converters.ToMIDISequenceConverter;
+import mugres.core.performance.converters.ToMidiSequenceConverter;
 
 import javax.sound.midi.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class REPL {
     private static File songFile;
@@ -28,16 +28,16 @@ public class REPL {
     private static Party functionCallsParty = Party.WellKnownParties.PIANO.getParty();
 
     private static String loopingSection = null;
-    private static Sequence loopingSectionMIDISequence = null;
+    private static Sequence loopingSectionMidiSequence = null;
 
     private static final Map<String, Function<String[], Boolean>> HANDLERS = new HashMap<>();
     private static final JSONReader SONG_JSON_READER = new JSONReader();
-    private static final ToMIDISequenceConverter TO_MIDI_SEQUENCE_CONVERTER = new ToMIDISequenceConverter();
+    private static final ToMidiSequenceConverter TO_MIDI_SEQUENCE_CONVERTER = new ToMidiSequenceConverter();
     private static FileWatcher songFileWatcher = null;
 
     public static void main(String[] args) {
         loadCommandHandlers();
-        createMIDISequencer();
+        createMidiSequencer();
 
         System.out.println("Welcome to MUGRES.");
 
@@ -72,31 +72,8 @@ public class REPL {
         HANDLERS.put("quit", REPL::quit);
     }
 
-    private static void createMIDISequencer() {
-        sequencer = createSequencer(createOutputPort());
-    }
-
-    private static Receiver createOutputPort() {
-        final String portName = System.getProperty("mugres.outputPort");
-        final List<MidiDevice.Info> candidates = Arrays.stream(MidiSystem.getMidiDeviceInfo())
-                .filter(d -> d.getName().equals(portName)).collect(Collectors.toList());
-
-        MidiDevice midiDevice = null;
-        boolean open = false;
-        for(MidiDevice.Info candidate : candidates) {
-            try {
-                open = false;
-                midiDevice = MidiSystem.getMidiDevice(candidate);
-                midiDevice.open();
-                open = true;
-                return midiDevice.getReceiver();
-            } catch (Exception e) {
-                if (midiDevice != null && open)
-                    midiDevice.close();
-            }
-        }
-
-        throw new RuntimeException("Invalid MIDI output port: " + portName);
+    private static void createMidiSequencer() {
+        sequencer = createSequencer(MUGRES.getMidiOutputPort());
     }
 
     private static Sequencer createSequencer(final Receiver outputPort) {
@@ -200,9 +177,9 @@ public class REPL {
 
             doLoadSong(changed.getAbsolutePath(), true);
             if (loopedSection != null && song.getSection(loopingSection) != null) {
-                loopingSectionMIDISequence = createSectionSongMIDISequence(loopedSection);
+                loopingSectionMidiSequence = createSectionSongMidiSequence(loopedSection);
                 try {
-                    sequencer.setSequence(loopingSectionMIDISequence);
+                    sequencer.setSequence(loopingSectionMidiSequence);
                 } catch (InvalidMidiDataException e) {
                     e.printStackTrace();
                 }
@@ -219,8 +196,8 @@ public class REPL {
             System.out.println(args[0] + ": no song loaded");
         } else {
             final Performance performance = Performer.perform(song);
-            final Sequence songMIDISequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
-            playMIDISequence(songMIDISequence, false);
+            final Sequence songMidiSequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
+            playMidiSequence(songMidiSequence, false);
         }
 
         return true;
@@ -263,16 +240,16 @@ public class REPL {
     }
 
     private static void doPlaySection(final String sectionName, final boolean loop) {
-        final Sequence sequence = createSectionSongMIDISequence(sectionName);
-        playMIDISequence(sequence, loop);
+        final Sequence sequence = createSectionSongMidiSequence(sectionName);
+        playMidiSequence(sequence, loop);
 
         if (loop) {
             loopingSection = sectionName;
-            loopingSectionMIDISequence = sequence;
+            loopingSectionMidiSequence = sequence;
         }
     }
 
-    private static Sequence createSectionSongMIDISequence(String sectionName) {
+    private static Sequence createSectionSongMidiSequence(String sectionName) {
         final Performance performance = Performer.perform(song.createSectionSong(sectionName));
         return TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
     }
@@ -368,15 +345,15 @@ public class REPL {
             final Call call = Call.parse(args[1]);
             final Song functionCallSong = Song.of(functionCallsContext, functionCallsParty, call);
             final Performance performance = Performer.perform(functionCallSong);
-            final Sequence songMIDISequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
-            playMIDISequence(songMIDISequence, false);
+            final Sequence songMidiSequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
+            playMidiSequence(songMidiSequence, false);
         }
 
         return true;
     }
 
 
-    private static void playMIDISequence(final Sequence midiSequence, final boolean loop) {
+    private static void playMidiSequence(final Sequence midiSequence, final boolean loop) {
         doStop();
 
         try {
@@ -404,7 +381,7 @@ public class REPL {
 
     private static void doStop() {
         loopingSection = null;
-        loopingSectionMIDISequence = null;
+        loopingSectionMidiSequence = null;
 
         if (sequencer.isRunning())
             sequencer.stop();

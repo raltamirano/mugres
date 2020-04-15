@@ -1,20 +1,20 @@
 package mugres.core.performance.exporters;
 
 import mugres.core.performance.Performance;
-import mugres.core.performance.converters.ToMIDISequenceConverter;
+import mugres.core.performance.converters.ToMidiSequenceConverter;
 
 import javax.sound.midi.MidiSystem;
 import java.io.File;
 import java.io.IOException;
 
-public class MIDIFileExporter implements Exporter {
+public class MidiFileExporter implements Exporter {
     private final int midiFileType;
 
-    public MIDIFileExporter() {
+    public MidiFileExporter() {
         this(MIDI_FILE_TYPE_1);
     }
 
-    public MIDIFileExporter(final int midiFileType) {
+    public MidiFileExporter(final int midiFileType) {
         this.midiFileType = midiFileType;
     }
 
@@ -25,5 +25,5 @@ public class MIDIFileExporter implements Exporter {
     }
 
     private static final int MIDI_FILE_TYPE_1 = 1;
-    private static final ToMIDISequenceConverter CONVERTER = new ToMIDISequenceConverter();
+    private static final ToMidiSequenceConverter CONVERTER = new ToMidiSequenceConverter();
 }

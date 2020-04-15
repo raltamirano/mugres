@@ -10,7 +10,7 @@ import static javax.sound.midi.Sequence.PPQ;
 import static javax.sound.midi.ShortMessage.NOTE_OFF;
 import static javax.sound.midi.ShortMessage.NOTE_ON;
 
-public class ToMIDISequenceConverter implements Converter<Sequence> {
+public class ToMidiSequenceConverter implements Converter<Sequence> {
     @Override
     public Sequence convert(final Performance performance) {
         try {

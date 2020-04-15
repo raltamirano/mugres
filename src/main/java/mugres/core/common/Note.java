@@ -27,7 +27,7 @@ public enum Note {
             if (note.number == number)
                 return note;
 
-        throw new IllegalArgumentException("MIDI note number must be 0 (C) <= number <= 11 (B)");
+        throw new IllegalArgumentException("Midi note number must be 0 (C) <= number <= 11 (B)");
     }
 
     public static Note of(final String label) {
