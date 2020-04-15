@@ -1,2 +1,2 @@
 # mugres-core
-MUGRES core library (Java)
+MUGRES is a tool to ease music composition
