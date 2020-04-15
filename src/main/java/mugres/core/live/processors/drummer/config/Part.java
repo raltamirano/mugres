@@ -7,7 +7,7 @@ public class Part {
     private String name;
     private Sequence sequence;
 
-    private Part(String name, Sequence sequence) {
+    Part(String name, Sequence sequence) {
         this.name = name;
         this.sequence = sequence;
     }

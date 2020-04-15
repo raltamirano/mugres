@@ -2,13 +2,13 @@ package mugres.core.live.processors.drummer;
 
 import mugres.core.common.Context;
 import mugres.core.common.Signal;
-import mugres.core.common.io.Output;
-import mugres.core.live.processors.drummer.config.Action;
-import mugres.core.live.processors.drummer.config.DrumPattern;
-import mugres.core.live.processors.drummer.config.Part;
 import mugres.core.common.io.Input;
+import mugres.core.common.io.Output;
 import mugres.core.live.processors.Processor;
+import mugres.core.live.processors.drummer.config.Action;
 import mugres.core.live.processors.drummer.config.Configuration;
+import mugres.core.live.processors.drummer.config.Groove;
+import mugres.core.live.processors.drummer.config.Part;
 
 import javax.sound.midi.*;
 
@@ -17,15 +17,13 @@ public class Drummer extends Processor {
     private final Receiver outputPort;
     private final Sequencer sequencer;
 
-    private DrumPattern playingPattern;
-    private DrumPattern nextPattern;
-    private Part grooveSectionA;
-    private Part grooveSectionB;
+    private Groove playingGroove;
+    private Groove nextGroove;
+    private Part mainSectionA;
+    private Part mainSectionB;
     private Part fill;
-    private boolean playingEndOfPattern = false;
+    private boolean playingEndOfGroove = false;
     private boolean finishing = false;
-
-    private long lastEventTimestamp = Long.MIN_VALUE;
 
     public Drummer(final Context context,
                    final Input input,
@@ -43,9 +41,6 @@ public class Drummer extends Processor {
     protected void doProcess(final Signal signal) {
         if (!signal.isActive())
             return;
-
-        /** Act upon a signal being activated. */
-        lastEventTimestamp = System.currentTimeMillis();
 
         final Action action = configuration.getAction(signal.getPlayed().getPitch().getMidi());
         if (action != null)
@@ -69,10 +64,10 @@ public class Drummer extends Processor {
     }
 
     private void playNextPart() {
-        final boolean switchPattern = this.playingPattern == null || this.nextPattern != null;
+        final boolean switchPattern = this.playingGroove == null || this.nextGroove != null;
 
         Sequence sequenceToPlay;
-        if (playingEndOfPattern) {
+        if (playingEndOfGroove) {
             if (finishing) {
                 stop();
                 return;
@@ -80,22 +75,22 @@ public class Drummer extends Processor {
 
             if (switchPattern)
                 switchToNextPattern();
-            sequenceToPlay = grooveSectionA.getSequence();
+            sequenceToPlay = mainSectionA.getSequence();
         } else {
-            sequenceToPlay = switchPattern || finishing ? fill.getSequence() : grooveSectionB.getSequence();
+            sequenceToPlay = switchPattern || finishing ? fill.getSequence() : mainSectionB.getSequence();
         }
 
-        final boolean splitGroove = this.grooveSectionB != null;
-        if (splitGroove)
-            playingEndOfPattern = !playingEndOfPattern;
+        final boolean splitMain = this.mainSectionB != null;
+        if (splitMain)
+            playingEndOfGroove = !playingEndOfGroove;
         else
-            playingEndOfPattern = true;
+            playingEndOfGroove = true;
 
         try {
             sequencer.setSequence(sequenceToPlay);
-            sequencer.setTempoInBPM(playingPattern.getTempo() != 0 ?
-                    playingPattern.getTempo() :
-                    configuration.getContext().getTempo());
+            sequencer.setTempoInBPM(playingGroove.getTempo() != 0 ?
+                    playingGroove.getTempo() :
+                    getContext().getTempo());
             sequencer.setTickPosition(0);
             sequencer.start();
         } catch (final InvalidMidiDataException e) {
@@ -104,47 +99,47 @@ public class Drummer extends Processor {
     }
 
     private void switchToNextPattern() {
-        this.playingPattern = this.nextPattern != null ?
-                this.nextPattern : this.playingPattern;
-        this.nextPattern = null;
+        this.playingGroove = this.nextGroove != null ?
+                this.nextGroove : this.playingGroove;
+        this.nextGroove = null;
 
-        if (playingPattern == null)
+        if (playingGroove == null)
             return;
 
         fill = chooseFill();
 
-        // Split groove at fill's length
-        final Part groove = chooseGroove();
+        // Split main at fill's length
+        final Part main = chooseMain();
 
         if (fill != null) {
-            final Part[] grooveSections = groove.split(fill);
-            grooveSectionA = grooveSections[0];
-            grooveSectionB = grooveSections[1];
+            final Part[] mainSections = main.split(fill);
+            mainSectionA = mainSections[0];
+            mainSectionB = mainSections[1];
 
-            // Make groove's section B and the fill the same length for a more accurate loop
-            Part.setSequenceLength(fill.getSequence(), grooveSectionB.getSequence().getTickLength());
+            // Make main's section B and the fill the same length for a more accurate loop
+            Part.setSequenceLength(fill.getSequence(), mainSectionB.getSequence().getTickLength());
         } else {
-            groove.fixLength();
-            grooveSectionA = groove;
-            grooveSectionB = null;
+            main.fixLength();
+            mainSectionA = main;
+            mainSectionB = null;
         }
     }
 
-    private Part chooseGroove() {
-        if (playingPattern.getGrooves().isEmpty())
-            throw new RuntimeException("No grooves defined for pattern: " + playingPattern.getName());
+    private Part chooseMain() {
+        if (playingGroove.getMains().isEmpty())
+            throw new RuntimeException("No mains defined for groove: " + playingGroove.getName());
 
-        // TODO: Honor playingPattern.getGroovesMode()!
-        final Part part = playingPattern.getGrooves().get(0);
+        // TODO: Honor playingPattern.getMainsMode()!
+        final Part part = playingGroove.getMains().get(0);
         return part; //.asClone();
     }
 
     private Part chooseFill() {
-        if (playingPattern.getFills().isEmpty())
+        if (playingGroove.getFills().isEmpty())
             return null;
 
         // TODO: Honor playingPattern.getFillsMode()!
-        final Part part = playingPattern.getFills().get(0);
+        final Part part = playingGroove.getFills().get(0);
         return part; //.asClone();
     }
 
@@ -152,15 +147,15 @@ public class Drummer extends Processor {
         // Cancel request to finish playing
         finishing = false;
 
-        if (playingPattern != null && pattern.equals(playingPattern.getName())) {
-            this.nextPattern = null;
+        if (playingGroove != null && pattern.equals(playingGroove.getName())) {
+            this.nextGroove = null;
             return;
         }
 
-        this.nextPattern = configuration.getPattern(pattern);
+        this.nextGroove = configuration.getGroove(pattern);
 
         if (!sequencer.isRunning()) {
-            playingEndOfPattern = true;
+            playingEndOfGroove = true;
             playNextPart();
         }
     }
@@ -182,8 +177,8 @@ public class Drummer extends Processor {
         if (sequencer.isRunning())
             sequencer.stop();
 
-        playingPattern = null;
-        nextPattern = null;
+        playingGroove = null;
+        nextGroove = null;
         finishing = false;
     }
 

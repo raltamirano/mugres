@@ -26,7 +26,7 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
                 final Track midiTrack = sequence.createTrack();
                 setTrackName(midiTrack, track.getParty());
                 for(Event event : track.getEvents())
-                    addNoteEvents(midiTrack, track.getChannel(), event);
+                    addNoteEvent(midiTrack, track.getChannel(), event);
             }
 
             setSequenceLength(sequence, performance.getLength().toPPQTicks(PPQ_RESOLUTION));
@@ -84,7 +84,7 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
         midiTrack.add(new MidiEvent(metaMessage, (long) 0));
     }
 
-    private void addNoteEvents(final Track midiTrack, final int channel, Event event)
+    private void addNoteEvent(final Track midiTrack, final int channel, Event event)
             throws InvalidMidiDataException {
         long startTicks = event.getPosition().toPPQTicks(PPQ_RESOLUTION);
 

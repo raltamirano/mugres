@@ -1,64 +1,121 @@
 package mugres.core.live.processors.drummer.config;
 
 import mugres.core.common.Context;
+import mugres.core.function.Call;
+import mugres.core.function.Function.Parameter.Variant;
+import mugres.core.function.builtin.drums.PreRecordedDrums;
+import mugres.core.notation.Song;
+import mugres.core.performance.Performer;
+import mugres.core.performance.converters.ToMidiSequenceConverter;
 
+import javax.sound.midi.Sequence;
 import java.util.HashMap;
 import java.util.Map;
 
+import static mugres.core.common.Party.WellKnownParties.DRUMS;
+import static mugres.core.function.Function.LENGTH_PARAMETER;
+
 public class Configuration {
     private String title;
-    private Map<String, DrumPattern> drumPatterns = new HashMap<>();
+    private final Map<String, Groove> grooves = new HashMap<>();
     private final Map<Integer, Action> actions = new HashMap<>();
-    private final Context context;
 
     public Configuration(final String title) {
         this.title = title;
-        context = Context.createBasicContext();
     }
 
     public String getTitle() {
         return title;
     }
 
-    public Map<String, DrumPattern> getDrumPatterns() {
-        return drumPatterns;
+    public Map<String, Groove> getGrooves() {
+        return grooves;
     }
 
     public Map<Integer, Action> getActions() {
         return actions;
     }
 
-    public Context getContext() {
-        return context;
+    public Groove createGroove(final String name) {
+        return createGroove(name, 0, Groove.Mode.SEQUENCE, Groove.Mode.SEQUENCE);
     }
 
-    public DrumPattern createPattern(final String name) {
-        return createPattern(name, 0, DrumPattern.Mode.SEQUENCE, DrumPattern.Mode.SEQUENCE);
+    public Groove createGroove(final String name,
+                               final Groove.Mode groovesMode,
+                               final Groove.Mode fillsMode) {
+        return createGroove(name, 0, groovesMode, fillsMode);
     }
 
-    public DrumPattern createPattern(final String name,
-                                     final DrumPattern.Mode groovesMode,
-                                     final DrumPattern.Mode fillsMode) {
-        return createPattern(name, 0, groovesMode, fillsMode);
-    }
+    public Groove createGroove(final String name, final int tempo,
+                               final Groove.Mode groovesMode,
+                               final Groove.Mode fillsMode) {
+        if (grooves.containsKey(name))
+            throw new IllegalArgumentException("Groove already created: " + name);
 
-    public DrumPattern createPattern(final String name, final int tempo,
-                                     final DrumPattern.Mode groovesMode,
-                                     final DrumPattern.Mode fillsMode) {
-        if (drumPatterns.containsKey(name))
-            throw new IllegalArgumentException("Pattern already created: " + name);
-
-        final DrumPattern pattern = new DrumPattern(name, tempo, groovesMode, fillsMode);
-        drumPatterns.put(name, pattern);
+        final Groove pattern = new Groove(name, tempo, groovesMode, fillsMode);
+        grooves.put(name, pattern);
 
         return pattern;
     }
 
-    public DrumPattern getPattern(final String name) {
-        final DrumPattern pattern = drumPatterns.get(name);
+    public Groove createGroove(final String name,
+                               final Context context,
+                               final int measures,
+                               final PreRecordedDrums generator) {
+        return createGroove(name, Groove.Mode.SEQUENCE, Groove.Mode.SEQUENCE, context, measures, generator);
+    }
+
+    public Groove createGroove(final String name,
+                               final Groove.Mode groovesMode,
+                               final Groove.Mode fillsMode,
+                               final Context context,
+                               final int measures,
+                               final PreRecordedDrums generator) {
+
+        final Groove groove = createGroove(name, context.getTempo(), groovesMode, fillsMode);
+
+        final Map<String, Object> arguments = new HashMap<>();
+
+        // Generate mains
+        final Variant mainVariant = Variant.V0;
+        arguments.put(LENGTH_PARAMETER.getName(), measures);
+        arguments.put("variant", mainVariant);
+        arguments.put("fill", Variant.NONE);
+
+        final Sequence sequence = generateSequence(context, generator, arguments);
+        final Part generatedPart = new Part(name + " " + mainVariant.name(), sequence);
+        groove.appendMain(generatedPart);
+
+        // Generate fills
+        final Variant fillVariant = Variant.V0;
+        arguments.clear();
+        arguments.put(LENGTH_PARAMETER.getName(), 1);
+        arguments.put("variant", Variant.V0);
+        arguments.put("fill", fillVariant);
+
+        final Sequence fillSequence = generateSequence(context, generator, arguments);
+        final Part fillGeneratedPart = new Part(name + " Fill " + fillVariant.name(), fillSequence);
+        groove.appendFill(fillGeneratedPart);
+
+        return groove;
+    }
+
+    private Sequence generateSequence(final Context context, final PreRecordedDrums generator,
+                                      final Map<String, Object> arguments) {
+        final Sequence sequence = CONVERTER.convert(Performer
+                .perform(Song.of(context, DRUMS.getParty(), Call.of(generator, arguments))));
+
+        // Remove control track
+        sequence.deleteTrack(sequence.getTracks()[0]);
+
+        return sequence;
+    }
+
+    public Groove getGroove(final String name) {
+        final Groove pattern = grooves.get(name);
 
         if (pattern == null)
-            throw new IllegalArgumentException("Unknown pattern: " + name);
+            throw new IllegalArgumentException("Unknown groove: " + name);
 
         return pattern;
     }
@@ -75,4 +132,6 @@ public class Configuration {
     public Action getAction(final int midi) {
         return actions.get(midi);
     }
+
+    private static final ToMidiSequenceConverter CONVERTER = new ToMidiSequenceConverter();
 }
