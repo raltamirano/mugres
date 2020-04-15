@@ -4,8 +4,8 @@
   <artifactId>mugres-core</artifactId>
   <versioning>
     <versions>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.5-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20200414185343</lastUpdated>
+    <lastUpdated>20200415112152</lastUpdated>
   </versioning>
 </metadata>
