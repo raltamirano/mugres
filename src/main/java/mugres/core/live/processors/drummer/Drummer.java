@@ -25,6 +25,7 @@ public class Drummer extends Processor {
     private Part mainSectionB;
     private Part fill;
     private boolean playingEndOfGroove = false;
+    private boolean playingFill = false;
     private boolean finishing = false;
     private final Thread statusThread;
 
@@ -72,7 +73,7 @@ public class Drummer extends Processor {
     }
 
     private void playNextPart() {
-        final boolean switchPattern = this.playingGroove == null || this.nextGroove != null;
+        final boolean switchGroove = this.playingGroove == null || this.nextGroove != null;
 
         Sequence sequenceToPlay;
         if (playingEndOfGroove) {
@@ -81,11 +82,19 @@ public class Drummer extends Processor {
                 return;
             }
 
-            if (switchPattern)
-                switchToNextPattern();
+            if (switchGroove)
+                switchToNextGroove();
             sequenceToPlay = mainSectionA.getSequence();
+            playingFill = false;
         } else {
-            sequenceToPlay = switchPattern || finishing ? fill.getSequence() : mainSectionB.getSequence();
+            sequenceToPlay = switchGroove || finishing ? fill.getSequence() : mainSectionB.getSequence();
+            if (switchGroove || finishing) {
+                playingFill = true;
+                sequenceToPlay = fill.getSequence();
+            } else {
+                playingFill = false;
+                sequenceToPlay = mainSectionB.getSequence();
+            }
         }
 
         final boolean splitMain = this.mainSectionB != null;
@@ -108,7 +117,7 @@ public class Drummer extends Processor {
         }
     }
 
-    private void switchToNextPattern() {
+    private void switchToNextGroove() {
         this.playingGroove = this.nextGroove != null ?
                 this.nextGroove : this.playingGroove;
         this.nextGroove = null;
@@ -139,7 +148,7 @@ public class Drummer extends Processor {
         if (playingGroove.getMains().isEmpty())
             throw new RuntimeException("No mains defined for groove: " + playingGroove.getName());
 
-        // TODO: Honor playingPattern.getMainsMode()!
+        // TODO: Honor playingGroove.getMainsMode()!
         final Part part = playingGroove.getMains().get(0);
         return part; //.asClone();
     }
@@ -148,24 +157,24 @@ public class Drummer extends Processor {
         if (playingGroove.getFills().isEmpty())
             return null;
 
-        // TODO: Honor playingPattern.getFillsMode()!
+        // TODO: Honor playingGroove.getFillsMode()!
         final Part part = playingGroove.getFills().get(0);
         return part; //.asClone();
     }
 
-    public void play(final String pattern) {
+    public void play(final String grooveName, final boolean immediately) {
         // Cancel request to finish playing
         finishing = false;
 
-        if (playingGroove != null && pattern.equals(playingGroove.getName())) {
+        if (playingGroove != null && grooveName.equals(playingGroove.getName())) {
             this.nextGroove = null;
             updateStatus();
             return;
         }
 
-        this.nextGroove = configuration.getGroove(pattern);
+        this.nextGroove = configuration.getGroove(grooveName);
 
-        if (!sequencer.isRunning()) {
+        if (!sequencer.isRunning() || immediately) {
             playingEndOfGroove = true;
             playNextPart();
         } else {
@@ -195,6 +204,7 @@ public class Drummer extends Processor {
         playingGroove = null;
         nextGroove = null;
         finishing = false;
+        playingFill = false;
 
         updateStatus();
     }
@@ -203,10 +213,12 @@ public class Drummer extends Processor {
         final StringBuilder builder = new StringBuilder();
 
         if (sequencer.isRunning()) {
-            builder.append(format("Playing groove %s (fill=%s)%n",
+            builder.append(format("Playing groove: %s (fill=%s)%n",
                     playingGroove.getName(), fill == null ? "No" : "Yes"));
             builder.append(format("Next groove: %s%n",
                     nextGroove == null ? "None" : nextGroove.getName()));
+            builder.append(format("Playing fill: %s%n",
+                    playingFill ? "Yes" : "No"));
             builder.append(format("Finishing: %s%n",
                     finishing ? "Yes" : "No"));
         } else {

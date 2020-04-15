@@ -17,7 +17,7 @@ public class Play implements Command {
     public void execute(final Context context,
                         final Drummer drummer,
                         final Map<String, Object> parameters) {
-        drummer.play((String)parameters.get("pattern"));
+        drummer.play((String)parameters.get("pattern"), (boolean)parameters.get("immediately"));
     }
 
     public static final Play INSTANCE = new Play();
