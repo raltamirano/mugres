@@ -94,9 +94,9 @@ public abstract class PreRecordedDrums extends Function {
             final Set<Event> toRemove = new HashSet<>();
             events.forEach(event -> {
                 if (event.getPosition().equals(Length.ZERO) &&
-                        (event.getPitch().getMidi() != BD.getMidi() && event.getPitch().getMidi() != SD.getMidi())) {
-                    if (event.getPitch().getMidi() == startingHit.getMidi()) {
-                        event.setVelocity(HARD.getVelocity());
+                        (event.getPlayed().getPitch().getMidi() != BD.getMidi() && event.getPlayed().getPitch().getMidi() != SD.getMidi())) {
+                    if (event.getPlayed().getPitch().getMidi() == startingHit.getMidi()) {
+                        event.getPlayed().setVelocity(HARD.getVelocity());
                         replaced.set(true);
                     } else {
                         toRemove.add(event);

@@ -37,9 +37,9 @@ public class Performer {
                                 final List<Event> events = sortEventList(functionResult.getEvents());
                                 for (Event event : events) {
                                     track.addEvent(Event.of(event.getPosition().plus(offset).plus(previousCallsOffset),
-                                            event.getPitch(),
-                                            event.getValue(),
-                                            event.getVelocity()));
+                                            event.getPlayed().getPitch(),
+                                            event.getPlayed().getValue(),
+                                            event.getPlayed().getVelocity()));
                                 }
                                 previousCallsOffset = previousCallsOffset.plus(callContext.getTimeSignature()
                                         .measuresLength(call.getLengthInMeasures()));

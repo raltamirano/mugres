@@ -88,10 +88,13 @@ public class ToMIDISequenceConverter implements Converter<Sequence> {
             throws InvalidMidiDataException {
         long startTicks = event.getPosition().toPPQTicks(PPQ_RESOLUTION);
 
-        final ShortMessage noteOn = new ShortMessage(NOTE_ON, channel, event.getPitch().getMidi(), event.getVelocity());
+        final ShortMessage noteOn = new ShortMessage(NOTE_ON, channel, event.getPlayed().getPitch().getMidi(),
+                event.getPlayed().getVelocity());
         midiTrack.add(new MidiEvent(noteOn, startTicks));
-        final ShortMessage noteOff = new ShortMessage(NOTE_OFF, channel, event.getPitch().getMidi(), 0);
-        midiTrack.add(new MidiEvent(noteOff, startTicks + event.getValue().length().toPPQTicks(PPQ_RESOLUTION)));
+        final ShortMessage noteOff = new ShortMessage(NOTE_OFF, channel, event.getPlayed().getPitch().getMidi(),
+                0);
+        midiTrack.add(new MidiEvent(noteOff, startTicks + event.getPlayed().getValue().length()
+                .toPPQTicks(PPQ_RESOLUTION)));
     }
 
     private static final int PPQ_RESOLUTION = 480;

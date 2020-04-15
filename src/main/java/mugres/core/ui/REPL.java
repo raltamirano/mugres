@@ -134,7 +134,7 @@ public class REPL {
             if (isSongLoaded()) {
                 System.out.println("Song: " + song.getTitle());
                 System.out.println("Source file: " + songFile.getAbsolutePath());
-                System.out.println("Looping section: " + loopingSection == null ? "No" : loopingSection);
+                System.out.println("Looping section: " + ((loopingSection == null) ? "No" : loopingSection));
             }
         }
 
