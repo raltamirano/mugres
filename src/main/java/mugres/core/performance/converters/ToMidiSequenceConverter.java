@@ -93,7 +93,7 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
         midiTrack.add(new MidiEvent(noteOn, startTicks));
         final ShortMessage noteOff = new ShortMessage(NOTE_OFF, channel, event.getPlayed().getPitch().getMidi(),
                 0);
-        midiTrack.add(new MidiEvent(noteOff, startTicks + event.getPlayed().getValue().length()
+        midiTrack.add(new MidiEvent(noteOff, startTicks + event.getValue().length()
                 .toPPQTicks(PPQ_RESOLUTION)));
     }
 
