@@ -14,7 +14,7 @@ public class MUGRES {
 
     private MUGRES() {}
 
-    private Transmitter getMidiInputPort() {
+    public static synchronized Transmitter getMidiInputPort() {
         if (midiInputPort != null)
             return midiInputPort;
 
@@ -41,7 +41,7 @@ public class MUGRES {
         throw new RuntimeException("Invalid MUGRES Midi input port: " + portName);
     }
 
-    public synchronized static Receiver getMidiOutputPort() {
+    public static synchronized Receiver getMidiOutputPort() {
         if (midiOutputPort != null)
             return midiOutputPort;
 
