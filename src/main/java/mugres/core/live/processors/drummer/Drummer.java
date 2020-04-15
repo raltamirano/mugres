@@ -12,6 +12,8 @@ import mugres.core.live.processors.drummer.config.Part;
 
 import javax.sound.midi.*;
 
+import static java.lang.String.format;
+
 public class Drummer extends Processor {
     private final Configuration configuration;
     private final Receiver outputPort;
@@ -95,6 +97,8 @@ public class Drummer extends Processor {
             sequencer.start();
         } catch (final InvalidMidiDataException e) {
             throw new RuntimeException(e);
+        } finally {
+            updateStatus();
         }
     }
 
@@ -149,6 +153,7 @@ public class Drummer extends Processor {
 
         if (playingGroove != null && pattern.equals(playingGroove.getName())) {
             this.nextGroove = null;
+            updateStatus();
             return;
         }
 
@@ -157,6 +162,8 @@ public class Drummer extends Processor {
         if (!sequencer.isRunning()) {
             playingEndOfGroove = true;
             playNextPart();
+        } else {
+            updateStatus();
         }
     }
 
@@ -167,6 +174,8 @@ public class Drummer extends Processor {
             stop();
         else
             finishing = true;
+
+        updateStatus();
     }
 
     public boolean isFinishing() {
@@ -180,6 +189,25 @@ public class Drummer extends Processor {
         playingGroove = null;
         nextGroove = null;
         finishing = false;
+
+        updateStatus();
+    }
+
+    private void updateStatus() {
+        final StringBuilder builder = new StringBuilder();
+
+        if (sequencer.isRunning()) {
+            builder.append(format("Playing groove %s (fill=%s)%n",
+                    playingGroove.getName(), fill == null ? "No" : "Yes"));
+            builder.append(format("Next groove: %s%n",
+                    nextGroove == null ? "None" : nextGroove.getName()));
+            builder.append(format("Finishing: %s%n",
+                    finishing ? "Yes" : "No"));
+        } else {
+            builder.append("Stopped");
+        }
+
+        reportStatus(builder.toString());
     }
 
     private static final int END_OF_TRACK = 0x2F;
