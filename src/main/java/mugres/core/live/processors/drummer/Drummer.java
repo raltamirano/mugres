@@ -26,6 +26,7 @@ public class Drummer extends Processor {
     private Part fill;
     private boolean playingEndOfGroove = false;
     private boolean finishing = false;
+    private final Thread statusThread;
 
     public Drummer(final Context context,
                    final Input input,
@@ -37,6 +38,11 @@ public class Drummer extends Processor {
         this.configuration = configuration;
         this.outputPort = outputPort;
         this.sequencer = createSequencer();
+
+        this.statusThread = new Thread(this::statusUpdater);
+        this.statusThread.setName("Drummer Status Updater");
+        this.statusThread.setDaemon(true);
+        //this.statusThread.start();
     }
 
     @Override
@@ -208,6 +214,19 @@ public class Drummer extends Processor {
         }
 
         reportStatus(builder.toString());
+    }
+
+    private void statusUpdater() {
+        while(true) {
+            try {
+                if (sequencer.isRunning())
+                    updateStatus();
+            } catch(final Throwable t) {
+                t.printStackTrace();
+            } finally {
+                 try { Thread.sleep(500); } catch (final Throwable ignore) {}
+            }
+        }
     }
 
     private static final int END_OF_TRACK = 0x2F;
