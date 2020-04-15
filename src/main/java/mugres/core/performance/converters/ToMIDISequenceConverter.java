@@ -29,10 +29,16 @@ public class ToMIDISequenceConverter implements Converter<Sequence> {
                     addNoteEvents(midiTrack, track.getChannel(), event);
             }
 
+            setSequenceLength(sequence, performance.getLength().toPPQTicks(PPQ_RESOLUTION));
+
             return sequence;
         } catch (final InvalidMidiDataException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void setSequenceLength(final Sequence sequence, final long lengthInTicks) {
+        sequence.getTracks()[0].get(sequence.getTracks()[0].size()-1).setTick(lengthInTicks);
     }
 
     private void setControlParameters(final Track controlTrack,

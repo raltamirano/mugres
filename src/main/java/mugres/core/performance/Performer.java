@@ -21,9 +21,10 @@ public class Performer {
 
         addControlEvents(song, performance);
 
+        Length offset = Length.ZERO;
         for(Party party : song.getParties()) {
             final Track track = performance.createTrack(party);
-            Length offset = Length.ZERO;
+            offset = Length.ZERO;
             for(Arrangement.Entry arrangementEntry : song.getArrangement().getEntries()) {
                 for(int arrangementEntryIndex = 1; arrangementEntryIndex <= arrangementEntry.getRepetitions();
                     arrangementEntryIndex++) {
@@ -52,6 +53,8 @@ public class Performer {
                 }
             }
         }
+
+        performance.setLength(offset);
 
         return performance;
     }

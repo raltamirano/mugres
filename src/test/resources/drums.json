@@ -1,0 +1,33 @@
+{
+  "title": "Drums",
+  "tempo": 160,
+  "sections": [
+    {
+      "name": "A",
+      "measures": 1,
+      "matrix": {
+        "DRUMS": [
+          {
+            "arguments": {
+              "pattern": [
+                "Division=SIXTEENTH\n",
+                "TimeSignature=4/4 \n",	
+				
+                "OHH x--x -x-- x-x- -x-- \n",
+                "SD  --X- --9- --9- --X- \n",
+                "BD  X--X -X-- X--X -X-- \n"
+              ]
+            },
+            "call": "drums()"
+          }
+        ]
+      }
+    }
+  ],
+  "arrangement": [
+    {
+      "section": "A",
+      "repetitions": 1
+    }
+  ]
+}

@@ -11,6 +11,7 @@ public class Performance {
     private final String song;
     private final List<Control.ControlEvent> controlEvents = new ArrayList<>();
     private final Set<Track> tracks = new HashSet<>();
+    private Length length = Length.ZERO;
 
     public Performance(String song) {
         this.song = song;
@@ -44,6 +45,14 @@ public class Performance {
         final Track track = new Track(party.getName(), party.getChannel());
         tracks.add(track);
         return track;
+    }
+
+    public Length getLength() {
+        return length;
+    }
+
+    public void setLength(final Length length) {
+        this.length = length;
     }
 
     @Override
