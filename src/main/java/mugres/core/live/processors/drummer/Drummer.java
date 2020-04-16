@@ -1,6 +1,8 @@
 package mugres.core.live.processors.drummer;
 
 import mugres.core.common.Context;
+import mugres.core.common.DrumKit;
+import mugres.core.common.Played;
 import mugres.core.common.Signal;
 import mugres.core.common.io.Input;
 import mugres.core.common.io.MidiOutput;
@@ -14,6 +16,8 @@ import mugres.core.live.processors.drummer.config.Part;
 import javax.sound.midi.*;
 
 import static java.lang.String.format;
+import static java.lang.System.currentTimeMillis;
+import static mugres.core.common.Party.WellKnownParties.DRUMS;
 
 public class Drummer extends Processor {
     private final Configuration configuration;
@@ -166,6 +170,13 @@ public class Drummer extends Processor {
         // TODO: Honor playingGroove.getFillsMode()!
         final Part part = playingGroove.getFills().get(0);
         return part; //.asClone();
+    }
+
+    public void hit(final DrumKit piece, final int velocity) {
+        if (velocity > 0)
+            getOutput().send(Signal.on(currentTimeMillis(),
+                    DRUMS.getParty().getChannel(),
+                    Played.of(piece.getPitch(), velocity)));
     }
 
     public void play(final String grooveName, final SwitchMode switchMode) {

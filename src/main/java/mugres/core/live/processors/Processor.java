@@ -10,6 +10,8 @@ import java.util.List;
 
 /** Live events/signals processor */
 public abstract class Processor {
+    private final Input input;
+    private final Output output;
     private final List<StatusListener> statusListeners = new ArrayList<>();
     private final Context context;
 
@@ -17,6 +19,8 @@ public abstract class Processor {
                         final Input input,
                         final Output output) {
         this.context = context;
+        this.input = input;
+        this.output = output;
 
         input.addListener(this::process);
     }
@@ -31,6 +35,14 @@ public abstract class Processor {
 
     public Context getContext() {
         return context;
+    }
+
+    protected Input getInput() {
+        return input;
+    }
+
+    protected Output getOutput() {
+        return output;
     }
 
     protected abstract void doProcess(final Signal signal);

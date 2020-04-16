@@ -1,6 +1,7 @@
 package mugres.core.live.processors.drummer.config;
 
 import mugres.core.common.Context;
+import mugres.core.common.DrumKit;
 import mugres.core.function.Call;
 import mugres.core.function.Function.Parameter.Variant;
 import mugres.core.function.builtin.drums.PreRecordedDrums;
@@ -81,6 +82,7 @@ public class Configuration {
         arguments.put(LENGTH_PARAMETER.getName(), measures);
         arguments.put("variant", mainVariant);
         arguments.put("fill", Variant.NONE);
+        arguments.put("startingHit", DrumKit.CR1);
 
         final Sequence sequence = generateSequence(context, generator, arguments);
         final Part generatedPart = new Part(name + " " + mainVariant.name(), sequence);

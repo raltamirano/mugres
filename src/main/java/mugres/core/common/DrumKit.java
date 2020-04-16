@@ -64,4 +64,8 @@ public enum DrumKit {
     public String getName() {
         return name;
     }
+
+    public Pitch getPitch() {
+        return Pitch.of(midi);
+    }
 }
