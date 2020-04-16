@@ -19,7 +19,8 @@ public class MidiOutput implements Output {
     public void send(final Signal signal) {
         try {
             final ShortMessage message = new ShortMessage(NOTE_ON, signal.getChannel(),
-                    signal.getPlayed().getPitch().getMidi(), signal.getPlayed().getVelocity());
+                    signal.getPlayed().getPitch().getMidi(),
+                    signal.isActive() ? signal.getPlayed().getVelocity() : 0);
             midiOutputPort.send(message, -1);
         } catch (final InvalidMidiDataException e) {
             throw new RuntimeException(e);
