@@ -9,16 +9,28 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MUGRES {
+    private static String midiInputPortName = System.getProperty("mugres.inputPort");
+    private static String midiOutputPortName = System.getProperty("mugres.outputPort");
     private static Transmitter midiInputPort = null;
     private static Receiver midiOutputPort = null;
 
     private MUGRES() {}
 
+    public static void useMidiInputPort(final String name) {
+        midiInputPortName = name;
+        midiInputPort = null;
+    }
+
+    public static void useMidiOutputPort(final String name) {
+        midiOutputPortName = name;
+        midiOutputPort = null;
+    }
+
     public static synchronized Transmitter getMidiInputPort() {
         if (midiInputPort != null)
             return midiInputPort;
 
-        final String portName = System.getProperty("mugres.inputPort");
+        final String portName = midiInputPortName;
         final List<MidiDevice.Info> candidates = Arrays.stream(MidiSystem.getMidiDeviceInfo())
                 .filter(d -> d.getName().equals(portName)).collect(Collectors.toList());
 
@@ -45,7 +57,7 @@ public class MUGRES {
         if (midiOutputPort != null)
             return midiOutputPort;
 
-        final String portName = System.getProperty("mugres.outputPort");
+        final String portName = midiOutputPortName;
         final List<MidiDevice.Info> candidates = Arrays.stream(MidiSystem.getMidiDeviceInfo())
                 .filter(d -> d.getName().equals(portName)).collect(Collectors.toList());
 
