@@ -3,6 +3,7 @@ package mugres.core.live.processors.drummer;
 import mugres.core.common.Context;
 import mugres.core.common.Signal;
 import mugres.core.common.io.Input;
+import mugres.core.common.io.MidiOutput;
 import mugres.core.common.io.Output;
 import mugres.core.live.processors.Processor;
 import mugres.core.live.processors.drummer.config.Action;
@@ -32,18 +33,24 @@ public class Drummer extends Processor {
     public Drummer(final Context context,
                    final Input input,
                    final Output output,
-                   final Configuration configuration,
-                   final Receiver outputPort) {
+                   final Configuration configuration) {
         super(context, input, output);
 
+        checkSuitableOutput(output);
+
         this.configuration = configuration;
-        this.outputPort = outputPort;
+        this.outputPort = ((MidiOutput)output).getMidiOutputPort();
         this.sequencer = createSequencer();
 
         this.statusThread = new Thread(this::statusUpdater);
         this.statusThread.setName("Drummer Status Updater");
         this.statusThread.setDaemon(true);
         //this.statusThread.start();
+    }
+
+    private void checkSuitableOutput(final Output output) {
+        if (!(output instanceof MidiOutput))
+            throw new IllegalArgumentException("Drummer can only work with MidiOutput-like ports!");
     }
 
     @Override

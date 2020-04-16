@@ -8,7 +8,7 @@ import javax.sound.midi.ShortMessage;
 
 import static javax.sound.midi.ShortMessage.NOTE_ON;
 
-class MidiOutput implements Output {
+public class MidiOutput implements Output {
     private final Receiver midiOutputPort;
 
     public MidiOutput(final Receiver midiOutputPort) {
@@ -24,5 +24,9 @@ class MidiOutput implements Output {
         } catch (final InvalidMidiDataException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Receiver getMidiOutputPort() {
+        return midiOutputPort;
     }
 }
