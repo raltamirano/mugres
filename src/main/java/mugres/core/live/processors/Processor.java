@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Live events/signals processor */
-public abstract class Processor {
+public abstract class Processor<S> {
     private final Input input;
     private final Output output;
     private final List<StatusListener> statusListeners = new ArrayList<>();
@@ -51,11 +51,11 @@ public abstract class Processor {
         statusListeners.add(listener);
     }
 
-    protected void reportStatus(final String status) {
-        statusListeners.forEach(l -> l.report(status));
+    protected void reportStatus(final String text, final S data) {
+        statusListeners.forEach(l -> l.report(Status.of(text, data)));
     }
 
     public interface StatusListener {
-        void report(final String status);
+        void report(final Status status);
     }
 }

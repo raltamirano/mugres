@@ -15,7 +15,6 @@ import mugres.core.live.processors.drummer.config.Part;
 
 import javax.sound.midi.*;
 
-import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static mugres.core.common.Party.WellKnownParties.DRUMS;
 
@@ -227,22 +226,15 @@ public class Drummer extends Processor {
     }
 
     private void updateStatus() {
-        final StringBuilder builder = new StringBuilder();
+        final Status status = Status.of(
+                sequencer.isRunning(),
+                playingGroove == null ? "" : playingGroove.getName(),
+                fill != null,
+                nextGroove == null ? "" : nextGroove.getName(),
+                playingFill,
+                finishing);
 
-        if (sequencer.isRunning()) {
-            builder.append(format("Playing groove: %s (fill=%s)%n",
-                    playingGroove.getName(), fill == null ? "No" : "Yes"));
-            builder.append(format("Next groove: %s%n",
-                    nextGroove == null ? "None" : nextGroove.getName()));
-            builder.append(format("Playing fill: %s%n",
-                    playingFill ? "Yes" : "No"));
-            builder.append(format("Finishing: %s%n",
-                    finishing ? "Yes" : "No"));
-        } else {
-            builder.append("Stopped");
-        }
-
-        reportStatus(builder.toString());
+        reportStatus(status.toString(), status);
     }
 
     private void statusUpdater() {
@@ -264,5 +256,65 @@ public class Drummer extends Processor {
         NORMAL,
         IMMEDIATELY,
         IMMEDIATELY_FILL
+    }
+
+    public static class Status {
+        private final boolean playing;
+        private final String playingGroove;
+        private final boolean playingGrooveHasFill;
+        private final String nextGroove;
+        private final boolean playingFillNow;
+        private final boolean finishing;
+
+        private Status(boolean playing, String playingGroove, boolean playingGrooveHasFill,
+                      String nextGroove, boolean playingFillNow, boolean finishing) {
+            this.playing = playing;
+            this.playingGroove = playingGroove;
+            this.playingGrooveHasFill = playingGrooveHasFill;
+            this.nextGroove = nextGroove;
+            this.playingFillNow = playingFillNow;
+            this.finishing = finishing;
+        }
+
+        public static Status of(boolean playing, String playingGroove, boolean playingGrooveHasFill,
+                                String nextGroove, boolean playingFillNow, boolean finishing) {
+            return new Status(playing, playingGroove, playingGrooveHasFill, nextGroove, playingFillNow, finishing);
+        }
+
+        public boolean isPlaying() {
+            return playing;
+        }
+
+        public String getPlayingGroove() {
+            return playingGroove;
+        }
+
+        public boolean getPlayingGrooveHasFill() {
+            return playingGrooveHasFill;
+        }
+
+        public String getNextGroove() {
+            return nextGroove;
+        }
+
+        public boolean isPlayingFillNow() {
+            return playingFillNow;
+        }
+
+        public boolean isFinishing() {
+            return finishing;
+        }
+
+        @Override
+        public String toString() {
+            return "Drummer Status{" +
+                    "playing=" + playing +
+                    ", playingGroove='" + playingGroove + '\'' +
+                    ", playingGrooveHasFill=" + playingGrooveHasFill +
+                    ", nextGroove='" + nextGroove + '\'' +
+                    ", playingFillNow=" + playingFillNow +
+                    ", finishing=" + finishing +
+                    '}';
+        }
     }
 }
