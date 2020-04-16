@@ -87,7 +87,6 @@ public class Drummer extends Processor {
             sequenceToPlay = mainSectionA.getSequence();
             playingFill = false;
         } else {
-            sequenceToPlay = switchGroove || finishing ? fill.getSequence() : mainSectionB.getSequence();
             if (switchGroove || finishing) {
                 playingFill = true;
                 sequenceToPlay = fill.getSequence();
@@ -162,7 +161,7 @@ public class Drummer extends Processor {
         return part; //.asClone();
     }
 
-    public void play(final String grooveName, final boolean immediately) {
+    public void play(final String grooveName, final SwitchMode switchMode) {
         // Cancel request to finish playing
         finishing = false;
 
@@ -174,8 +173,8 @@ public class Drummer extends Processor {
 
         this.nextGroove = configuration.getGroove(grooveName);
 
-        if (!sequencer.isRunning() || immediately) {
-            playingEndOfGroove = true;
+        if (!sequencer.isRunning() || switchMode != SwitchMode.NORMAL) {
+            playingEndOfGroove = !sequencer.isRunning() || switchMode != SwitchMode.IMMEDIATELY_FILL;
             playNextPart();
         } else {
             updateStatus();
@@ -242,4 +241,10 @@ public class Drummer extends Processor {
     }
 
     private static final int END_OF_TRACK = 0x2F;
+
+    public enum SwitchMode {
+        NORMAL,
+        IMMEDIATELY,
+        IMMEDIATELY_FILL
+    }
 }
