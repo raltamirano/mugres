@@ -66,13 +66,13 @@ public abstract class Function {
         return events;
     }
 
-    public List<Event> execute(final Context context) {
+    public List<Event> executeNoArgs(final Context context) {
         return execute(context, Collections.emptyMap());
     }
 
     /** This methods is useful for functions that either have only a single parameter or
      * a single mandatory parameter (besides {@link #LENGTH_PARAMETER}) among all of its parameters. */
-    public List<Event> execute(final Context context, final Object argument) {
+    public List<Event> executeSingleArg(final Context context, final Object argument) {
         final List<Parameter> parameterList = new ArrayList<>(this.parameters);
         final long mandatoryParameters = parameterList.stream().filter(p -> !p.getName().equals(LENGTH_PARAMETER.getName())
                 && !p.optional).count();
@@ -171,12 +171,16 @@ public abstract class Function {
             return function;
         }
 
-        public List<Event> execute(final Context context) {
-            return function.execute(context);
+        public List<Event> execute(final Context context, final Map<String, Object> arguments) {
+            return function.execute(context, arguments);
         }
 
-        public List<Event> execute(final Context context, final Object argument) {
-            return function.execute(context, argument);
+        public List<Event> executeNoArgs(final Context context) {
+            return function.executeNoArgs(context);
+        }
+
+        public List<Event> executeSingleArg(final Context context, final Object argument) {
+            return function.executeSingleArg(context, argument);
         }
     }
 

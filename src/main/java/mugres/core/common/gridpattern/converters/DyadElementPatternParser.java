@@ -43,7 +43,7 @@ public class DyadElementPatternParser implements ElementPatternParser<DyadElemen
         final List<Dyad> events = new ArrayList<>();
 
         final String[] measures = line.trim().split("\\|");
-        final boolean useMeasuresNotation = measures.length > 1;
+        final boolean useMeasuresNotation = line.contains("|");
 
         if (useMeasuresNotation) {
             final int slotsInOneMeasure = slotValue.denominator();

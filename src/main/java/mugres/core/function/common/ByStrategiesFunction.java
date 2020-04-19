@@ -7,6 +7,8 @@ import mugres.core.function.Function;
 
 import java.util.*;
 
+import static java.util.Arrays.asList;
+
 public abstract class ByStrategiesFunction extends Function {
     protected ByStrategiesFunction(final String name, final String description) {
         super(name, description,
@@ -40,7 +42,7 @@ public abstract class ByStrategiesFunction extends Function {
 
         Length offset = Length.ZERO;
         for (int index = 0; index < repetitions; index++) {
-            final List<Event> generated = strategy.execute(context, totalMeasures / strategy.getMeasures());
+            final List<Event> generated = strategy.execute(context);
             for(final Event event : generated)
                 event.offset(offset);
             events.addAll(generated);
@@ -58,9 +60,44 @@ public abstract class ByStrategiesFunction extends Function {
         }
     }
 
-    protected static <X> X random(final List<X> items) {
-        return items.isEmpty() ? null :
-                items.get(RND.nextInt(items.size()));
+    protected static <X> X random(final Set<X> items, final X... avoid) {
+        return random(new ArrayList<>(items), avoid);
+    }
+
+    protected static <X> X random(final List<X> items, final X... avoid) {
+        if (items.isEmpty())
+            return null;
+
+        final Set<X> avoidSet = new HashSet<>(asList(avoid));
+        for(int i=0; i<10_000; i++) { // safety loop
+            final X item = items.get(RND.nextInt(items.size()));
+            if (!avoidSet.contains(item))
+                return item;
+        }
+
+        throw new RuntimeException(String.format("Could not get random value. Items=%s - Exclusions: %s",
+                items, avoidSet));
+    }
+
+    protected static <X> List<X> randoms(final Set<X> items, final int count, final boolean allowDuplicates) {
+        return randoms(new ArrayList<>(items), count, allowDuplicates);
+    }
+
+    protected static <X> List<X> randoms(final List<X> items, final int count, final boolean allowDuplicates) {
+        final List<X> result = new ArrayList<>();
+
+        int safetyCounter = 0;
+        while(safetyCounter++ < 10_000 && result.size() < count) {
+            final X item = random(items);
+            if (allowDuplicates || !result.contains(item))
+                result.add(item);
+        }
+
+        if (result.size() == count)
+            return result;
+
+        throw new RuntimeException(String.format("Could not get random values. Items=%s - Count: %d",
+                items, count));
     }
 
     private final Map<Integer, List<Strategy>> STRATEGIES = new HashMap<>();
@@ -68,6 +105,6 @@ public abstract class ByStrategiesFunction extends Function {
 
     public interface Strategy {
         int getMeasures();
-        List<Event> execute(final Context context, final int totalMeasures);
+        List<Event> execute(final Context context);
     }
 }
