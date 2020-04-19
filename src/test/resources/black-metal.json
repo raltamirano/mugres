@@ -1,0 +1,20 @@
+{
+  "title": "Frostbitten Random Black Metal riffs",
+  "tempo": 138,
+  "sections": [
+    {
+      "name": "A",
+      "measures": 4,
+      "matrix": {
+        "DRUMS": "blastBeat()",
+        "GUITAR1": "blackMetal()"
+      }
+    }
+  ],
+  "arrangement": [
+    {
+      "section": "A",
+      "repetitions": 4
+    }
+  ]
+}

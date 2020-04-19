@@ -70,5 +70,13 @@ public enum Note {
         return Pitch.of(number + ((octave + 2) * 12));
     }
 
+    public boolean before(final Note other) {
+        return number < other.number;
+    }
+
+    public boolean after(final Note other) {
+        return number > other.number;
+    }
+
     public static final int BASE_OCTAVE = 3;
 }

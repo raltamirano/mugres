@@ -1,6 +1,7 @@
 package mugres.core.function;
 
 import mugres.core.common.*;
+import mugres.core.function.builtin.bm.BlackMetal;
 import mugres.core.function.builtin.drums.BlastBeat;
 import mugres.core.function.builtin.drums.Drums;
 import mugres.core.function.builtin.drums.HalfTime;
@@ -9,6 +10,7 @@ import mugres.core.function.builtin.random.Random;
 
 import java.util.*;
 
+import static java.util.Arrays.asList;
 import static mugres.core.common.Context.SECTION_LENGTH;
 
 /** Function that generates musical artifacts. */
@@ -62,6 +64,32 @@ public abstract class Function {
         final List<Event> events = doExecute(context, prepareArguments(arguments));
         // TODO: Validate length/complete to length with rests / etc.
         return events;
+    }
+
+    public List<Event> execute(final Context context) {
+        return execute(context, Collections.emptyMap());
+    }
+
+    /** This methods is useful for functions that either have only a single parameter or
+     * a single mandatory parameter (besides {@link #LENGTH_PARAMETER}) among all of its parameters. */
+    public List<Event> execute(final Context context, final Object argument) {
+        final List<Parameter> parameterList = new ArrayList<>(this.parameters);
+        final long mandatoryParameters = parameterList.stream().filter(p -> !p.getName().equals(LENGTH_PARAMETER.getName())
+                && !p.optional).count();
+        String parameterName = null;
+        if (parameterList.size() == 1) {
+            parameterName = parameterList.get(0).name;
+        } else if (mandatoryParameters == 1) {
+            parameterName = parameterList.stream().filter(p -> !p.getName().equals(LENGTH_PARAMETER.getName())
+                    && !p.optional).findFirst().get().name;
+        }
+
+        if (parameterName == null)
+            throw new IllegalArgumentException("Could not determine the parameter to use");
+
+        final Map<String, Object> arguments = new HashMap<>();
+        arguments.put(parameterName, argument);
+        return execute(context, arguments);
     }
 
     protected abstract List<Event> doExecute(final Context context, final Map<String, Object> arguments);
@@ -122,7 +150,8 @@ public abstract class Function {
         DRUMS(new Drums()),
         RIFFER(new Riffer()),
         HALF_TIME(new HalfTime()),
-        BLAST_BEAT(new BlastBeat());
+        BLAST_BEAT(new BlastBeat()),
+        BLACK_METAL(new BlackMetal());
 
         private final Function function;
 
@@ -140,6 +169,14 @@ public abstract class Function {
 
         public Function getFunction() {
             return function;
+        }
+
+        public List<Event> execute(final Context context) {
+            return function.execute(context);
+        }
+
+        public List<Event> execute(final Context context, final Object argument) {
+            return function.execute(context, argument);
         }
     }
 

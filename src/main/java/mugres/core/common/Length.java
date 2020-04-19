@@ -31,6 +31,10 @@ public class Length implements Comparable<Length> {
         return Math.round(n / 16.0 * (double)ppqResolution);
     }
 
+    public Length plus(final Value value) {
+        return plus(value.length());
+    }
+
     public Length plus(final Length other) {
         return new Length(this.n + other.n);
     }

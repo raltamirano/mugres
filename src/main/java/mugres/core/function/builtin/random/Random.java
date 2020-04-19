@@ -35,7 +35,7 @@ public class Random extends Function {
         Length actualPosition = Length.ZERO;
         while(actualPosition.getLength() < length.getLength()) {
             events.add(Event.of(actualPosition, pitches.get(RND.nextInt(pitches.size())), noteValue, 100));
-            actualPosition = actualPosition.plus(noteValue.length());
+            actualPosition = actualPosition.plus(noteValue);
         }
 
         return events;
