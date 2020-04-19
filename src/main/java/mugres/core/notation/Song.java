@@ -6,6 +6,7 @@ import mugres.core.function.Call;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Song {
@@ -93,5 +94,18 @@ public class Song {
 
     public Arrangement getArrangement() {
         return arrangement;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Song song = (Song) o;
+        return title.equals(song.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title);
     }
 }

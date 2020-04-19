@@ -15,6 +15,7 @@ public class Section {
     private final int measures;
     private final Song song;
     private final Context context;
+    private boolean regenerate = false;
     private final Map<Party, List<Call>> matrix = new HashMap<>();
 
     public Section(final Song song, final String name, final int measures) {
@@ -45,6 +46,14 @@ public class Section {
         return context;
     }
 
+    public boolean isRegenerate() {
+        return regenerate;
+    }
+
+    public void setRegenerate(boolean regenerate) {
+        this.regenerate = regenerate;
+    }
+
     public Map<Party, List<Call>> getMatrix() {
         return Collections.unmodifiableMap(matrix);
     }
@@ -65,6 +74,20 @@ public class Section {
 
     public Length getLength() {
         return context.getTimeSignature().measuresLength(measures);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return name.equals(section.name) &&
+                song.equals(section.song);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, song);
     }
 
     @Override
