@@ -44,11 +44,11 @@ public class Performer {
 
                             final List<Event> partyEvents = new ArrayList<>();
                             Length previousCallsOffset = Length.ZERO;
-                            for (Call call : arrangementEntry.getSection().getMatrix().get(party)) {
+                            for (Call<List<Event>> call : arrangementEntry.getSection().getMatrix().get(party)) {
                                 final Context callContext = arrangementEntry.getSection().getContext();
-                                final Result functionResult = call.execute(callContext);
+                                final Result<List<Event>> functionResult = call.execute(callContext);
                                 if (functionResult.succeeded()) {
-                                    final List<Event> events = sortEventList(functionResult.getEvents());
+                                    final List<Event> events = sortEventList(functionResult.getData());
                                     for (Event event : events) {
                                         track.addEvent(Event.of(event.getPosition().plus(offset).plus(previousCallsOffset),
                                                 event.getPlayed().getPitch(),

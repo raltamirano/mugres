@@ -1,19 +1,14 @@
 package mugres.core.function;
 
-import mugres.core.common.Event;
-
-import java.util.Collections;
-import java.util.List;
-
-public class Result {
-    private final List<Event> events;
+public class Result<T> {
+    private final T data;
     private final Throwable error;
 
-    public Result(final List<Event> events) {
-        if (events == null)
-            throw new IllegalArgumentException("events");
+    public Result(final T data) {
+        if (data == null)
+            throw new IllegalArgumentException("data");
 
-        this.events = events;
+        this.data = data;
         this.error = null;
     }
 
@@ -21,12 +16,12 @@ public class Result {
         if (error == null)
             throw new IllegalArgumentException("error");
 
-        this.events = Collections.emptyList();
+        this.data = null;
         this.error = error;
     }
 
-    public List<Event> getEvents() {
-        return Collections.unmodifiableList(events);
+    public T getData() {
+        return data;
     }
 
     public Throwable getError() {

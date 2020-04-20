@@ -1,13 +1,11 @@
 package mugres.core.notation;
 
 import mugres.core.common.Context;
+import mugres.core.common.Event;
 import mugres.core.common.Party;
 import mugres.core.function.Call;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class Song {
     private String title;
@@ -25,7 +23,9 @@ public class Song {
         return new Song(title, context);
     }
 
-    public static Song of(final Context functionCallsContext, final Party functionCallsParty, final Call call) {
+    public static Song of(final Context functionCallsContext,
+                          final Party functionCallsParty,
+                          final Call<List<Event>> call) {
         final Song functionCallSong = new Song("Untitled", functionCallsContext);
         final Section section = functionCallSong.createSection("A", call.getLengthInMeasures());
         section.addPart(functionCallsParty, call);

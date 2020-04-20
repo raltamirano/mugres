@@ -1,6 +1,8 @@
 package mugres.core.function.builtin.bm;
 
 import mugres.core.common.*;
+import mugres.core.function.Function;
+import mugres.core.function.builtin.riffer.Riffer;
 import mugres.core.function.common.ByStrategiesFunction;
 
 import java.util.*;
@@ -10,7 +12,6 @@ import java.util.regex.Pattern;
 import static java.util.Arrays.asList;
 import static mugres.core.common.Value.QUARTER;
 import static mugres.core.common.Value.SIXTEENTH;
-import static mugres.core.function.Function.WellKnownFunctions.RIFFER;
 
 public class BlackMetal extends ByStrategiesFunction {
     public BlackMetal() {
@@ -121,7 +122,11 @@ public class BlackMetal extends ByStrategiesFunction {
         arguments.put(LENGTH_PARAMETER.getName(), measures);
         arguments.put("value", SIXTEENTH);
         arguments.put("riff", riff);
-        return RIFFER.execute(context, arguments);
+        return riffer().execute(context, arguments);
+    }
+
+    private static Riffer riffer() {
+        return Function.forName("riffer");
     }
 
     private static List<Event> offsetEvents(final List<Event> events, final Length offset) {

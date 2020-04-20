@@ -6,15 +6,13 @@ import mugres.core.function.builtin.drums.BlastBeat;
 import mugres.core.function.builtin.drums.Drums;
 import mugres.core.function.builtin.drums.HalfTime;
 import mugres.core.function.builtin.riffer.Riffer;
-import mugres.core.function.builtin.random.Random;
 
 import java.util.*;
 
-import static java.util.Arrays.asList;
 import static mugres.core.common.Context.SECTION_LENGTH;
 
 /** Function that generates musical artifacts. */
-public abstract class Function {
+public abstract class Function<T> {
     private final String name;
     private final String description;
     private final Set<Parameter> parameters = new HashSet<>();
@@ -28,6 +26,8 @@ public abstract class Function {
             addParameter(parameter);
         // Every function must specify these mandatory parameters
         addParameter(LENGTH_PARAMETER);
+
+        registerFunction(this);
     }
 
     public String getName() {
@@ -56,23 +56,23 @@ public abstract class Function {
         parameters.add(parameter);
     }
 
-    public List<Event> execute(final Context context, final Map<String, Object> arguments) {
+    public T execute(final Context context, final Map<String, Object> arguments) {
         if (!arguments.containsKey(LENGTH_PARAMETER.getName()))
             if (context.has(SECTION_LENGTH))
                 arguments.put(LENGTH_PARAMETER.getName(), context.get(SECTION_LENGTH));
 
-        final List<Event> events = doExecute(context, prepareArguments(arguments));
+        final T result = doExecute(context, prepareArguments(arguments));
         // TODO: Validate length/complete to length with rests / etc.
-        return events;
+        return result;
     }
 
-    public List<Event> executeNoArgs(final Context context) {
+    public T executeNoArgs(final Context context) {
         return execute(context, Collections.emptyMap());
     }
 
     /** This methods is useful for functions that either have only a single parameter or
      * a single mandatory parameter (besides {@link #LENGTH_PARAMETER}) among all of its parameters. */
-    public List<Event> executeSingleArg(final Context context, final Object argument) {
+    public T executeSingleArg(final Context context, final Object argument) {
         final List<Parameter> parameterList = new ArrayList<>(this.parameters);
         final long mandatoryParameters = parameterList.stream().filter(p -> !p.getName().equals(LENGTH_PARAMETER.getName())
                 && !p.optional).count();
@@ -92,7 +92,7 @@ public abstract class Function {
         return execute(context, arguments);
     }
 
-    protected abstract List<Event> doExecute(final Context context, final Map<String, Object> arguments);
+    protected abstract T doExecute(final Context context, final Map<String, Object> arguments);
 
     protected Length lengthFromNumberOfMeasures(final Context context, final Map<String, Object> arguments) {
         final int measures = (Integer) arguments.get(LENGTH_PARAMETER.getName());
@@ -139,49 +139,39 @@ public abstract class Function {
         return preparedArguments;
     }
 
-    /** Mandatory length parameter every function must have */
+    public static abstract class EventsFunction extends Function<List<Event>> {
+        public EventsFunction(final String name,
+                        final String description,
+                        final Parameter... parameters) {
+            super(name, description, parameters);
+        }
+    }
+
+    /** Mandatory length parameter some functions must have */
     public static final Parameter LENGTH_PARAMETER = new Parameter("len", "Length in measures",
             Parameter.DataType.INTEGER);
 
-    // Builtin functions
+    private static final Map<String, Function> REGISTRY = new HashMap<>();
 
-    public enum WellKnownFunctions {
-        RANDOM(new Random()),
-        DRUMS(new Drums()),
-        RIFFER(new Riffer()),
-        HALF_TIME(new HalfTime()),
-        BLAST_BEAT(new BlastBeat()),
-        BLACK_METAL(new BlackMetal());
 
-        private final Function function;
+    static {
+        new Random();
+        new Drums();
+        new HalfTime();
+        new BlastBeat();
+        new Riffer();
+        new BlackMetal();
+    }
 
-        WellKnownFunctions(final Function function) {
-            this.function = function;
-        }
+    private static synchronized void registerFunction(final Function function) {
+        final String name = function.getName();
+        if (REGISTRY.containsKey(name))
+            throw new IllegalArgumentException("Already registered function name: " + name);
+        REGISTRY.put(name, function);
+    }
 
-        public static WellKnownFunctions forName(final String name) {
-            for(WellKnownFunctions w : values())
-                if (w.function.name.equals(name))
-                    return w;
-
-            throw new IllegalArgumentException("Unknown function: " + name);
-        }
-
-        public Function getFunction() {
-            return function;
-        }
-
-        public List<Event> execute(final Context context, final Map<String, Object> arguments) {
-            return function.execute(context, arguments);
-        }
-
-        public List<Event> executeNoArgs(final Context context) {
-            return function.executeNoArgs(context);
-        }
-
-        public List<Event> executeSingleArg(final Context context, final Object argument) {
-            return function.executeSingleArg(context, argument);
-        }
+    public static <R, F extends Function<R>> F forName(final String name) {
+        return (F) REGISTRY.get(name);
     }
 
     public static class Parameter {

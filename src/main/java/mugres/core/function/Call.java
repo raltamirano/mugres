@@ -12,33 +12,33 @@ import java.util.regex.Pattern;
 import static mugres.core.function.Function.LENGTH_PARAMETER;
 
 /** Function call. */
-public class Call {
-    private final Function function;
+public class Call<T> {
+    private final Function<T> function;
     private final Map<String, Object> arguments = new HashMap<>();
 
-    private Call(final Function function, final Map<String, Object> arguments) {
+    private Call(final Function<T> function, final Map<String, Object> arguments) {
         this.function = function;
         this.arguments.putAll(arguments);
     }
 
-    private Call(final Function function, final int lengthInMeasures) {
+    private Call(final Function<T> function, final int lengthInMeasures) {
         this.function = function;
         this.arguments.put(LENGTH_PARAMETER.getName(), lengthInMeasures);
     }
 
-    public static Call of(final Function function, final Map<String, Object> arguments) {
+    public static <X> Call of(final Function<X> function, final Map<String, Object> arguments) {
         return new Call(function, arguments);
     }
 
-    public static Call of(final Function function, final int lengthInMeasures) {
+    public static <X> Call of(final Function<X> function, final int lengthInMeasures) {
         return new Call(function, lengthInMeasures);
     }
 
-    public static Call parse(final String input) {
+    public static <X> Call<X> parse(final String input) {
         return parse(input, Collections.emptyMap());
     }
 
-    public static Call parse(final String input, final Map<String, String> argumentsMap) {
+    public static <X> Call<X> parse(final String input, final Map<String, String> argumentsMap) {
         if (input == null || input.trim().isEmpty())
             throw new IllegalArgumentException("input");
 
@@ -119,18 +119,18 @@ public class Call {
     }
 
     private static Function getFunction(final String functionName) {
-        try {
-            return Function.WellKnownFunctions.forName(functionName).getFunction();
-        } catch (final Throwable ignore) {
+        final Function<Object> fn = Function.forName(functionName);
+        if (fn == null)
             throw new RuntimeException("Unknown function: " + functionName);
-        }
+
+        return fn;
     }
 
-    public Function getFunction() {
+    public Function<T> getFunction() {
         return function;
     }
 
-    public Result execute(final Context context) {
+    public Result<T> execute(final Context context) {
         try {
             return new Result(function.execute(context, arguments));
         } catch (final Throwable t) {

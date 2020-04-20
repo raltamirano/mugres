@@ -2,9 +2,11 @@ package mugres.core.notation;
 
 import mugres.core.common.Context;
 import mugres.core.common.Context.ComposableContext;
+import mugres.core.common.Event;
 import mugres.core.common.Length;
 import mugres.core.common.Party;
 import mugres.core.function.Call;
+import mugres.core.function.Function;
 
 import java.util.*;
 
@@ -16,7 +18,7 @@ public class Section {
     private final Song song;
     private final Context context;
     private boolean regenerate = false;
-    private final Map<Party, List<Call>> matrix = new HashMap<>();
+    private final Map<Party, List<Call<List<Event>>>> matrix = new HashMap<>();
 
     public Section(final Song song, final String name, final int measures) {
         this.song = song;
@@ -54,15 +56,17 @@ public class Section {
         this.regenerate = regenerate;
     }
 
-    public Map<Party, List<Call>> getMatrix() {
+    public Map<Party, List<Call<List<Event>>>> getMatrix() {
         return Collections.unmodifiableMap(matrix);
     }
 
-    public void addPart(final Party party, final Call call) {
+    public void addPart(final Party party, final Call<List<Event>> call) {
         if (party == null)
             throw new IllegalArgumentException("party");
         if (call == null)
             throw new IllegalArgumentException("call");
+        if (!(call.getFunction() instanceof Function.EventsFunction))
+            throw new IllegalArgumentException("call must be an instance of " + Function.EventsFunction.class.getName());
 
         song.addParty(party);
         matrix.computeIfAbsent(party, p -> new ArrayList()).add(call);

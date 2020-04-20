@@ -1,6 +1,8 @@
 package mugres.core;
 
 import mugres.core.function.Call;
+import mugres.core.function.Function;
+import mugres.core.function.builtin.random.Random;
 import mugres.core.notation.Section;
 import mugres.core.notation.Song;
 import mugres.core.performance.Performance;
@@ -12,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import javax.sound.midi.Sequence;
 
 import static mugres.core.common.Context.createBasicContext;
-import static mugres.core.function.Function.WellKnownFunctions.RANDOM;
 import static mugres.core.common.Party.WellKnownParties.GUITAR1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -24,7 +25,7 @@ public class ConvertToMidiTests {
         final Section section = song.createSection("A", 2);
         song.getArrangement().addEntry(section, 1);
 
-        section.addPart(GUITAR1.getParty(), Call.of(RANDOM.getFunction(), section.getMeasures()));
+        section.addPart(GUITAR1.getParty(), Call.of(random(), section.getMeasures()));
 
         final Performance performance = Performer.perform(song);
         System.out.println(String.format("Performance =>%n%s", performance));
@@ -49,6 +50,10 @@ public class ConvertToMidiTests {
         // Expected events: one set track name, 16 note events (8 notes, each one get both a NOTE_ON
         // and a NOTE_OFF event) and end-of-track
         assertEquals(18, sequence.getTracks()[1].size());
+    }
+
+    public Random random() {
+        return Function.forName("random");
     }
 }
 

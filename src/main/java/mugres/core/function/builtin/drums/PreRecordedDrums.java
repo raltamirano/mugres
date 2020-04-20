@@ -3,7 +3,7 @@ package mugres.core.function.builtin.drums;
 import mugres.core.common.*;
 import mugres.core.common.gridpattern.GridPattern;
 import mugres.core.common.gridpattern.converters.DrumKitHitElementPatternParser;
-import mugres.core.function.Function;
+import mugres.core.function.Function.EventsFunction;
 import mugres.core.function.Function.Parameter.Variant;
 import org.apache.commons.io.IOUtils;
 
@@ -18,7 +18,7 @@ import static mugres.core.common.gridpattern.converters.DrumKitHitElementPattern
 import static mugres.core.function.Function.Parameter.Variant.NONE;
 import static mugres.core.function.Function.Parameter.Variant.V0;
 
-public abstract class PreRecordedDrums extends Function {
+public abstract class PreRecordedDrums extends EventsFunction {
     protected PreRecordedDrums(final String name, final String description) {
         super(name, description,
                 Parameter.of("variant", "The pattern variant to play",

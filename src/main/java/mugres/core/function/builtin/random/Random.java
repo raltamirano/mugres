@@ -1,7 +1,7 @@
 package mugres.core.function.builtin.random;
 
 import mugres.core.common.*;
-import mugres.core.function.Function;
+import mugres.core.function.Function.EventsFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import static mugres.core.common.Value.QUARTER;
 import static mugres.core.function.Function.Parameter.DataType.INTEGER;
 import static mugres.core.function.Function.Parameter.DataType.VALUE;
 
-public class Random extends Function {
+public class Random extends EventsFunction {
     public Random() {
         super("random", "Generates random pitches",
                 Parameter.of("startingOctave", "Starting octave",
