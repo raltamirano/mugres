@@ -8,6 +8,7 @@ import mugres.core.function.Function.Parameter.Variant;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -15,8 +16,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static mugres.core.common.DrumKit.BD;
 import static mugres.core.common.DrumKit.SD;
 import static mugres.core.common.gridpattern.converters.DrumKitHitElementPatternParser.DrumKitHit.Intensity.HARD;
-import static mugres.core.function.Function.Parameter.Variant.NONE;
-import static mugres.core.function.Function.Parameter.Variant.V0;
+import static mugres.core.function.Function.Parameter.Variant.*;
+import static mugres.core.utils.Randoms.random;
 
 public abstract class PreRecordedDrums extends EventsFunction {
     protected PreRecordedDrums(final String name, final String description) {
@@ -59,8 +60,9 @@ public abstract class PreRecordedDrums extends EventsFunction {
 
         // If there's room for the main part of the pattern...
         if (fill == NONE || fillPattern.getLength().getLength() < length.getLength()) {
-            final String mainVariant = String.format("%s/%s-%s-%s",
-                    getName(), timeSignatureId, MAIN, variant.name().toLowerCase());
+            final String mainVariant = variant == RANDOM ?
+                    pickRandomPatternName() :
+                    String.format("%s/%s-%s-%s", getName(), timeSignatureId, MAIN, variant.name().toLowerCase());
             final GridPattern<DrumKitHitElementPatternParser.DrumKitHit> mainPattern =
                     loadPattern(context, mainVariant);
 
@@ -119,6 +121,15 @@ public abstract class PreRecordedDrums extends EventsFunction {
         try {
             final String pattern = IOUtils.resourceToString("/drum-patterns/" + id, Charset.defaultCharset());
             return GridPattern.parse(pattern, DrumKitHitElementPatternParser.getInstance(), context);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String pickRandomPatternName()  {
+        try {
+            final List<String> files = IOUtils.readLines(new StringReader(IOUtils.resourceToString("/drum-patterns/" + getName(), Charset.defaultCharset())));
+            return getName() + "/" + random(files);
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }

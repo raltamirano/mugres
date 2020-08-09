@@ -260,6 +260,8 @@ public abstract class Function<T> {
         public enum Variant {
             /** Not specified */
             NONE,
+            /** Pick one of the available variants at random */
+            RANDOM,
             /** Builtin variant 0 (default)*/
             V0,
             /** Builtin variant 1 */
@@ -479,7 +481,7 @@ public abstract class Function<T> {
             /** User variant 98 */
             U98,
             /** User variant 99 */
-            U99
+            U99;
         }
     }
 }

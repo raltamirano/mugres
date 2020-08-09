@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static mugres.core.common.Context.createBasicContext;
 import static mugres.core.common.Direction.ASCENDING;
 import static mugres.core.common.Direction.DESCENDING;
+import static mugres.core.function.Function.Parameter.Variant.*;
 import static mugres.core.utils.Randoms.*;
 import static mugres.core.utils.Utils.rangeClosed;
 
@@ -66,6 +66,7 @@ public class LoFiHipHopSongGenerator extends SongGenerator {
 
     private void createBeat(final Section section) {
         final Map<String, Object> args = new HashMap<>();
+        args.put("variant", RANDOM);
         section.addPart(DRUMS, Call.of("hipHopBeat", args));
     }
 
@@ -216,5 +217,5 @@ public class LoFiHipHopSongGenerator extends SongGenerator {
     private static final Party MELODY = new Party("Melody", Instrument.Synth_Voice, 4);
 
     private static final int MIN_TEMPO = 60;
-    private static final int MAX_TEMPO = 110;
+    private static final int MAX_TEMPO = 100;
 }
