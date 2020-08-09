@@ -6,7 +6,7 @@ import mugres.core.common.Key;
 import mugres.core.common.Party;
 import mugres.core.common.TimeSignature;
 import mugres.core.function.Call;
-import mugres.core.generation.generators.Generator;
+import mugres.core.function.Function;
 import mugres.core.notation.Section;
 import mugres.core.notation.Song;
 import mugres.core.notation.readers.JSONReader;
@@ -18,7 +18,6 @@ import javax.sound.midi.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
-import java.util.function.Function;
 
 public class REPL {
     private static File songFile;
@@ -31,7 +30,7 @@ public class REPL {
     private static String loopingSection = null;
     private static Sequence loopingSectionMidiSequence = null;
 
-    private static final Map<String, Function<String[], Boolean>> HANDLERS = new HashMap<>();
+    private static final Map<String, java.util.function.Function<String[], Boolean>> HANDLERS = new HashMap<>();
     private static final JSONReader SONG_JSON_READER = new JSONReader();
     private static final ToMidiSequenceConverter TO_MIDI_SEQUENCE_CONVERTER = new ToMidiSequenceConverter();
     private static FileWatcher songFileWatcher = null;
@@ -67,10 +66,9 @@ public class REPL {
         HANDLERS.put("calls-key", REPL::callsSetKey);
         HANDLERS.put("calls-ts", REPL::callsSetTimeSignature);
         HANDLERS.put("calls-party", REPL::callsSetParty);
+        HANDLERS.put("call-list-functions", REPL::callListFunctions);
         HANDLERS.put("calls-show-parties", REPL::callsShowAvailableParties);
         HANDLERS.put("call", REPL::callsExecute);
-        HANDLERS.put("gen-list-generators", REPL::genListGenerators);
-        HANDLERS.put("gen-generate", REPL::genGenerate);
         HANDLERS.put("stop", REPL::stop);
         HANDLERS.put("quit", REPL::quit);
     }
@@ -95,7 +93,7 @@ public class REPL {
             return true;
 
         final String command = tokens[0];
-        final Function<String[], Boolean> handler = HANDLERS.get(command);
+        final java.util.function.Function<String[], Boolean> handler = HANDLERS.get(command);
 
         if (handler != null) {
             return handler.apply(tokens);
@@ -346,36 +344,36 @@ public class REPL {
             System.out.println(args[0] + ": single argument expected: call function specification");
         } else {
             final Call call = Call.parse(args[1]);
-            final Song functionCallSong = Song.of(functionCallsContext, functionCallsParty, call);
-            final Performance performance = Performer.perform(functionCallSong);
-            final Sequence songMidiSequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
-            playMidiSequence(songMidiSequence, false);
+
+            Song functionCallSong = null;
+            switch(call.getFunction().getArtifact()) {
+                case SONG:
+                    functionCallSong = (Song)call.execute(functionCallsContext).getData();
+                    break;
+                case EVENTS:
+                    functionCallSong = Song.of(functionCallsContext, functionCallsParty, call);
+                    break;
+                default:
+                    System.out.println("Unhandled function artifact: " + call.getFunction().getArtifact());
+            }
+
+            if (functionCallSong != null) {
+                final Performance performance = Performer.perform(functionCallSong);
+                final Sequence songMidiSequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
+                playMidiSequence(songMidiSequence, false);
+            }
         }
 
         return true;
     }
 
-    private static boolean genListGenerators(final String[] args) {
+    private static boolean callListFunctions(final String[] args) {
         if (args.length != 1) {
             System.out.println(args[0] + ": no arguments expected");
         } else {
-            for(Generator<?> g : Generator.allGenerators())
+            for(Function<?> g : Function.allFunctions())
                 System.out.println(String.format("%-20s\t%-50s\t%s", g.getName(), g.getDescription(),
                         g.getArtifact().getName()));
-        }
-
-        return true;
-    }
-
-    private static boolean genGenerate(final String[] args) {
-        if (args.length != 2) {
-            System.out.println(args[0] + ": single argument expected: Generator (only artifact=Song)'s name");
-        } else {
-            final Generator<Song> generator = Generator.forName(args[1]);
-            final Song generatedSong = generator.generate();
-            final Performance performance = Performer.perform(generatedSong);
-            final Sequence songMidiSequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
-            playMidiSequence(songMidiSequence, false);
         }
 
         return true;

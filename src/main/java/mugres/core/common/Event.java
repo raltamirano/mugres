@@ -1,5 +1,6 @@
 package mugres.core.common;
 
+/** A notated musical event, with a known duration. */
 public class Event {
     private Length position;
     private final Value value;

@@ -9,8 +9,11 @@ import mugres.core.function.builtin.drums.HalfTime;
 import mugres.core.function.builtin.drums.HipHopBeat;
 import mugres.core.function.builtin.random.Random;
 import mugres.core.function.builtin.riffer.Riffer;
+import mugres.core.function.builtin.song.LoFiHipHopSongGenerator;
+import mugres.core.notation.Song;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static mugres.core.common.Context.SECTION_LENGTH;
 
@@ -27,8 +30,6 @@ public abstract class Function<T> {
         this.description = description;
         for(Parameter parameter : parameters)
             addParameter(parameter);
-        // Every function must specify these mandatory parameters
-        addParameter(LENGTH_PARAMETER);
 
         register(this);
     }
@@ -52,7 +53,9 @@ public abstract class Function<T> {
         return null;
     }
 
-    private void addParameter(final Parameter parameter) {
+    public abstract Artifact getArtifact();
+
+    protected void addParameter(final Parameter parameter) {
         if (parameters.contains(parameter.name))
             throw new IllegalArgumentException(String.format("Parameter '%s' already exists!", parameter.name));
 
@@ -147,6 +150,27 @@ public abstract class Function<T> {
                         final String description,
                         final Parameter... parameters) {
             super(name, description, parameters);
+
+            // Every function must specify these mandatory parameters
+            addParameter(LENGTH_PARAMETER);
+        }
+
+        @Override
+        public Artifact getArtifact() {
+            return Artifact.EVENTS;
+        }
+    }
+
+    public static abstract class SongFunction extends Function<Song> {
+        public SongFunction(final String name,
+                        final String description,
+                        final Parameter... parameters) {
+            super(name, description, parameters);
+        }
+
+        @Override
+        public Artifact getArtifact() {
+            return Artifact.SONG;
         }
     }
 
@@ -165,6 +189,7 @@ public abstract class Function<T> {
         new Riffer();
         new Chords();
         new BlackMetal();
+        new LoFiHipHopSongGenerator();
     }
 
     private static synchronized void register(final Function function) {
@@ -176,6 +201,32 @@ public abstract class Function<T> {
 
     public static <R, F extends Function<R>> F forName(final String name) {
         return (F) REGISTRY.get(name);
+    }
+
+    public static Set<Function> forArtifact(final Artifact artifact) {
+        return Collections.unmodifiableSet(REGISTRY.values().stream()
+                .filter(f -> f.getArtifact().equals(artifact))
+                .collect(Collectors.toSet()));
+    }
+
+    public static Set<Function> allFunctions() {
+        return Collections.unmodifiableSet(new HashSet<>(REGISTRY.values()));
+    }
+
+    /** Musical artifacts a Function can produce. */
+    public enum Artifact {
+        EVENTS("Events"),
+        SONG("Song");
+
+        private final String name;
+
+        Artifact(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 
     public static class Parameter {
@@ -481,7 +532,7 @@ public abstract class Function<T> {
             /** User variant 98 */
             U98,
             /** User variant 99 */
-            U99;
+            U99
         }
     }
 }

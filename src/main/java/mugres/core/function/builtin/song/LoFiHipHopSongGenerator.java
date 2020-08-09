@@ -1,9 +1,9 @@
-package mugres.core.generation.generators.song.builtin.lofihiphop;
+package mugres.core.function.builtin.song;
 
 import mugres.core.common.*;
 import mugres.core.common.chords.ChordProgression;
 import mugres.core.function.Call;
-import mugres.core.generation.generators.song.SongGenerator;
+import mugres.core.function.Function;
 import mugres.core.notation.Section;
 import mugres.core.notation.Song;
 
@@ -16,23 +16,17 @@ import static java.util.Arrays.asList;
 import static mugres.core.common.Context.createBasicContext;
 import static mugres.core.common.Direction.ASCENDING;
 import static mugres.core.common.Direction.DESCENDING;
-import static mugres.core.function.Function.Parameter.Variant.*;
+import static mugres.core.function.Function.Parameter.Variant.RANDOM;
 import static mugres.core.utils.Randoms.*;
 import static mugres.core.utils.Utils.rangeClosed;
 
-public class LoFiHipHopSongGenerator extends SongGenerator {
-    @Override
-    public String getName() {
-        return "loFiHipHop";
+public class LoFiHipHopSongGenerator extends Function.SongFunction {
+    public LoFiHipHopSongGenerator() {
+        super("loFiHipHop", "Lo-Fi Hip Hop");
     }
 
     @Override
-    public String getDescription() {
-        return "Lo-Fi Hip Hop";
-    }
-
-    @Override
-    protected Song doGenerate() {
+    protected Song doExecute(final Context context, final Map<String, Object> arguments) {
         final Song song = Song.of(getDescription() + " song",
                 createBasicContext()
                         .setTempo(tempo())
