@@ -52,10 +52,11 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
         final Section section = song.createSection(name, RND.nextBoolean() ? 4 : 8);
         final ChordProgression chordProgression = improviseChordProgression(section.getContext(),
                 section.getMeasures());
+        section.getContext().setChordProgression(chordProgression);
 
         createBeat(section);
-        createEPianoChords(chordProgression, section);
-        createLeadMelody(chordProgression, section);
+        createEPianoChords(section);
+        createLeadMelody(section);
 
         return section;
     }
@@ -66,14 +67,14 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
         section.addPart(DRUMS, Call.of("hipHopBeat", args));
     }
 
-    private void createEPianoChords(final ChordProgression chordProgression, final Section section) {
+    private void createEPianoChords(final Section section) {
         final int BASE_OCTAVE = random(asList(2, 3));
 
         final boolean arpeggiate = RND.nextBoolean();
         final Direction[] directions = directionsSequence();
         int octave = BASE_OCTAVE;
         final StringBuilder progression = new StringBuilder();
-        final List<ChordProgression.ChordEvent> events = chordProgression.getEvents();
+        final List<ChordProgression.ChordEvent> events = section.getContext().getChordProgression().getEvents();
         for(int index = 0; index < events.size(); index++) {
             if (index > 0) progression.append("|");
 
@@ -113,11 +114,11 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
         section.addPart(E_PIANO, call);
     }
 
-    private void createLeadMelody(final ChordProgression chordProgression, final Section section) {
+    private void createLeadMelody(final Section section) {
         final StringBuilder progression = new StringBuilder();
 
         boolean first = true;
-        for (ChordProgression.ChordEvent c : chordProgression.getEvents()) {
+        for (ChordProgression.ChordEvent c : section.getContext().getChordProgression().getEvents()) {
             if (!first) progression.append("|");
             progression.append(c.notation());
             progression.append(" [4]");

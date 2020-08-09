@@ -1,5 +1,7 @@
 package mugres.core.common;
 
+import mugres.core.common.chords.ChordProgression;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -15,6 +17,8 @@ public interface Context {
     default Context setKey(final Key key) { put(KEY, key); return this; }
     default TimeSignature getTimeSignature() { return get(TIME_SIGNATURE); }
     default Context setTimeSignature(final TimeSignature timeSignature) { put(TIME_SIGNATURE, timeSignature); return this; }
+    default ChordProgression getChordProgression() { return get(CHORD_PROGRESSION); }
+    default Context setChordProgression(final ChordProgression chordProgression) { put(CHORD_PROGRESSION, chordProgression); return this; }
 
     void put(final String key, Object value);
     <X> X get(final String key);
@@ -32,6 +36,7 @@ public interface Context {
     String KEY = "key";
     String TIME_SIGNATURE = "time-signature";
     String SECTION_LENGTH = "section-length";
+    String CHORD_PROGRESSION = "chord-progression";
 
     final class ComposableContext implements Context
     {
