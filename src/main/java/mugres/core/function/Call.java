@@ -26,8 +26,25 @@ public class Call<T> {
         this.arguments.put(LENGTH_PARAMETER.getName(), lengthInMeasures);
     }
 
+
+    public static <X> Call of(final String functionName, final Map<String, Object> arguments) {
+        final Function function = Function.forName(functionName);
+        if (function == null)
+            throw new RuntimeException("Unknown function: " + functionName);
+
+        return of(function, arguments);
+    }
+
     public static <X> Call of(final Function<X> function, final Map<String, Object> arguments) {
         return new Call(function, arguments);
+    }
+
+    public static <X> Call of(final String functionName, final int lengthInMeasures) {
+        final Function function = Function.forName(functionName);
+        if (function == null)
+            throw new RuntimeException("Unknown function: " + functionName);
+
+        return of(function, lengthInMeasures);
     }
 
     public static <X> Call of(final Function<X> function, final int lengthInMeasures) {

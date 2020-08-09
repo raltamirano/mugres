@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import static java.util.Arrays.asList;
 import static mugres.core.common.Value.QUARTER;
 import static mugres.core.common.Value.SIXTEENTH;
+import static mugres.core.utils.Randoms.*;
 
 public class BlackMetal extends ByStrategiesFunction {
     public BlackMetal() {

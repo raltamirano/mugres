@@ -31,7 +31,6 @@ public class Utils {
                     continue;
 
                 final Length position = source.getDivision().length().multiply(hit.getSlot() - startingSlot);
-                final DrumKitHit.Intensity intensity = hit.getData().getIntensity();
                 final DrumKit drumKitElement = DrumKit.valueOf(hit.getElement());
                 final int velocity = hit.getData().getIntensity().getVelocity();
 

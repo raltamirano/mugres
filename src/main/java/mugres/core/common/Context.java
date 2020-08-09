@@ -10,11 +10,11 @@ import static java.util.Arrays.asList;
 /** Context data for all things musical. */
 public interface Context {
     default int getTempo() { return get(TEMPO); }
-    default void setTempo(final int tempo) { put(TEMPO, tempo); }
+    default Context setTempo(final int tempo) { put(TEMPO, tempo); return this;}
     default Key getKey() { return get(KEY); }
-    default void setKey(final Key key) { put(KEY, key); }
+    default Context setKey(final Key key) { put(KEY, key); return this; }
     default TimeSignature getTimeSignature() { return get(TIME_SIGNATURE); }
-    default void setTimeSignature(final TimeSignature timeSignature) { put(TIME_SIGNATURE, timeSignature); }
+    default Context setTimeSignature(final TimeSignature timeSignature) { put(TIME_SIGNATURE, timeSignature); return this; }
 
     void put(final String key, Object value);
     <X> X get(final String key);

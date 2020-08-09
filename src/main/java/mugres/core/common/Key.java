@@ -1,6 +1,8 @@
 package mugres.core.common;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static mugres.core.common.Key.Mode.MAJOR;
 import static mugres.core.common.Key.Mode.MINOR;
@@ -34,12 +36,15 @@ public enum Key {
 
     private final String label;
     private final Note root;
+    private final List<Note> notes;
     private final Mode mode;
 
     Key(final String label, final Note root, final Mode mode) {
         this.label = label;
         this.root = root;
         this.mode = mode;
+        this.notes = Collections.unmodifiableList(defaultScale().pitches(root, 1)
+                .stream().map(Pitch::getNote).collect(Collectors.toList()));
     }
 
     public String label() {
@@ -56,6 +61,10 @@ public enum Key {
 
     public Scale defaultScale() {
         return mode == MAJOR ? Scale.MAJOR : Scale.MINOR;
+    }
+
+    public List<Note> notes() {
+        return notes;
     }
 
     public List<Pitch> chord(final Pitch rootPitch) {

@@ -7,6 +7,7 @@ import mugres.core.function.Call;
 
 import java.util.*;
 
+/** MUGRES internal representation of a song. */
 public class Song {
     private String title;
     private final Context context;

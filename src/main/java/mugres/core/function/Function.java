@@ -2,9 +2,12 @@ package mugres.core.function;
 
 import mugres.core.common.*;
 import mugres.core.function.builtin.bm.BlackMetal;
+import mugres.core.function.builtin.chords.Chords;
 import mugres.core.function.builtin.drums.BlastBeat;
 import mugres.core.function.builtin.drums.Drums;
 import mugres.core.function.builtin.drums.HalfTime;
+import mugres.core.function.builtin.drums.HipHopBeat;
+import mugres.core.function.builtin.random.Random;
 import mugres.core.function.builtin.riffer.Riffer;
 
 import java.util.*;
@@ -27,7 +30,7 @@ public abstract class Function<T> {
         // Every function must specify these mandatory parameters
         addParameter(LENGTH_PARAMETER);
 
-        registerFunction(this);
+        register(this);
     }
 
     public String getName() {
@@ -153,20 +156,21 @@ public abstract class Function<T> {
 
     private static final Map<String, Function> REGISTRY = new HashMap<>();
 
-
     static {
         new Random();
         new Drums();
         new HalfTime();
         new BlastBeat();
+        new HipHopBeat();
         new Riffer();
+        new Chords();
         new BlackMetal();
     }
 
-    private static synchronized void registerFunction(final Function function) {
+    private static synchronized void register(final Function function) {
         final String name = function.getName();
         if (REGISTRY.containsKey(name))
-            throw new IllegalArgumentException("Already registered function name: " + name);
+            throw new IllegalArgumentException("Already registered function: " + name);
         REGISTRY.put(name, function);
     }
 

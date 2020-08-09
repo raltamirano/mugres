@@ -6,6 +6,7 @@ import mugres.core.common.Key;
 import mugres.core.common.Party;
 import mugres.core.common.TimeSignature;
 import mugres.core.function.Call;
+import mugres.core.generation.generators.Generator;
 import mugres.core.notation.Section;
 import mugres.core.notation.Song;
 import mugres.core.notation.readers.JSONReader;
@@ -68,6 +69,8 @@ public class REPL {
         HANDLERS.put("calls-party", REPL::callsSetParty);
         HANDLERS.put("calls-show-parties", REPL::callsShowAvailableParties);
         HANDLERS.put("call", REPL::callsExecute);
+        HANDLERS.put("gen-list-generators", REPL::genListGenerators);
+        HANDLERS.put("gen-generate", REPL::genGenerate);
         HANDLERS.put("stop", REPL::stop);
         HANDLERS.put("quit", REPL::quit);
     }
@@ -352,6 +355,31 @@ public class REPL {
         return true;
     }
 
+    private static boolean genListGenerators(final String[] args) {
+        if (args.length != 1) {
+            System.out.println(args[0] + ": no arguments expected");
+        } else {
+            for(Generator<?> g : Generator.allGenerators())
+                System.out.println(String.format("%-20s\t%-50s\t%s", g.getName(), g.getDescription(),
+                        g.getArtifact().getName()));
+        }
+
+        return true;
+    }
+
+    private static boolean genGenerate(final String[] args) {
+        if (args.length != 2) {
+            System.out.println(args[0] + ": single argument expected: Generator (only artifact=Song)'s name");
+        } else {
+            final Generator<Song> generator = Generator.forName(args[1]);
+            final Song generatedSong = generator.generate();
+            final Performance performance = Performer.perform(generatedSong);
+            final Sequence songMidiSequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
+            playMidiSequence(songMidiSequence, false);
+        }
+
+        return true;
+    }
 
     private static void playMidiSequence(final Sequence midiSequence, final boolean loop) {
         doStop();

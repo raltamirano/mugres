@@ -10,6 +10,7 @@ import java.util.Map;
 import static mugres.core.common.Value.QUARTER;
 import static mugres.core.function.Function.Parameter.DataType.INTEGER;
 import static mugres.core.function.Function.Parameter.DataType.VALUE;
+import static mugres.core.utils.Randoms.RND;
 
 public class Random extends EventsFunction {
     public Random() {
@@ -40,6 +41,4 @@ public class Random extends EventsFunction {
 
         return events;
     }
-
-    private static final java.util.Random RND = new java.util.Random();
 }

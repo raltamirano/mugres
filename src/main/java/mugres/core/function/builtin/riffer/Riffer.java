@@ -38,7 +38,6 @@ public class Riffer extends EventsFunction {
 
         final List<Event> events = new ArrayList<>();
 
-
         DyadElementPatternParser.Dyad lastDyad = null;
         for(GridEvent<DyadElementPatternParser.Dyad> dyadEvent : riffPattern.getEvents()) {
             final Length position = riffPattern.getDivision().length().multiply(dyadEvent.getSlot() - 1);

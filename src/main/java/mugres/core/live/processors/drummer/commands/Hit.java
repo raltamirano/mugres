@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static mugres.core.utils.Randoms.RND;
+
 public class Hit implements Command {
     private Hit() {}
 
@@ -26,7 +28,6 @@ public class Hit implements Command {
             drummer.hit(pieces.get(RND.nextInt(pieces.size())), velocity);
     }
 
-    private static final Random RND = new Random();
     public static final Hit INSTANCE = new Hit();
     public static final String NAME = "Hit";
 }
