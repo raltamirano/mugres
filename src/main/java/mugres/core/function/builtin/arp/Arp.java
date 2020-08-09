@@ -66,13 +66,17 @@ public class Arp extends EventsFunction {
             matcher.reset();
             while(matcher.find() && controlLength.lessThan(totalLength)) {
                 final String element = matcher.group(2);
-                final int index = REST.equals(element) ? 0 : Integer.parseInt(element);
+                final boolean isRest = REST.equals(element);
                 final Value value = parseNoteValue(matcher.group(3));
-                final Event event = index < chord.size() ? chord.get(index) : chord.get(0);
                 final Value actualValue = controlLength.plus(value.length()).greaterThan(totalLength) ?
                         Value.forLength(totalLength.minus(controlLength)) : value;
 
-                arpeggio.add(Event.of(position, event.getPlayed().getPitch(), actualValue, event.getPlayed().getVelocity()));
+                if (!isRest) {
+                    final int index = isRest ? 0 : Integer.parseInt(element);
+                    final Event event = index < chord.size() ? chord.get(index) : chord.get(0);
+                    arpeggio.add(Event.of(position, event.getPlayed().getPitch(), actualValue, event.getPlayed().getVelocity()));
+                }
+
                 position = position.plus(value.length());
                 controlLength = controlLength.plus(value.length());
             }
