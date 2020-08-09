@@ -9,14 +9,15 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static mugres.core.function.Function.COMPOSED_CALL_RESULT_PARAMETER;
 import static mugres.core.function.Function.LENGTH_PARAMETER;
 
 /** Function call. */
 public class Call<T> {
-    private final Function<T> function;
-    private final Map<String, Object> arguments = new HashMap<>();
+    protected final Function<T> function;
+    protected final Map<String, Object> arguments = new HashMap<>();
 
-    private Call(final Function<T> function, final Map<String, Object> arguments) {
+    protected Call(final Function<T> function, final Map<String, Object> arguments) {
         this.function = function;
         this.arguments.putAll(arguments);
     }
@@ -25,7 +26,6 @@ public class Call<T> {
         this.function = function;
         this.arguments.put(LENGTH_PARAMETER.getName(), lengthInMeasures);
     }
-
 
     public static <X> Call of(final String functionName, final Map<String, Object> arguments) {
         final Function function = Function.forName(functionName);
@@ -147,6 +147,18 @@ public class Call<T> {
         return function;
     }
 
+    public Call<T> compose(final String functionName, final Map<String, Object> arguments) {
+        final Function function = Function.forName(functionName);
+        if (function == null)
+            throw new RuntimeException("Unknown function: " + functionName);
+
+        return compose(function, arguments);
+    }
+
+    public Call<T> compose(final Function<T> function, final Map<String, Object> arguments) {
+        return new ComposedCall<>(this, function, arguments);
+    }
+
     public Result<T> execute(final Context context) {
         try {
             return new Result(function.execute(context, arguments));
@@ -165,4 +177,27 @@ public class Call<T> {
 
     private static final Pattern FUNCTION_CALL = Pattern.compile("([a-z][0-9a-zA-Z_-]+[0-9a-zA-Z])\\((.*)\\)");
     private static final Pattern NAMED_ARGS_LIST = Pattern.compile("([a-z][0-9a-zA-Z_-]*[0-9a-zA-Z])\\=(\\'(?:[#\\[\\]\\{\\}\\|\\s0-9a-zA-Z_-]+)\\'|(?:\\-?\\d+(?:\\.\\d+)?)|true|false|yes|no|y|n|(?:[0-9a-zA-Z_-]+))");
+
+    private static class ComposedCall<X> extends Call<X> {
+        private final Call<X> wrapped;
+
+        ComposedCall(final Call<X> wrapped,
+                             final Function<X> functionToApply,
+                             final Map<String, Object> functionToApplyArguments) {
+            super(functionToApply, functionToApplyArguments);
+
+            this.wrapped = wrapped;
+        }
+
+        @Override
+        public Result<X> execute(Context context) {
+            try {
+                final Result<X> wrappedResult = wrapped.execute(context);
+                arguments.put(COMPOSED_CALL_RESULT_PARAMETER.getName(), wrappedResult);
+                return new Result(function.execute(context, arguments));
+            } catch (final Throwable t) {
+                return new Result(t);
+            }
+        }
+    }
 }

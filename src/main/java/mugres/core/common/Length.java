@@ -35,12 +35,26 @@ public class Length implements Comparable<Length> {
         return plus(value.length());
     }
 
+    public Length minus(final Length other) {
+        return new Length(this.n - other.n);
+    }
+
     public Length plus(final Length other) {
         return new Length(this.n + other.n);
     }
 
     public Length multiply(final int factor) {
         return new Length(this.n * factor);
+    }
+
+    /** Greater than */
+    public boolean greaterThan(final Length other) {
+        return this.n > other.n;
+    }
+
+    /** Less than */
+    public boolean lessThan(final Length other) {
+        return this.n < other.n;
     }
 
     public static final Length ZERO = Length.of(0);

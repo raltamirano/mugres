@@ -154,7 +154,13 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
 
         final Map<String, Object> args = new HashMap<>();
         args.put("progression", progression.toString());
-        section.addPart(E_PIANO, Call.of("chords", args));
+        Call call = Call.of("chords", args);
+        if (arpeggiate) {
+            final Map<String, Object> arpArgs = new HashMap<>();
+            arpArgs.put("pattern", "4e3e4e3e1h");
+            call = call.compose("arp", arpArgs);
+        }
+        section.addPart(E_PIANO, call);
     }
 
     private static int tempo() {

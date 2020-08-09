@@ -28,6 +28,13 @@ public enum Value {
         throw new IllegalArgumentException("Invalid value ID: " + id);
     }
 
+    public static Value forLength(final Length l) {
+        for(Value v : values())
+            if (v.length.equals(l))
+                return v;
+        throw new IllegalArgumentException("Invalid value for length: " + l);
+    }
+
     public String label() {
         return label;
     }

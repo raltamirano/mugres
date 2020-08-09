@@ -1,6 +1,7 @@
 package mugres.core.function;
 
 import mugres.core.common.*;
+import mugres.core.function.builtin.arp.Arp;
 import mugres.core.function.builtin.bm.BlackMetal;
 import mugres.core.function.builtin.chords.Chords;
 import mugres.core.function.builtin.drums.BlastBeat;
@@ -106,8 +107,15 @@ public abstract class Function<T> {
         return timeSignature.measuresLength(measures);
     }
 
+    protected Result<T> getComposedCallResult(final Map<String, Object> arguments) {
+        return (Result<T>) arguments.get(COMPOSED_CALL_RESULT_PARAMETER.getName());
+    }
+
     private Map<String, Object> prepareArguments(final Map<String, Object> arguments) {
         final Map<String, Object> preparedArguments = new HashMap<>();
+
+        if (arguments.containsKey(COMPOSED_CALL_RESULT_PARAMETER.getName()))
+            preparedArguments.put(COMPOSED_CALL_RESULT_PARAMETER.getName(), arguments.get(COMPOSED_CALL_RESULT_PARAMETER.getName()));
 
         if (parameters.isEmpty()) {
             if (arguments.isEmpty())
@@ -130,7 +138,7 @@ public abstract class Function<T> {
             }
 
             for(String argumentName : arguments.keySet())
-                if (!parameters.stream().anyMatch(p -> p.name.equals(argumentName)))
+                if (!allowedInternalParameter(argumentName) && !parameters.stream().anyMatch(p -> p.name.equals(argumentName)))
                     throw new IllegalArgumentException(String.format("Unexpected argument '%s' " +
                             "while calling function '%s'. Value: '%s'",
                             argumentName, name, arguments.get(argumentName)));
@@ -143,6 +151,11 @@ public abstract class Function<T> {
                     LENGTH_PARAMETER.name));
 
         return preparedArguments;
+    }
+
+    private boolean allowedInternalParameter(String argumentName) {
+        if (COMPOSED_CALL_RESULT_PARAMETER.getName().equals(argumentName)) return true;
+        return false;
     }
 
     public static abstract class EventsFunction extends Function<List<Event>> {
@@ -177,6 +190,8 @@ public abstract class Function<T> {
     /** Mandatory length parameter some functions must have */
     public static final Parameter LENGTH_PARAMETER = new Parameter("len", "Length in measures",
             Parameter.DataType.INTEGER);
+    public static final Parameter COMPOSED_CALL_RESULT_PARAMETER = new Parameter("composedCallResult", "Result of composed Call",
+            Parameter.DataType.UNKNOWN);
 
     private static final Map<String, Function> REGISTRY = new HashMap<>();
 
@@ -188,6 +203,7 @@ public abstract class Function<T> {
         new HipHopBeat();
         new Riffer();
         new Chords();
+        new Arp();
         new BlackMetal();
         new LoFiHipHopSongGenerator();
     }
@@ -305,7 +321,9 @@ public abstract class Function<T> {
             /** A DrumKit piece*/
             DRUM_KIT,
             /** Variants of something */
-            VARIANT
+            VARIANT,
+            /** Unknown */
+            UNKNOWN
         }
 
         public enum Variant {
