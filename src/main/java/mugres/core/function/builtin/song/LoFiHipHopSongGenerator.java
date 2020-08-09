@@ -7,7 +7,6 @@ import mugres.core.function.Function;
 import mugres.core.notation.Section;
 import mugres.core.notation.Song;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +15,10 @@ import static java.util.Arrays.asList;
 import static mugres.core.common.Context.createBasicContext;
 import static mugres.core.common.Direction.ASCENDING;
 import static mugres.core.common.Direction.DESCENDING;
+import static mugres.core.common.chords.Chords.improviseChordProgression;
 import static mugres.core.function.Function.Parameter.Variant.RANDOM;
-import static mugres.core.utils.Randoms.*;
-import static mugres.core.utils.Utils.rangeClosed;
+import static mugres.core.utils.Randoms.RND;
+import static mugres.core.utils.Randoms.random;
 
 public class LoFiHipHopSongGenerator extends Function.SongFunction {
     public LoFiHipHopSongGenerator() {
@@ -50,10 +50,12 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
 
     private Section createSongSection(final String name, final Song song) {
         final Section section = song.createSection(name, RND.nextBoolean() ? 4 : 8);
-        final ChordProgression chordProgression = improviseChordProgression(section);
+        final ChordProgression chordProgression = improviseChordProgression(section.getContext(),
+                section.getMeasures());
 
         createBeat(section);
-        createEPianoChords(chordProgression, section, RND.nextBoolean());
+        createEPianoChords(chordProgression, section);
+        createLeadMelody(chordProgression, section);
 
         return section;
     }
@@ -64,62 +66,10 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
         section.addPart(DRUMS, Call.of("hipHopBeat", args));
     }
 
-    private static ChordProgression improviseChordProgression(final Section section) {
-        final Scale scale = section.getContext().getKey().defaultScale();
-        final List<Integer> scaleDegrees = rangeClosed(1, scale.degrees());
-        final List<Integer> roots = randoms(scaleDegrees, 4, false);
-        final ChordProgression progression = ChordProgression.of(section.getMeasures());
-        final boolean alterChords = section.getMeasures() > 4 || RND.nextBoolean();
+    private void createEPianoChords(final ChordProgression chordProgression, final Section section) {
+        final int BASE_OCTAVE = random(asList(2, 3));
 
-        Length at = Length.ZERO;
-
-        if (section.getMeasures() < 4) {
-            for (int index = 0; index < section.getMeasures(); index++) {
-                progression.event(scale.chordAtDegree(section.getContext().getKey().getRoot(), roots.get(index)), at);
-                at = at.plus(section.getContext().getTimeSignature().measuresLength());
-            }
-        } else if (section.getMeasures() == 4) {
-            if (alterChords) {
-                for (int index = 0; index < section.getMeasures(); index++) {
-                    progression.event(scale.chordAtDegree(section.getContext().getKey().getRoot(), roots.get(index)), at);
-                    at = at.plus(section.getContext().getTimeSignature().measuresLength());
-                }
-            }  else {
-                for (int r = 0; r < 2; r++)
-                    for (int index = 0; index < 2; index++) {
-                        progression.event(scale.chordAtDegree(section.getContext().getKey().getRoot(), roots.get(index)), at);
-                        at = at.plus(section.getContext().getTimeSignature().measuresLength());
-                    }
-            }
-        } else {
-            for (int index = 0; index < 4; index++) {
-                progression.event(scale.chordAtDegree(section.getContext().getKey().getRoot(), roots.get(index)), at);
-                at = at.plus(section.getContext().getTimeSignature().measuresLength());
-            }
-
-            if (alterChords) {
-                final List<Integer> newRoots = randoms(scaleDegrees, 4,  false);
-                for (int index = 0; index < newRoots.size(); index++) {
-                    progression.event(scale.chordAtDegree(section.getContext().getKey().getRoot(), newRoots.get(index)), at);
-                    at = at.plus(section.getContext().getTimeSignature().measuresLength());
-                }
-            } else {
-                // Complete the section length with the same chords as the first part
-                final List<ChordProgression.ChordEvent> chordEvents = new ArrayList<>(progression.getEvents());
-                for (int index = 0; index < section.getMeasures() - 4; index++) {
-                    progression.event(chordEvents.get(index % chordEvents.size()).getChord(), at);
-                    at = at.plus(section.getContext().getTimeSignature().measuresLength());
-                }
-            }
-        }
-
-        return progression;
-    }
-
-    private void createEPianoChords(final ChordProgression chordProgression, final Section section,
-                                    final boolean arpeggiate) {
-        final int BASE_OCTAVE = random(asList(2, 3, 4));
-
+        final boolean arpeggiate = RND.nextBoolean();
         final Direction[] directions = directionsSequence();
         int octave = BASE_OCTAVE;
         final StringBuilder progression = new StringBuilder();
@@ -149,18 +99,39 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
             }
 
             progression.append(events.get(index).getChord().notation());
-            progression.append(" [" + octave + "]");
+            progression.append(" [").append(octave).append("]");
         }
 
         final Map<String, Object> args = new HashMap<>();
         args.put("progression", progression.toString());
-        Call call = Call.of("chords", args);
+        Call<List<Event>> call = Call.of("chords", args);
         if (arpeggiate) {
             final Map<String, Object> arpArgs = new HashMap<>();
-            arpArgs.put("pattern", "4e3e4e3e1h");
+            arpArgs.put("pattern", "1q2q3q3q");
             call = call.compose("arp", arpArgs);
         }
         section.addPart(E_PIANO, call);
+    }
+
+    private void createLeadMelody(final ChordProgression chordProgression, final Section section) {
+        final StringBuilder progression = new StringBuilder();
+
+        boolean first = true;
+        for (ChordProgression.ChordEvent c : chordProgression.getEvents()) {
+            if (!first) progression.append("|");
+            progression.append(c.notation());
+            progression.append(" [4]");
+            first = false;
+        }
+
+        final Map<String, Object> args = new HashMap<>();
+        args.put("progression", progression.toString());
+        Call<List<Event>> call = Call.of("chords", args);
+
+        final Map<String, Object> arpArgs = new HashMap<>();
+        arpArgs.put("pattern", "4e3e4e3eRh");
+        call = call.compose("arp", arpArgs);
+        section.addPart(MELODY, call);
     }
 
     private static int tempo() {
