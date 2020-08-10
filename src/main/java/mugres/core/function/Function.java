@@ -322,6 +322,8 @@ public abstract class Function<T> {
             DRUM_KIT,
             /** Variants of something */
             VARIANT,
+            /** True/False values */
+            BOOLEAN,
             /** Unknown */
             UNKNOWN
         }

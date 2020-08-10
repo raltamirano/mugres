@@ -130,7 +130,8 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
         Call<List<Event>> call = Call.of("chords", args);
 
         final Map<String, Object> arpArgs = new HashMap<>();
-        arpArgs.put("pattern", "4e3e4e3eRh");
+        arpArgs.put("pattern", "4e3e4e3eRh 1h3h");
+        arpArgs.put("restart", false);
         arpArgs.put("octavesUp", random(asList(0, 1, 2)));
         arpArgs.put("octavesDown", random(asList(0, 1, 2)));
         call = call.compose("arp", arpArgs);

@@ -12,8 +12,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static mugres.core.common.Value.QUARTER;
-import static mugres.core.function.Function.Parameter.DataType.INTEGER;
-import static mugres.core.function.Function.Parameter.DataType.TEXT;
+import static mugres.core.function.Function.Parameter.DataType.*;
 import static mugres.core.utils.Randoms.random;
 import static mugres.core.utils.Utils.rangeClosed;
 
@@ -25,7 +24,9 @@ public class Arp extends EventsFunction {
                 Parameter.of("octavesUp", "Octaves up (for transposition)",
                         INTEGER, true, 0),
                 Parameter.of("octavesDown", "Octaves down (for transposition)",
-                        INTEGER, true, 0)
+                        INTEGER, true, 0),
+                Parameter.of("restart", "Restart the pattern every new chord",
+                        BOOLEAN, true, true)
 
         );
     }
@@ -37,6 +38,7 @@ public class Arp extends EventsFunction {
         final String pattern = (String) arguments.get("pattern");
         final int octavesUp = (Integer) arguments.get("octavesUp");
         final int octavesDown = (Integer) arguments.get("octavesDown");
+        final boolean restart = (Boolean) arguments.get("restart");
         final Matcher matcher = ARP_PATTERN.matcher(pattern);
 
         // Big assumptions here:
@@ -45,7 +47,7 @@ public class Arp extends EventsFunction {
         extractPositions(composed.getData())
                 .stream()
                 .map(p -> getChordEvents(composed.getData(), p))
-                .map(c -> arpeggiate(c, matcher, octavesUp, octavesDown))
+                .map(c -> arpeggiate(c, matcher, octavesUp, octavesDown, restart))
                 .forEach(events::addAll);
 
         return events;
@@ -66,16 +68,22 @@ public class Arp extends EventsFunction {
     }
 
     private static List<Event> arpeggiate(final List<Event> chord, final Matcher matcher,
-                                          final int octavesUp, final int octavesDown) {
+                                          final int octavesUp, final int octavesDown,
+                                          final boolean restart) {
         final List<Event> arpeggio = new ArrayList<>();
         final Length totalLength = chord.get(0).getValue().length();
 
         Length position = chord.get(0).getPosition();
         Length controlLength = Length.ZERO;
 
-        while(controlLength.lessThan(totalLength)) {
+        if (restart)
             matcher.reset();
-            while(matcher.find() && controlLength.lessThan(totalLength)) {
+
+        while(controlLength.lessThan(totalLength)) {
+            if (matcher.hitEnd())
+                matcher.reset();
+
+            while(controlLength.lessThan(totalLength) && matcher.find()) {
                 final String element = matcher.group(2);
                 final boolean isRest = REST.equals(element);
                 final Value value = parseNoteValue(matcher.group(3));

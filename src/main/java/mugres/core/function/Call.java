@@ -116,6 +116,9 @@ public class Call<T> {
                     case INTEGER:
                         argument = Integer.parseInt(argumentString);
                         break;
+                    case BOOLEAN:
+                        argument = Boolean.parseBoolean(argumentString);
+                        break;
                     case DRUM_KIT:
                         argument = DrumKit.valueOf(argumentString);
                         break;
