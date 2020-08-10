@@ -131,6 +131,8 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
 
         final Map<String, Object> arpArgs = new HashMap<>();
         arpArgs.put("pattern", "4e3e4e3eRh");
+        arpArgs.put("octavesUp", random(asList(0, 1, 2)));
+        arpArgs.put("octavesDown", random(asList(0, 1, 2)));
         call = call.compose("arp", arpArgs);
         section.addPart(MELODY, call);
     }

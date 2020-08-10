@@ -12,13 +12,21 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static mugres.core.common.Value.QUARTER;
+import static mugres.core.function.Function.Parameter.DataType.INTEGER;
 import static mugres.core.function.Function.Parameter.DataType.TEXT;
+import static mugres.core.utils.Randoms.random;
+import static mugres.core.utils.Utils.rangeClosed;
 
 public class Arp extends EventsFunction {
     public Arp() {
         super("arp", "Arpeggiates composed call's events",
                 Parameter.of("pattern", "Arp pattern",
-                        TEXT, true, "1232")
+                        TEXT, true, "1232"),
+                Parameter.of("octavesUp", "Octaves up (for transposition)",
+                        INTEGER, true, 0),
+                Parameter.of("octavesDown", "Octaves down (for transposition)",
+                        INTEGER, true, 0)
+
         );
     }
 
@@ -27,6 +35,8 @@ public class Arp extends EventsFunction {
         final Result<List<Event>> composed = getComposedCallResult(arguments);
         final List<Event> events = new ArrayList<>();
         final String pattern = (String) arguments.get("pattern");
+        final int octavesUp = (Integer) arguments.get("octavesUp");
+        final int octavesDown = (Integer) arguments.get("octavesDown");
         final Matcher matcher = ARP_PATTERN.matcher(pattern);
 
         // Big assumptions here:
@@ -35,7 +45,7 @@ public class Arp extends EventsFunction {
         extractPositions(composed.getData())
                 .stream()
                 .map(p -> getChordEvents(composed.getData(), p))
-                .map(c -> arpeggiate(c, matcher))
+                .map(c -> arpeggiate(c, matcher, octavesUp, octavesDown))
                 .forEach(events::addAll);
 
         return events;
@@ -55,7 +65,8 @@ public class Arp extends EventsFunction {
                 .collect(Collectors.toList());
     }
 
-    private static List<Event> arpeggiate(final List<Event> chord, final Matcher matcher) {
+    private static List<Event> arpeggiate(final List<Event> chord, final Matcher matcher,
+                                          final int octavesUp, final int octavesDown) {
         final List<Event> arpeggio = new ArrayList<>();
         final Length totalLength = chord.get(0).getValue().length();
 
@@ -74,7 +85,7 @@ public class Arp extends EventsFunction {
                 if (!isRest) {
                     final int index = isRest ? 0 : Integer.parseInt(element);
                     final Event event = index < chord.size() ? chord.get(index) : chord.get(0);
-                    arpeggio.add(Event.of(position, event.getPlayed().getPitch(), actualValue, event.getPlayed().getVelocity()));
+                    arpeggio.add(Event.of(position, getActualPitch(event.getPlayed().getPitch(), octavesUp, octavesDown), actualValue, event.getPlayed().getVelocity()));
                 }
 
                 position = position.plus(value.length());
@@ -83,6 +94,27 @@ public class Arp extends EventsFunction {
         }
 
         return arpeggio;
+    }
+
+    private static Pitch getActualPitch(final Pitch pitch, final int octavesUp, final int octavesDown) {
+        try {
+            if (octavesUp == 0 && octavesDown == 0) return pitch;
+            if (octavesUp < 0 || octavesDown < 0) return pitch;
+
+            final int originalOctave = pitch.getOctave();
+            final List<Integer> octaves = rangeClosed(originalOctave - octavesDown, originalOctave + octavesUp);
+            final int newOctave = random(octaves);
+            final int octaveDiff = originalOctave - newOctave;
+
+            if (octaveDiff > 0)
+                return pitch.down(octaveDiff * 12);
+            else if (octaveDiff < 0)
+                return pitch.up(octaveDiff * 12);
+            else
+                return pitch;
+        } catch (final Throwable ignore) {
+            return pitch;
+        }
     }
 
     private static Value parseNoteValue(final String input) {
