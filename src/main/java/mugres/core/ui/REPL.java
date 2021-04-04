@@ -66,7 +66,7 @@ public class REPL {
         HANDLERS.put("calls-key", REPL::callsSetKey);
         HANDLERS.put("calls-ts", REPL::callsSetTimeSignature);
         HANDLERS.put("calls-party", REPL::callsSetParty);
-        HANDLERS.put("call-list-functions", REPL::callListFunctions);
+        HANDLERS.put("calls-show-functions", REPL::callsShowFunctions);
         HANDLERS.put("calls-show-parties", REPL::callsShowAvailableParties);
         HANDLERS.put("call", REPL::callsExecute);
         HANDLERS.put("stop", REPL::stop);
@@ -367,7 +367,7 @@ public class REPL {
         return true;
     }
 
-    private static boolean callListFunctions(final String[] args) {
+    private static boolean callsShowFunctions(final String[] args) {
         if (args.length != 1) {
             System.out.println(args[0] + ": no arguments expected");
         } else {
