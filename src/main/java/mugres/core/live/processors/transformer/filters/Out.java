@@ -5,6 +5,7 @@ import mugres.core.common.io.Output;
 import mugres.core.common.Signal;
 import mugres.core.common.Signals;
 
+import java.util.Map;
 import java.util.PriorityQueue;
 
 import static java.util.Comparator.comparingLong;
@@ -16,6 +17,8 @@ public final class Out extends Filter {
     private final PriorityQueue<Signal> queue;
 
     public Out(final Context context, final Output output) {
+        super("Out");
+
         this.context = context;
         this.output = output;
 
@@ -25,12 +28,12 @@ public final class Out extends Filter {
     }
 
     @Override
-    protected boolean canHandle(final Context context, final Signals signals) {
+    protected boolean canHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
         return true;
     }
 
     @Override
-    protected Signals handle(final Context context, final Signals signals) {
+    protected Signals handle(final Context context, final Signals signals, final Map<String, Object> arguments) {
         final long now = System.currentTimeMillis();
 
         for(Signal e : signals.signals())
