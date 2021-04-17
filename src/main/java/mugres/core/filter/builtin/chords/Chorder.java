@@ -6,7 +6,6 @@ import mugres.core.common.chords.Type;
 import mugres.core.filter.Filter;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -85,11 +84,6 @@ public class Chorder extends Filter {
     private Type getChordType(final Map<String, Object> arguments) {
         return Type.forAbbreviation(arguments.get("chordType").toString());
     }
-
-    private Key getKey(final Context context, final Map<String, Object> arguments) {
-        return Key.fromLabel(arguments.get("key").toString());
-    }
-
 
     public enum ChordMode {
         DIATONIC,

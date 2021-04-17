@@ -64,7 +64,7 @@ public final class Out extends Filter {
                 } catch (final Throwable ignore) {
                     // Do nothing!
                 } finally {
-                    try { Thread.sleep(50); } catch (final Throwable ignore) {}
+                    try { Thread.sleep(10); } catch (final Throwable ignore) {}
                 }
         });
     }

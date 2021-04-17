@@ -46,6 +46,10 @@ public class Signal {
         return of(time, channel, newPlayed, active);
     }
 
+    public Signal modifiedTime(final long newTime) {
+        return of(newTime, channel, played, active);
+    }
+
     public Signal toOn() {
         return active ? this : of(time, channel, played, true);
     }

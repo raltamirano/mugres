@@ -3,6 +3,7 @@ package mugres.core.common;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 
@@ -32,7 +33,15 @@ public class Signals {
         return Collections.unmodifiableList(signals);
     }
 
+    public Signals actives() {
+        return of(signals.stream().filter(Signal::isActive).toArray(Signal[]::new));
+    }
+
     public Signal first() {
         return signals.get(0);
+    }
+
+    public boolean isEmpty() {
+        return signals.isEmpty();
     }
 }
