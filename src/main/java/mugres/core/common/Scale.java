@@ -79,8 +79,7 @@ public enum Scale {
         notes.add(next);
         for (int interval : intervals) {
             next = next.up(interval);
-            if (!notes.contains(next))
-                notes.add(next);
+            notes.add(next);
         }
 
         return notes;

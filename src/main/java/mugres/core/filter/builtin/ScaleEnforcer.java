@@ -54,33 +54,21 @@ public class ScaleEnforcer extends Filter {
     }
 
     private void correctUp(final Signals result, final List<Note> scaleNotes, final Signal in) {
-        final Note playedNote = in.getPlayed().getPitch().getNote();
-
-        for (int i = 0; i < scaleNotes.size(); i++) {
-            if (scaleNotes.get(i).number() > playedNote.number()) {
-                final Note targetNote = scaleNotes.get(i);
-                Pitch newPitch = Pitch.of(targetNote, in.getPlayed().getPitch().getOctave());
-                if (newPitch.getMidi() < in.getPlayed().getPitch().getMidi())
-                    newPitch = newPitch.up(Interval.OCTAVE);
-                result.add(in.modifiedPlayed(Played.of(newPitch, in.getPlayed().getVelocity())));
-                break;
-            }
-        }
+        Pitch newPitch = in.getPlayed().getPitch();
+        while(!scaleNotes.contains(newPitch.getNote()))
+            newPitch = newPitch.up(1);
+        if (newPitch.getMidi() < in.getPlayed().getPitch().getMidi())
+            newPitch = newPitch.up(Interval.OCTAVE);
+        result.add(in.modifiedPlayed(Played.of(newPitch, in.getPlayed().getVelocity())));
     }
 
     private void correctDown(final Signals result, final List<Note> scaleNotes, final Signal in) {
-        final Note playedNote = in.getPlayed().getPitch().getNote();
-
-        for (int i = scaleNotes.size() - 1; i >= 0; i--) {
-            if (scaleNotes.get(i).number() < playedNote.number()) {
-                final Note targetNote = scaleNotes.get(i);
-                Pitch newPitch = Pitch.of(targetNote, in.getPlayed().getPitch().getOctave());
-                if (newPitch.getMidi() > in.getPlayed().getPitch().getMidi())
-                    newPitch = newPitch.down(Interval.OCTAVE);
-                result.add(in.modifiedPlayed(Played.of(newPitch, in.getPlayed().getVelocity())));
-                break;
-            }
-        }
+        Pitch newPitch = in.getPlayed().getPitch();
+        while(!scaleNotes.contains(newPitch.getNote()))
+            newPitch = newPitch.down(1);
+        if (newPitch.getMidi() > in.getPlayed().getPitch().getMidi())
+            newPitch = newPitch.down(Interval.OCTAVE);
+        result.add(in.modifiedPlayed(Played.of(newPitch, in.getPlayed().getVelocity())));
     }
 
     private List<Note> getScaleNotes(final Context context, final Map<String, Object> arguments) {
