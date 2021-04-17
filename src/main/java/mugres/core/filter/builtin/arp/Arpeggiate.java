@@ -47,35 +47,36 @@ public class Arpeggiate extends Filter {
 
     private static List<ArpEntry> getPattern(final Context context, final Map<String, Object> arguments) {
         final List<ArpEntry> pattern = new ArrayList<>();
+        final Value defaultValue = getTimeSignature(context, arguments).getDenominator();
 
         final Matcher matcher = ARP_PATTERN.matcher(arguments.get("pattern").toString());
 
         while(matcher.find())
             pattern.add(new ArpEntry(Integer.valueOf(matcher.group(2)),
-                    parseEntryDuration(context, arguments, matcher.group(3))));
+                    parseEntryDuration(context, arguments, defaultValue, matcher.group(3))));
 
         return pattern;
     }
 
     private static long parseEntryDuration(final Context context, final Map<String, Object> arguments,
-                                           final String input) {
-        if (input.endsWith(MILLIS))
+                                           final Value defaultValue, final String input) {
+        if (input != null && input.trim().endsWith(MILLIS))
             return Long.parseLong(input.substring(0, input.length() - MILLIS.length()));
 
         final int bpm = getTempo(context, arguments);
-        final Value value  = parseNoteValue(input);
+        final Value value  = parseNoteValue(input, defaultValue);
 
         return value.length().toMillis(bpm);
     }
 
-    private static Value parseNoteValue(final String input) {
-        return input == null || input.trim().isEmpty() ? QUARTER : Value.forId(input);
+    private static Value parseNoteValue(final String input, final Value defaultValue) {
+        return input == null || input.trim().isEmpty() ? defaultValue : Value.forId(input);
     }
 
 
     private static final String REST = "R";
     private static final String MILLIS = "ms";
-    private static final Pattern ARP_PATTERN = Pattern.compile("(([1-9]\\d*|" + REST + ")\\s(w|h|q|e|s|t|m|[1-9]\\d*"+ MILLIS + ")?)+?");
+    private static final Pattern ARP_PATTERN = Pattern.compile("(([1-9]|" + REST + ")\\s?(w|h|q|e|s|t|m|[1-9]\\d*"+ MILLIS + ")?)+?");
 
     private static class ArpEntry {
         private final int noteIndex;

@@ -27,11 +27,12 @@ public class Monitor extends Filter {
 
     private String getLabel(final Map<String, Object> arguments) {
         try {
-            return String.format(arguments.get("label").toString(), "[%s]");
+            return String.format(LABEL_FORMAT, arguments.get("label").toString());
         } catch (final Throwable ignore) {
-            return "[]";
+            return String.format(LABEL_FORMAT, "");
         }
     }
 
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("hh:mm:ss.SSS");
+    private static final String LABEL_FORMAT = "[%-10s]";
 }
