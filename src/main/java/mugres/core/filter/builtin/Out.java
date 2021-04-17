@@ -1,9 +1,10 @@
-package mugres.core.live.processors.transformer.filters;
+package mugres.core.filter.builtin;
 
 import mugres.core.common.Context;
 import mugres.core.common.io.Output;
 import mugres.core.common.Signal;
 import mugres.core.common.Signals;
+import mugres.core.filter.Filter;
 
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -42,7 +43,7 @@ public final class Out extends Filter {
             else
                 queue.add(e);
 
-        return Signals.empty();
+        return Signals.create();
     }
 
     private Thread createWorkerThread() {

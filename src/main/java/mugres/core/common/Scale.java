@@ -56,12 +56,34 @@ public enum Scale {
         this.chordTypesByDegree = chordTypesByDegree;
     }
 
+    public static Scale of(final String name) {
+        for(Scale note : Scale.values())
+            if (note.name.equals(name))
+                return note;
+
+        throw new IllegalArgumentException("Invalid scale: " + name);
+    }
+
     public String getName() {
         return name;
     }
 
     public int degrees() {
         return intervals.length;
+    }
+
+    public List<Note> notes(final Note root) {
+        final List<Note> notes = new ArrayList<>();
+
+        Note next = root;
+        notes.add(next);
+        for (int interval : intervals) {
+            next = next.up(interval);
+            if (!notes.contains(next))
+                notes.add(next);
+        }
+
+        return notes;
     }
 
     public List<Pitch> pitches(final Note root, final int octavesToGenerate) {

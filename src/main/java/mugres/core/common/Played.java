@@ -5,7 +5,7 @@ public class Played {
     private final Pitch pitch;
     private int velocity;
 
-    private Played(final Pitch pitch,final int velocity) {
+    private Played(final Pitch pitch, final int velocity) {
         this.pitch = pitch;
         this.velocity = velocity;
     }
@@ -26,7 +26,24 @@ public class Played {
         this.velocity = velocity;
     }
 
+    public Played pitchUp(final int semitones) {
+        return of(pitch.up(semitones), velocity);
+    }
+
+    public Played pitchUp(final Interval interval) {
+        return of(pitch.up(interval), velocity);
+    }
+
+    public Played pitchDown(final int semitones) {
+        return of(pitch.down(semitones), velocity);
+    }
+
+    public Played pitchDown(final Interval interval) {
+        return of(pitch.down(interval), velocity);
+    }
+
     public String toString() {
         return String.format("%s (%03d)", pitch, velocity);
     }
+
 }

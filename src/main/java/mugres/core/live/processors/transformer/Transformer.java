@@ -7,8 +7,8 @@ import mugres.core.common.io.Input;
 import mugres.core.common.io.Output;
 import mugres.core.live.processors.Processor;
 import mugres.core.live.processors.transformer.config.Configuration;
-import mugres.core.live.processors.transformer.filters.In;
-import mugres.core.live.processors.transformer.filters.Out;
+import mugres.core.filter.builtin.In;
+import mugres.core.filter.builtin.Out;
 
 public class Transformer extends Processor {
     private final Configuration config;

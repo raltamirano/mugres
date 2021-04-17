@@ -1,7 +1,9 @@
-package mugres.core.live.processors.transformer.filters;
+package mugres.core.filter;
 
 import mugres.core.common.Context;
 import mugres.core.common.Signals;
+import mugres.core.filter.builtin.Monitor;
+import mugres.core.filter.builtin.ScaleEnforcer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,16 +11,8 @@ import java.util.Map;
 public abstract class Filter {
     private final String name;
 
-    private Filter next;
-
-    Filter(final String name) {
-        this(name, null);
-    }
-
-    Filter(final String name, final Filter next) {
-
+    protected Filter(final String name) {
         this.name = name;
-        this.next = next;
 
         register(this);
     }
@@ -40,14 +34,11 @@ public abstract class Filter {
                 handle(context, signals, arguments) : signals;
     }
 
-    public void setNext(final Filter filter) {
-        this.next = filter;
-    }
-
     private static final Map<String, Filter> REGISTRY = new HashMap<>();
 
     static {
         new Monitor();
+        new ScaleEnforcer();
     }
 
     private static synchronized void register(final Filter filter) {

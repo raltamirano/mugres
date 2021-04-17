@@ -1,6 +1,6 @@
 package mugres.core.live.processors.transformer.config;
 
-import mugres.core.live.processors.transformer.filters.Filter;
+import mugres.core.filter.Filter;
 
 import java.util.ArrayList;
 import java.util.Collections;

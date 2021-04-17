@@ -1,7 +1,8 @@
-package mugres.core.live.processors.transformer.filters;
+package mugres.core.filter.builtin;
 
 import mugres.core.common.Context;
 import mugres.core.common.Signals;
+import mugres.core.filter.Filter;
 
 import java.util.Map;
 

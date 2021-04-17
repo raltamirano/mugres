@@ -17,8 +17,15 @@ public class Signals {
         return new Signals(signals);
     }
 
-    public static Signals empty() {
+    public static Signals create() {
         return new Signals();
+    }
+
+    public void add(final Signal signal) {
+        if (signal == null)
+            throw new IllegalArgumentException("signal");
+
+        signals.add(signal);
     }
 
     public List<Signal> signals() {

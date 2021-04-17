@@ -15,11 +15,15 @@ public class Signal {
     }
 
     public static Signal on(final long time, final int channel, final Played played) {
-        return new Signal(time, channel, played, true);
+        return of(time, channel, played, true);
     }
 
     public static Signal off(final long time, final int channel, final Played played) {
-        return new Signal(time, channel, played, false);
+        return of(time, channel, played, false);
+    }
+
+    public static Signal of(final long time, final int channel, final Played played, final boolean active) {
+        return new Signal(time, channel, played, active);
     }
 
     public long getTime() {
@@ -38,8 +42,13 @@ public class Signal {
         return active;
     }
 
+    public Signal modifiedPlayed(final Played newPlayed) {
+        return of(time, channel, newPlayed, active);
+    }
+
     @Override
     public String toString() {
         return String.format("%s [%d][%s]", played, channel, active ? "on" : "off");
     }
+
 }

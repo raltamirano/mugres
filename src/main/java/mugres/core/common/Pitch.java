@@ -48,12 +48,16 @@ public class Pitch {
         return octave;
     }
 
+    public static Pitch of(final Note note, final int octave) {
+        return of(note.number() + ((octave + 1) * 12));
+    }
+
     public synchronized static Pitch of(final int midi) {
         if (!isValidMidiNoteNumber(midi))
             throw new IllegalArgumentException("Invalid Midi note number: " + midi);
 
         if (!CACHE.containsKey(midi))
-            CACHE.put(midi, new Pitch(midi, Note.of(midi % 12), (midi / 12) - 2));
+            CACHE.put(midi, new Pitch(midi, Note.of(midi % 12), (midi / 12) - 1));
 
         return CACHE.get(midi);
     }
@@ -83,4 +87,7 @@ public class Pitch {
     }
 
     private static final Map<Integer, Pitch> CACHE = new HashMap<>();
+
+    public static final Pitch MIDDLE_C = of(Note.C, 4);
+    public static final Pitch CONCERT_PITCH = of(Note.A, 4);
 }

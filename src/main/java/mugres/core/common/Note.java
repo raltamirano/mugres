@@ -67,7 +67,7 @@ public enum Note {
     }
 
     public Pitch pitch(final int octave) {
-        return Pitch.of(number + ((octave + 2) * 12));
+        return Pitch.of(this, octave);
     }
 
     public boolean before(final Note other) {
