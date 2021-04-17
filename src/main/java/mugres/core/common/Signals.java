@@ -13,7 +13,7 @@ public class Signals {
         this.signals.addAll(asList(signals));
     }
 
-    public static Signals of(final Signal...signals) {
+    public static Signals of(final Signal... signals) {
         return new Signals(signals);
     }
 
@@ -30,5 +30,9 @@ public class Signals {
 
     public List<Signal> signals() {
         return Collections.unmodifiableList(signals);
+    }
+
+    public Signal first() {
+        return signals.get(0);
     }
 }

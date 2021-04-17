@@ -2,8 +2,9 @@ package mugres.core.filter;
 
 import mugres.core.common.Context;
 import mugres.core.common.Signals;
-import mugres.core.filter.builtin.Monitor;
-import mugres.core.filter.builtin.ScaleEnforcer;
+import mugres.core.filter.builtin.chords.Chorder;
+import mugres.core.filter.builtin.system.Monitor;
+import mugres.core.filter.builtin.scales.ScaleEnforcer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +40,7 @@ public abstract class Filter {
     static {
         new Monitor();
         new ScaleEnforcer();
+        new Chorder();
     }
 
     private static synchronized void register(final Filter filter) {

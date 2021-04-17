@@ -1,4 +1,4 @@
-package mugres.core.filter.builtin;
+package mugres.core.filter.builtin.system;
 
 import mugres.core.common.Context;
 import mugres.core.common.io.Output;

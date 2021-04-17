@@ -1,4 +1,4 @@
-package mugres.core.filter.builtin;
+package mugres.core.filter.builtin.scales;
 
 import mugres.core.common.*;
 import mugres.core.filter.Filter;
@@ -78,7 +78,7 @@ public class ScaleEnforcer extends Filter {
         return scale.notes(root);
     }
 
-    private CorrectionMode getCorrectionMode(Map<String, Object> arguments) {
+    private CorrectionMode getCorrectionMode(final Map<String, Object> arguments) {
         return CorrectionMode.valueOf(arguments.get("correctionMode").toString());
     }
 
