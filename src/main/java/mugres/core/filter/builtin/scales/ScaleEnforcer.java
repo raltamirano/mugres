@@ -72,10 +72,17 @@ public class ScaleEnforcer extends Filter {
     }
 
     private List<Note> getScaleNotes(final Context context, final Map<String, Object> arguments) {
-        final Scale scale = Scale.of(arguments.get("scale").toString());
-        final Note root = Note.of(arguments.get("root").toString());
-
-        return scale.notes(root);
+        try {
+            if (arguments.containsKey("scale") && arguments.containsKey("root")) {
+                final Scale scale = Scale.of(arguments.get("scale").toString());
+                final Note root = Note.of(arguments.get("root").toString());
+                return scale.notes(root);
+            } else {
+                return context.getKey().notes();
+            }
+        } catch (final Throwable ignore) {
+            return context.getKey().notes();
+        }
     }
 
     private CorrectionMode getCorrectionMode(final Map<String, Object> arguments) {

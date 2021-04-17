@@ -32,10 +32,13 @@ public abstract class Filter {
 
     protected static int getTempo(final Context context, final Map<String, Object> arguments) {
         try {
-            final Integer tempo = Integer.valueOf(arguments.get("tempo").toString());
-            if (tempo < 0)
-                return context.getTempo();
-            return tempo;
+            final Integer tempo = arguments.containsKey("tempo") ?
+                    Integer.valueOf(arguments.get("tempo").toString()) :
+                    context.getTempo();
+
+            return tempo > 0 ?
+                    tempo :
+                    context.getTempo();
         } catch (final Throwable ignore) {
             return context.getTempo();
         }
@@ -43,7 +46,9 @@ public abstract class Filter {
 
     protected static Key getKey(final Context context, final Map<String, Object> arguments) {
         try {
-            return Key.fromLabel(arguments.get("key").toString());
+            return arguments.containsKey("key") ?
+                    Key.fromLabel(arguments.get("key").toString()) :
+                    context.getKey();
         } catch (final Throwable ignore) {
             return context.getKey();
         }
@@ -51,7 +56,9 @@ public abstract class Filter {
 
     protected static TimeSignature getTimeSignature(final Context context, final Map<String, Object> arguments) {
         try {
-            return TimeSignature.of(arguments.get("timeSignature").toString());
+            return arguments.containsKey("timeSignature") ?
+                    TimeSignature.of(arguments.get("timeSignature").toString()) :
+                    context.getTimeSignature();
         } catch (final Throwable ignore) {
             return context.getTimeSignature();
         }
