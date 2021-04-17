@@ -159,10 +159,10 @@ public enum Scale {
                                  final int baseOctave) {
         final List<Pitch> result = new ArrayList<>();
 
-        final List<Pitch> pitches = pitches(scaleRoot, 2, baseOctave);
+        final List<Pitch> pitches = pitches(scaleRoot, 3, baseOctave - 1);
         for(int i = 0; i < pitches.size(); i++) {
             Pitch pitch = pitches.get(i);
-            if (pitch.getNote().equals(startingAt)) {
+            if (pitch.getNote().equals(startingAt) && pitch.getOctave() == baseOctave) {
                 for(int j = 0; j < numberOfNotes; j ++)
                     result.add(pitches.get(i + (j * type.getScaleSteps())));
                 break;
