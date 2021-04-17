@@ -2,23 +2,23 @@
 <metadata modelVersion="1.1.0">
   <groupId>mugres</groupId>
   <artifactId>mugres-core</artifactId>
-  <version>0.11-SNAPSHOT</version>
+  <version>0.12-SNAPSHOT</version>
   <versioning>
     <snapshot>
-      <timestamp>20210417.134512</timestamp>
+      <timestamp>20210417.172626</timestamp>
       <buildNumber>1</buildNumber>
     </snapshot>
-    <lastUpdated>20210417134512</lastUpdated>
+    <lastUpdated>20210417172626</lastUpdated>
     <snapshotVersions>
       <snapshotVersion>
         <extension>jar</extension>
-        <value>0.11-20210417.134512-1</value>
-        <updated>20210417134512</updated>
+        <value>0.12-20210417.172626-1</value>
+        <updated>20210417172626</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>pom</extension>
-        <value>0.11-20210417.134512-1</value>
-        <updated>20210417134512</updated>
+        <value>0.12-20210417.172626-1</value>
+        <updated>20210417172626</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>
