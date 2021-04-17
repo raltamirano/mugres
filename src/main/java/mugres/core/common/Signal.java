@@ -46,6 +46,14 @@ public class Signal {
         return of(time, channel, newPlayed, active);
     }
 
+    public Signal toOn() {
+        return active ? this : of(time, channel, played, true);
+    }
+
+    public Signal toOff() {
+        return active ? of(time, channel, played, false) : this;
+    }
+
     @Override
     public String toString() {
         return String.format("%s [%d][%s]", played, channel, active ? "on" : "off");

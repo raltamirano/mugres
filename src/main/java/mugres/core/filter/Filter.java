@@ -3,6 +3,7 @@ package mugres.core.filter;
 import mugres.core.common.Context;
 import mugres.core.common.Signals;
 import mugres.core.filter.builtin.chords.Chorder;
+import mugres.core.filter.builtin.misc.Latch;
 import mugres.core.filter.builtin.system.Monitor;
 import mugres.core.filter.builtin.scales.ScaleEnforcer;
 
@@ -41,6 +42,7 @@ public abstract class Filter {
         new Monitor();
         new ScaleEnforcer();
         new Chorder();
+        new Latch();
     }
 
     private static synchronized void register(final Filter filter) {
