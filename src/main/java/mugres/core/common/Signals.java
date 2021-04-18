@@ -1,14 +1,14 @@
 package mugres.core.common;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 
 public class Signals {
     private final List<Signal> signals = new ArrayList<>();
+    private Map<String, Object> attributes;
+    private final Object attributesSyncObject = new Object();
 
     private Signals(final Signal...signals) {
         this.signals.addAll(asList(signals));
@@ -43,5 +43,34 @@ public class Signals {
 
     public boolean isEmpty() {
         return signals.isEmpty();
+    }
+
+    public Map<String, Object> getAttributes() {
+        synchronized (attributesSyncObject) {
+            return  attributes == null ? Collections.emptyMap() : Collections.unmodifiableMap(attributes);
+        }
+    }
+
+    public void setAttribute(final String name, final Object value) {
+        synchronized (attributesSyncObject) {
+            if (attributes == null)
+                attributes = new HashMap<>();
+            attributes.put(name, value);
+        }
+    }
+
+    public Object getAttribute(final String name) {
+        synchronized (attributesSyncObject) {
+            return attributes == null ?
+                    null :
+                    attributes.get(name);
+        }
+    }
+
+    public void removeAttribute(final String name) {
+        synchronized (attributesSyncObject) {
+            if (attributes != null)
+                attributes.remove(name);
+        }
     }
 }
