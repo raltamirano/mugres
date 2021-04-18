@@ -1,11 +1,17 @@
 package mugres.core.common;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /** Live signal. Analog to {@link mugres.core.common.Event} in the notated world. */
 public class Signal {
     private final long time;
     private final int channel;
     private final Played played;
     private final boolean active;
+    private Map<String, Object> attributes;
+    private final Object attributesSyncObject = new Object();
 
     private Signal(final long time, final int channel, final Played played, final boolean active) {
         this.time = time;
@@ -58,9 +64,40 @@ public class Signal {
         return active ? of(time, channel, played, false) : this;
     }
 
+    public Map<String, Object> getAttributes() {
+        synchronized (attributesSyncObject) {
+            return  attributes == null ? Collections.emptyMap() : Collections.unmodifiableMap(attributes);
+        }
+    }
+
+    public void setAttribute(final String name, final Object value) {
+        synchronized (attributesSyncObject) {
+            if (attributes == null)
+                attributes = new HashMap<>();
+            attributes.put(name, value);
+        }
+    }
+
+    public Object getAttribute(final String name) {
+        synchronized (attributesSyncObject) {
+            return attributes == null ?
+                null :
+                attributes.get(name);
+        }
+    }
+
+    public void removeAttribute(final String name) {
+        synchronized (attributesSyncObject) {
+            if (attributes != null)
+                attributes.remove(name);
+        }
+    }
+
     @Override
     public String toString() {
         return String.format("%s [%d][%s]", played, channel, active ? "on" : "off");
     }
 
+    /** Lane attribute name */
+    public static final String LANE = "lane";
 }

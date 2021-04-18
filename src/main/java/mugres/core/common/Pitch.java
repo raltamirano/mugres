@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class Pitch {
+public class Pitch implements Comparable<Pitch> {
     private final int midi;
     private final Note note;
     private final int octave;
@@ -84,6 +84,11 @@ public class Pitch {
     @Override
     public int hashCode() {
         return Objects.hash(midi);
+    }
+
+    @Override
+    public int compareTo(final Pitch o) {
+        return Integer.compare(this.midi, o.midi);
     }
 
     private static final Map<Integer, Pitch> CACHE = new HashMap<>();

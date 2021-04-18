@@ -7,6 +7,7 @@ import mugres.core.common.TimeSignature;
 import mugres.core.filter.builtin.arp.Arpeggiate;
 import mugres.core.filter.builtin.chords.Chorder;
 import mugres.core.filter.builtin.misc.Latch;
+import mugres.core.filter.builtin.misc.Ranges;
 import mugres.core.filter.builtin.misc.Transpose;
 import mugres.core.filter.builtin.system.Monitor;
 import mugres.core.filter.builtin.scales.ScaleEnforcer;
@@ -83,6 +84,7 @@ public abstract class Filter {
         new Latch();
         new Arpeggiate();
         new Transpose();
+        new Ranges();
     }
 
     private static synchronized void register(final Filter filter) {
