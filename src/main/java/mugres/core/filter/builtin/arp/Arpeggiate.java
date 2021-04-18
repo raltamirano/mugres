@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static mugres.core.common.Value.QUARTER;
+import static mugres.core.utils.Randoms.random;
 
 public class Arpeggiate extends Filter {
     public Arpeggiate() {
@@ -33,13 +33,28 @@ public class Arpeggiate extends Filter {
         long startTime = actives.first().getTime();
         long delta = 0;
         for(final ArpEntry e : pattern) {
-            // Do nothing with note indexes outside of the given notes
-            if (actives.signals().size() >= e.noteIndex) {
-                final Signal signal = actives.signals().get(e.noteIndex - 1);
-                result.add(signal.modifiedTime(startTime + delta));
-                result.add(signal.modifiedTime(startTime + delta + e.millis).toOff());
-                delta += e.millis + 1;
+            // Do nothing with rests
+            if (e.getType() != ArpEntry.Type.REST) {
+                final Signal signal;
+                switch(e.getType()) {
+                    case NOTE:
+                        signal = actives.signals().size() >= e.noteIndex ?
+                            actives.signals().get(e.noteIndex - 1) : null;
+                        break;
+                    case RANDOM:
+                        signal = random(actives.signals());
+                        break;
+                    default:
+                        signal = null;
+                        // TODO: logging!
+                }
+
+                if (signal != null) {
+                    result.add(signal.modifiedTime(startTime + delta));
+                    result.add(signal.modifiedTime(startTime + delta + e.millis).toOff());
+                }
             }
+            delta += e.millis + 1;
         }
 
         return result;
@@ -51,11 +66,23 @@ public class Arpeggiate extends Filter {
 
         final Matcher matcher = ARP_PATTERN.matcher(arguments.get("pattern").toString());
 
-        while(matcher.find())
-            pattern.add(new ArpEntry(Integer.valueOf(matcher.group(2)),
-                    parseEntryDuration(context, arguments, defaultValue, matcher.group(3))));
+        while(matcher.find()) {
+            final String note = matcher.group(2);
+            final String duration = matcher.group(3);
+            final ArpEntry.Type type = getArpEntryType(note);
+            pattern.add(ArpEntry.of(type, type == ArpEntry.Type.NOTE ? Integer.valueOf(note) : null,
+                    parseEntryDuration(context, arguments, defaultValue, duration)));
+        }
 
         return pattern;
+    }
+
+    private static ArpEntry.Type getArpEntryType(final String input) {
+        switch (input) {
+            case REST: return ArpEntry.Type.REST;
+            case RANDOM_NOTE: return ArpEntry.Type.RANDOM;
+            default: return ArpEntry.Type.NOTE;
+        }
     }
 
     private static long parseEntryDuration(final Context context, final Map<String, Object> arguments,
@@ -75,24 +102,41 @@ public class Arpeggiate extends Filter {
 
 
     private static final String REST = "R";
+    private static final String RANDOM_NOTE = "X";
     private static final String MILLIS = "ms";
-    private static final Pattern ARP_PATTERN = Pattern.compile("(([1-9]|" + REST + ")\\s?(w|h|q|e|s|t|m|[1-9]\\d*"+ MILLIS + ")?)+?");
+    private static final Pattern ARP_PATTERN = Pattern.compile("(([1-9]|" + REST + "|" + RANDOM_NOTE + ")\\s?(w|h|q|e|s|t|m|[1-9]\\d*"+ MILLIS + ")?)+?");
 
     private static class ArpEntry {
-        private final int noteIndex;
+        private final Type type;
+        private final Integer noteIndex;
         private final long millis;
 
-        public ArpEntry(final int noteIndex, final long millis) {
+        private ArpEntry(final Type type, final Integer noteIndex, final long millis) {
+            this.type = type;
             this.noteIndex = noteIndex;
             this.millis = millis;
         }
 
-        public int getNoteIndex() {
+        public static ArpEntry of(final Type type, final Integer noteIndex, final long millis) {
+            return new ArpEntry(type, noteIndex, millis);
+        }
+
+        public Type getType() {
+            return type;
+        }
+
+        public Integer getNoteIndex() {
             return noteIndex;
         }
 
         public long getMillis() {
             return millis;
+        }
+
+        public enum Type {
+            NOTE,
+            REST,
+            RANDOM
         }
     }
 }
