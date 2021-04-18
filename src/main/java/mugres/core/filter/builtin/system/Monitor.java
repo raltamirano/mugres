@@ -14,12 +14,12 @@ public class Monitor extends Filter {
     }
 
     @Override
-    protected boolean canHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    protected boolean internalCanHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
         return true;
     }
 
     @Override
-    protected Signals handle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    protected Signals internalHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
         signals.signals().forEach(e -> System.out.println(String.format("%s %s %s",
                 TIME_FORMAT.format(new Date()), getLabel(arguments), e)));
         return signals;

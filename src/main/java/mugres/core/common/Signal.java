@@ -1,8 +1,6 @@
 package mugres.core.common;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /** Live signal. Analog to {@link mugres.core.common.Event} in the notated world. */
 public class Signal {
@@ -101,11 +99,11 @@ public class Signal {
         }
     }
 
-    public Object getAttribute(final String name) {
+    public <X> X getAttribute(final String name) {
         synchronized (attributesSyncObject) {
             return attributes == null ?
                 null :
-                attributes.get(name);
+                    (X)attributes.get(name);
         }
     }
 
@@ -116,11 +114,33 @@ public class Signal {
         }
     }
 
-    @Override
-    public String toString() {
-        return String.format("%s [%d][%s]", played, channel, active ? "on" : "off");
+    public void addTag(final String tag) {
+        if (tag == null || tag.trim().isEmpty())
+            return;
+
+        synchronized (attributesSyncObject) {
+            Set<String> tags = getAttribute(TAGS);
+            if (tags == null) {
+                tags = new HashSet<>();
+                setAttribute(TAGS, tags);
+            }
+            tags.add(tag);
+        }
     }
 
-    /** Lane attribute name */
-    public static final String LANE = "lane";
+    public boolean hasTag(final String tag) {
+        if (tag == null || tag.trim().isEmpty())
+            return false;
+
+        final Set<String> tags = getAttribute(TAGS);
+        return tags == null ? false : tags.contains(tag);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s [%d][%s][%s]", played, channel, active ? "on" : "off", getAttribute(TAGS));
+    }
+
+    /** Tags attribute name */
+    public static final String TAGS = "tags";
 }

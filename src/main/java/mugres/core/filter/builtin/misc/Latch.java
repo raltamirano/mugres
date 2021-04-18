@@ -17,12 +17,12 @@ public class Latch extends Filter {
     }
 
     @Override
-    protected boolean canHandle(Context context, Signals signals, Map<String, Object> arguments) {
+    protected boolean internalCanHandle(Context context, Signals signals, Map<String, Object> arguments) {
         return true;
     }
 
     @Override
-    protected Signals handle(Context context, Signals signals, Map<String, Object> arguments) {
+    protected Signals internalHandle(Context context, Signals signals, Map<String, Object> arguments) {
         final Signals result = Signals.create();
         final String latchKey = latchKey(signals);
 

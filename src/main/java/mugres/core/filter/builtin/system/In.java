@@ -12,12 +12,12 @@ public final class In extends Filter {
     }
 
     @Override
-    protected boolean canHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    protected boolean internalCanHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
         return true;
     }
 
     @Override
-    protected Signals handle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    protected Signals internalHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
         return signals;
     }
 }

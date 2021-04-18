@@ -21,26 +21,21 @@ public class Ranges extends Filter {
     }
 
     @Override
-    protected boolean canHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    protected boolean internalCanHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
         return true;
     }
 
     @Override
-    protected Signals handle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    protected Signals internalHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
         final List<Range> ranges = getRanges(arguments);
 
         for(final Signal in : signals.signals()) {
-            boolean matched = false;
             for(int index=0; index<ranges.size(); index++) {
                 if (ranges.get(index).contains(in.getPlayed().getPitch())) {
-                    matched = true;
-                    in.setAttribute(Signal.LANE, index+1);
+                    in.addTag(ranges.get(index).getTag());
                     break;
                 }
             }
-            // All signals that don't match any range end up in lane 0
-            if (!matched)
-                in.setAttribute(Signal.LANE, 0);
         }
 
         return signals;
@@ -55,13 +50,14 @@ public class Ranges extends Filter {
             return emptyList();
 
         final List<Range> ranges = new ArrayList<>();
-        for(final String rangeValue : rangesValue.split(PARTS_SEPARATOR)) {
-            final Matcher matcher = RANGE_PATTERN.matcher(rangesValue);
-            if (matcher.find()) {
-                final String[] parts = matcher.group().split(PARTS_SEPARATOR);
-                final int start = Integer.valueOf(parts[0]);
-                final int end = Integer.valueOf(parts[1]);
-                final Range range = Range.of(Pitch.of(start), Pitch.of(end));
+        for(final String rangeValue : rangesValue.split(RANGES_SEPARATOR)) {
+            final Matcher matcher = RANGE_PATTERN.matcher(rangeValue);
+            if (matcher.matches()) {
+                final String[] parts = rangeValue.split(PARTS_SEPARATOR);
+                final String tag = parts[0];
+                final int start = Integer.valueOf(parts[1]);
+                final int end = Integer.valueOf(parts[2]);
+                final Range range = Range.of(tag, Pitch.of(start), Pitch.of(end));
                 validateNoOverlapping(ranges, range);
                 ranges.add(range);
             }
@@ -80,20 +76,26 @@ public class Ranges extends Filter {
 
     private static final String RANGES_SEPARATOR = ",";
     private static final String PARTS_SEPARATOR = ":";
-    private static final Pattern RANGE_PATTERN = Pattern.compile("\\d{1,3}+\\" + PARTS_SEPARATOR + "\\d{1,3}");
+    private static final Pattern RANGE_PATTERN = Pattern.compile("[a-zA-Z0-9\\/\\_\\-]+" + PARTS_SEPARATOR + "\\d{1,3}+\\" + PARTS_SEPARATOR + "\\d{1,3}");
     private static final Pattern RANGES_PATTERN = Pattern.compile("^" + RANGE_PATTERN.pattern() + "(" + RANGES_SEPARATOR + RANGE_PATTERN.pattern() + ")*$");
 
     private static class Range implements Comparable<Range> {
+        private String tag;
         private Pitch start;
         private Pitch end;
 
-        private Range(final Pitch start, final Pitch end) {
+        private Range(final String tag, final Pitch start, final Pitch end) {
+            this.tag = tag;
             this.start = start;
             this.end = end;
         }
 
-        public static Range of(final Pitch start, final Pitch end) {
-            return new Range(start, end);
+        public static Range of(final String tag, final Pitch start, final Pitch end) {
+            return new Range(tag, start, end);
+        }
+
+        public String getTag() {
+            return tag;
         }
 
         public Pitch getStart() {

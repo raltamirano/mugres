@@ -1,9 +1,9 @@
 package mugres.core.common;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static mugres.core.common.Signal.TAGS;
 
 public class Signals {
     private final List<Signal> signals = new ArrayList<>();
@@ -14,7 +14,15 @@ public class Signals {
         this.signals.addAll(asList(signals));
     }
 
+    private Signals(final List<Signal> signals) {
+        this.signals.addAll(signals);
+    }
+
     public static Signals of(final Signal... signals) {
+        return new Signals(signals);
+    }
+
+    public static Signals of(final List<Signal> signals) {
         return new Signals(signals);
     }
 
@@ -59,11 +67,11 @@ public class Signals {
         }
     }
 
-    public Object getAttribute(final String name) {
+    public <X> X getAttribute(final String name) {
         synchronized (attributesSyncObject) {
             return attributes == null ?
                     null :
-                    attributes.get(name);
+                    (X)attributes.get(name);
         }
     }
 
@@ -72,5 +80,27 @@ public class Signals {
             if (attributes != null)
                 attributes.remove(name);
         }
+    }
+
+    public void addTag(final String tag) {
+        if (tag == null || tag.trim().isEmpty())
+            return;
+
+        synchronized (attributesSyncObject) {
+            Set<String> tags = getAttribute(TAGS);
+            if (tags == null) {
+                tags = new HashSet<>();
+                setAttribute(TAGS, tags);
+            }
+            tags.add(tag);
+        }
+    }
+
+    public boolean hasTag(final String tag) {
+        if (tag == null || tag.trim().isEmpty())
+            return false;
+
+        final Set<String> tags = getAttribute(TAGS);
+        return tags == null ? false : tags.contains(tag);
     }
 }
