@@ -29,7 +29,16 @@ public class Signal {
     }
 
     public static Signal of(final long time, final int channel, final Played played, final boolean active) {
-        return new Signal(time, channel, played, active);
+        return of(time, channel, played, active, null);
+    }
+
+    public static Signal of(final long time, final int channel, final Played played, final boolean active,
+                            final Map<String, Object> attributes) {
+        final Signal signal = new Signal(time, channel, played, active);
+        if (attributes != null)
+            for(String key : attributes.keySet())
+                signal.setAttribute(key, attributes.get(key));
+        return signal;
     }
 
     public long getTime() {
@@ -49,19 +58,33 @@ public class Signal {
     }
 
     public Signal modifiedPlayed(final Played newPlayed) {
-        return of(time, channel, newPlayed, active);
+        synchronized (attributesSyncObject) {
+            return of(time, channel, newPlayed, active, attributes);
+        }
     }
 
     public Signal modifiedTime(final long newTime) {
-        return of(newTime, channel, played, active);
+        synchronized (attributesSyncObject) {
+            return of(newTime, channel, played, active, attributes);
+        }
     }
 
     public Signal toOn() {
-        return active ? this : of(time, channel, played, true);
+        if (active)
+            return this;
+        else
+            synchronized (attributesSyncObject) {
+                return of(time, channel, played, true, attributes);
+            }
     }
 
     public Signal toOff() {
-        return active ? of(time, channel, played, false) : this;
+        if (active)
+            synchronized (attributesSyncObject) {
+                return of(time, channel, played, false, attributes);
+            }
+        else
+            return this;
     }
 
     public Map<String, Object> getAttributes() {
