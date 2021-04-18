@@ -3,6 +3,7 @@ package mugres.core.filter;
 import mugres.core.common.*;
 import mugres.core.filter.builtin.arp.Arpeggiate;
 import mugres.core.filter.builtin.chords.Chorder;
+import mugres.core.filter.builtin.misc.Clear;
 import mugres.core.filter.builtin.misc.Latch;
 import mugres.core.filter.builtin.misc.Ranges;
 import mugres.core.filter.builtin.misc.Transpose;
@@ -135,6 +136,7 @@ public abstract class Filter {
         new Arpeggiate();
         new Transpose();
         new Ranges();
+        new Clear();
     }
 
     private static synchronized void register(final Filter filter) {
