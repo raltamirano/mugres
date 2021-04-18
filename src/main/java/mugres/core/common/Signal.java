@@ -4,6 +4,7 @@ import java.util.*;
 
 /** Live signal. Analog to {@link mugres.core.common.Event} in the notated world. */
 public class Signal implements Cloneable {
+    private final UUID eventId;
     private final long time;
     private final int channel;
     private final Played played;
@@ -11,32 +12,37 @@ public class Signal implements Cloneable {
     private Map<String, Object> attributes;
     private final Object attributesSyncObject = new Object();
 
-    private Signal(final long time, final int channel, final Played played, final boolean active) {
+    private Signal(final UUID eventId, final long time, final int channel, final Played played, final boolean active) {
+        this.eventId = eventId;
         this.time = time;
         this.channel = channel;
         this.played = played;
         this.active = active;
     }
 
-    public static Signal on(final long time, final int channel, final Played played) {
-        return of(time, channel, played, true);
+    public static Signal on(final UUID eventId, final long time, final int channel, final Played played) {
+        return of(eventId, time, channel, played, true);
     }
 
-    public static Signal off(final long time, final int channel, final Played played) {
-        return of(time, channel, played, false);
+    public static Signal off(final UUID eventId, final long time, final int channel, final Played played) {
+        return of(eventId, time, channel, played, false);
     }
 
-    public static Signal of(final long time, final int channel, final Played played, final boolean active) {
-        return of(time, channel, played, active, null);
+    public static Signal of(final UUID eventId, final long time, final int channel, final Played played, final boolean active) {
+        return of(eventId, time, channel, played, active, null);
     }
 
-    public static Signal of(final long time, final int channel, final Played played, final boolean active,
+    public static Signal of(final UUID eventId, final long time, final int channel, final Played played, final boolean active,
                             final Map<String, Object> attributes) {
-        final Signal signal = new Signal(time, channel, played, active);
+        final Signal signal = new Signal(eventId, time, channel, played, active);
         if (attributes != null)
             for(String key : attributes.keySet())
                 signal.setAttribute(key, attributes.get(key));
         return signal;
+    }
+
+    public UUID getEventId() {
+        return eventId;
     }
 
     public long getTime() {
@@ -57,13 +63,13 @@ public class Signal implements Cloneable {
 
     public Signal modifiedPlayed(final Played newPlayed) {
         synchronized (attributesSyncObject) {
-            return of(time, channel, newPlayed, active, attributes);
+            return of(eventId, time, channel, newPlayed, active, attributes);
         }
     }
 
     public Signal modifiedTime(final long newTime) {
         synchronized (attributesSyncObject) {
-            return of(newTime, channel, played, active, attributes);
+            return of(eventId, newTime, channel, played, active, attributes);
         }
     }
 
@@ -72,14 +78,14 @@ public class Signal implements Cloneable {
             return this;
         else
             synchronized (attributesSyncObject) {
-                return of(time, channel, played, true, attributes);
+                return of(eventId, time, channel, played, true, attributes);
             }
     }
 
     public Signal toOff() {
         if (active)
             synchronized (attributesSyncObject) {
-                return of(time, channel, played, false, attributes);
+                return of(eventId, time, channel, played, false, attributes);
             }
         else
             return this;
@@ -87,7 +93,7 @@ public class Signal implements Cloneable {
 
     @Override
     public Signal clone() {
-        final Signal clone = of(time, channel, played.clone(), active);
+        final Signal clone = of(eventId, time, channel, played.clone(), active);
         synchronized (attributesSyncObject) {
             if (attributes != null)
                 for(final String key : attributes.keySet())

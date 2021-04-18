@@ -15,6 +15,8 @@ import mugres.core.live.processors.drummer.config.Part;
 
 import javax.sound.midi.*;
 
+import java.util.UUID;
+
 import static java.lang.System.currentTimeMillis;
 import static mugres.core.common.Party.WellKnownParties.DRUMS;
 
@@ -173,7 +175,7 @@ public class Drummer extends Processor {
 
     public void hit(final DrumKit piece, final int velocity) {
         if (velocity > 0)
-            getOutput().send(Signal.on(currentTimeMillis(),
+            getOutput().send(Signal.on(UUID.randomUUID(), currentTimeMillis(),
                     DRUMS.getParty().getChannel(),
                     Played.of(piece.getPitch(), velocity)));
     }

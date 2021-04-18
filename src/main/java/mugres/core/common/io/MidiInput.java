@@ -9,6 +9,8 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 
+import java.util.UUID;
+
 import static java.lang.System.currentTimeMillis;
 import static javax.sound.midi.ShortMessage.NOTE_OFF;
 import static javax.sound.midi.ShortMessage.NOTE_ON;
@@ -28,11 +30,11 @@ public class MidiInput extends Input implements Receiver {
         final ShortMessage shortMessage = (ShortMessage) message;
 
         if (shortMessage.getCommand() == NOTE_ON)
-            send(Signal.on(currentTimeMillis(),
+            send(Signal.on(UUID.randomUUID(), currentTimeMillis(),
                     shortMessage.getChannel(),
                     Played.of(Pitch.of(shortMessage.getData1()), shortMessage.getData2())));
         else if (shortMessage.getCommand() == NOTE_OFF)
-            send(Signal.off(currentTimeMillis(),
+            send(Signal.off(UUID.randomUUID(), currentTimeMillis(),
                     shortMessage.getChannel(),
                     Played.of(Pitch.of(shortMessage.getData1()), 0)));
     }
