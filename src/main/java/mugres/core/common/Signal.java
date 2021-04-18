@@ -3,7 +3,7 @@ package mugres.core.common;
 import java.util.*;
 
 /** Live signal. Analog to {@link mugres.core.common.Event} in the notated world. */
-public class Signal {
+public class Signal implements Cloneable {
     private final long time;
     private final int channel;
     private final Played played;
@@ -83,6 +83,17 @@ public class Signal {
             }
         else
             return this;
+    }
+
+    @Override
+    public Signal clone() {
+        final Signal clone = of(time, channel, played.clone(), active);
+        synchronized (attributesSyncObject) {
+            if (attributes != null)
+                for(final String key : attributes.keySet())
+                    clone.setAttribute(key, attributes.get(key));
+        }
+        return clone;
     }
 
     public Map<String, Object> getAttributes() {

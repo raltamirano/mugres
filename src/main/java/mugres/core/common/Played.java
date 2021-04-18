@@ -1,7 +1,7 @@
 package mugres.core.common;
 
 /** A specific note played. */
-public class Played {
+public class Played implements Cloneable {
     private final Pitch pitch;
     private int velocity;
 
@@ -40,6 +40,11 @@ public class Played {
 
     public Played pitchDown(final Interval interval) {
         return of(pitch.down(interval), velocity);
+    }
+
+    @Override
+    protected Played clone() {
+        return of(pitch, velocity);
     }
 
     public String toString() {
