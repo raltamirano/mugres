@@ -18,6 +18,12 @@ public final class In extends Filter {
 
     @Override
     protected Signals internalHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+        updateSignalsState(signals);
         return signals;
+    }
+
+    private void updateSignalsState(final Signals signals) {
+        signals.actives().forEach(Filter::activateSignal);
+        signals.inactives().forEach(Filter::deactivateSignal);
     }
 }

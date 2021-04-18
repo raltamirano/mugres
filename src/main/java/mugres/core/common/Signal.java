@@ -155,7 +155,10 @@ public class Signal implements Cloneable {
 
     @Override
     public String toString() {
-        return String.format("%s [%d][%s][%s]", played, channel, active ? "on" : "off", getAttribute(TAGS));
+        final Object tags = getAttribute(TAGS);
+        return String.format("(%s) %s [%d] [%s] Tags=[%s]",
+                eventId, played, channel, active ? "on" : "off",
+                tags == null ? "" : tags);
     }
 
     /** Tags attribute name */

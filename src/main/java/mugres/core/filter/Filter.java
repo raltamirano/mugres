@@ -7,10 +7,7 @@ import mugres.core.filter.builtin.misc.*;
 import mugres.core.filter.builtin.scales.ScaleEnforcer;
 import mugres.core.filter.builtin.system.Monitor;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
@@ -157,6 +154,47 @@ public abstract class Filter {
 
     public static Filter forName(final String name) {
         return REGISTRY.get(name);
+    }
+
+    public static void activateSignal(final Signal signal) {
+        ACTIVE_SIGNALS.put(signal.getEventId(), signal);
+        fireActivatedSignalNotification(signal.getEventId());
+    }
+
+    public static void deactivateSignal(final Signal signal) {
+        final UUID originalEventId = getOriginalEventId(signal);
+        if (originalEventId != null) {
+            ACTIVE_SIGNALS.remove(originalEventId);
+            fireDeactivatedSignalNotification(originalEventId);
+        }
+    }
+
+    protected static void addSignalEventListener(final SignalEventListener listener) {
+        SIGNAL_EVENT_LISTENERS.add(listener);
+    }
+
+    private static UUID getOriginalEventId(final Signal signal) {
+        return ACTIVE_SIGNALS.entrySet().stream()
+                .filter(e -> e.getValue().getPlayed().getPitch().equals(signal.getPlayed().getPitch()))
+                .findFirst()
+                .map(Map.Entry::getKey)
+                .orElse(null);
+    }
+
+    private static void fireActivatedSignalNotification(final UUID activated) {
+        SIGNAL_EVENT_LISTENERS.forEach(l -> l.activated(activated));
+    }
+
+    private static void fireDeactivatedSignalNotification(final UUID deactivated) {
+        SIGNAL_EVENT_LISTENERS.forEach(l -> l.deactivated(deactivated));
+    }
+
+    private static final Map<UUID, Signal> ACTIVE_SIGNALS = new HashMap<>();
+    private static final Set<SignalEventListener> SIGNAL_EVENT_LISTENERS = new HashSet<>();
+
+    public interface SignalEventListener {
+        void activated(final UUID activated);
+        void deactivated(final UUID deactivated);
     }
 
     public static class SplitByTagsResult {

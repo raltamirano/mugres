@@ -1,6 +1,7 @@
 package mugres.core.common;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import static java.util.Arrays.asList;
 import static mugres.core.common.Signal.TAGS;
@@ -47,6 +48,14 @@ public class Signals {
 
     public Signals actives() {
         return of(signals.stream().filter(Signal::isActive).toArray(Signal[]::new));
+    }
+
+    public Signals inactives() {
+        return of(signals.stream().filter(s -> !s.isActive()).toArray(Signal[]::new));
+    }
+
+    public void forEach(final Consumer<? super Signal> consumer) {
+        signals.forEach(consumer);
     }
 
     public Signal first() {

@@ -5,9 +5,11 @@ import mugres.core.common.io.Output;
 import mugres.core.common.Signal;
 import mugres.core.common.Signals;
 import mugres.core.filter.Filter;
+import org.w3c.dom.ls.LSOutput;
 
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.UUID;
 
 import static java.util.Comparator.comparingLong;
 
@@ -26,6 +28,8 @@ public final class Out extends Filter {
         queue = new PriorityQueue<>(comparingLong(Signal::getTime));
         worker = createWorkerThread();
         worker.start();
+
+        addSignalEventListener(createSignalEventListener());
     }
 
     @Override
@@ -67,5 +71,19 @@ public final class Out extends Filter {
                     try { Thread.sleep(10); } catch (final Throwable ignore) {}
                 }
         });
+    }
+
+    private SignalEventListener createSignalEventListener() {
+        return new SignalEventListener() {
+            @Override
+            public void activated(final UUID activated) {
+                // Do nothing
+            }
+
+            @Override
+            public void deactivated(final UUID deactivated) {
+                queue.removeIf(s -> s.getEventId().equals(deactivated));
+            }
+        };
     }
 }
