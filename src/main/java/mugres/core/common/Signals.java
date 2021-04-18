@@ -37,6 +37,10 @@ public class Signals {
         signals.add(signal);
     }
 
+    public void addAll(final Signals others) {
+        others.signals.forEach(this::add);
+    }
+
     public List<Signal> signals() {
         return Collections.unmodifiableList(signals);
     }
@@ -102,5 +106,13 @@ public class Signals {
 
         final Set<String> tags = getAttribute(TAGS);
         return tags == null ? false : tags.contains(tag);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        for(final Signal s : signals)
+            builder.append(s).append("\n");
+        return builder.toString();
     }
 }

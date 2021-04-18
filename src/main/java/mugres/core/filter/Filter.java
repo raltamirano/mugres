@@ -7,7 +7,10 @@ import mugres.core.filter.builtin.misc.*;
 import mugres.core.filter.builtin.scales.ScaleEnforcer;
 import mugres.core.filter.builtin.system.Monitor;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
@@ -69,7 +72,10 @@ public abstract class Filter {
     }
 
     public Signals handle(final Context context, final Signals signals, final Map<String, Object> arguments) {
-        return internalHandle(context, filterByTags(context, signals, arguments), arguments);
+        final SplitByTagsResult splitByTagsResult = splitByTags(signals, arguments);
+        final Signals handledSignals = internalHandle(context, splitByTagsResult.getInside(), arguments);
+        handledSignals.addAll(splitByTagsResult.getOutside());
+        return handledSignals;
     }
 
     private boolean checkTagFilter(final Context context, final Signals signals, final Map<String, Object> arguments) {
@@ -89,26 +95,31 @@ public abstract class Filter {
         }
     }
 
-    private Signals filterByTags(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    private SplitByTagsResult splitByTags(final Signals signals, final Map<String, Object> arguments) {
         try {
             if (!arguments.containsKey(TAG_FILTER))
-                return signals;
+                return SplitByTagsResult.of(signals, Signals.create());
 
-            final Signals result = Signals.create();
+            final Signals inside = Signals.create();
+            final Signals outside = Signals.create();
+
             final Set<String> tags = new HashSet<>(asList(arguments.get(TAG_FILTER).toString().split(TAG_FILTER_SEPARATOR)));
             for(final Signal in : signals.signals()) {
+                boolean check = false;
                 for (final String tag : tags) {
                     if (in.hasTag(tag)) {
-                        result.add(in);
+                        check = true;
+                        inside.add(in);
                         break;
                     }
                 }
+                if (!check)
+                    outside.add(in);
             }
 
-            return result;
+            return SplitByTagsResult.of(inside, outside);
         } catch (final Throwable ignore) {
-            // TODO: logging
-            return Signals.create();
+            return SplitByTagsResult.of(Signals.create(), signals);
         }
     }
 
@@ -146,5 +157,37 @@ public abstract class Filter {
 
     public static Filter forName(final String name) {
         return REGISTRY.get(name);
+    }
+
+    public static class SplitByTagsResult {
+        private final Signals inside;
+        private final Signals outside;
+
+        private SplitByTagsResult(final Signals inside, final Signals outside) {
+            this.inside = inside;
+            this.outside = outside;
+        }
+
+        public static SplitByTagsResult of(final Signals inside, final Signals outside) {
+            return new SplitByTagsResult(inside, outside);
+        }
+
+        public Signals getInside() {
+            return inside;
+        }
+
+        public Signals getOutside() {
+            return outside;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder builder = new StringBuilder();
+
+            builder.append("Inside: ").append("\n").append(inside).append("\n");
+            builder.append("Outside: ").append("\n").append(outside).append("\n");
+
+            return builder.toString();
+        }
     }
 }
