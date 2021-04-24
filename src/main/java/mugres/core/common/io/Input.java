@@ -17,7 +17,7 @@ public abstract class Input {
         listeners.add(listener);
     }
 
-    protected void send(final Signal signal) {
+    public void send(final Signal signal) {
         listeners.forEach(listener -> listener.receive(signal));
     }
 

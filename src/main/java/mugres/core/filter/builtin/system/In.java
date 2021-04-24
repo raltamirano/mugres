@@ -1,14 +1,26 @@
 package mugres.core.filter.builtin.system;
 
 import mugres.core.common.Context;
+import mugres.core.common.Signal;
 import mugres.core.common.Signals;
+import mugres.core.common.io.Input;
 import mugres.core.filter.Filter;
 
 import java.util.Map;
 
 public final class In extends Filter {
-    public In() {
+    private final Context context;
+    private final Input input;
+
+    public In(final Context context, final Input input) {
         super("In");
+
+        this.context = context;
+        this.input = input;
+    }
+
+    public Input getInput() {
+        return input;
     }
 
     @Override

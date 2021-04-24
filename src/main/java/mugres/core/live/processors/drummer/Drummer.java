@@ -39,7 +39,7 @@ public class Drummer extends Processor {
                    final Input input,
                    final Output output,
                    final Configuration configuration) {
-        super(context, input, output);
+        super(context, input, output, null);
 
         checkSuitableOutput(output);
 
@@ -56,6 +56,16 @@ public class Drummer extends Processor {
     private void checkSuitableOutput(final Output output) {
         if (!(output instanceof MidiOutput))
             throw new IllegalArgumentException("Drummer can only work with MidiOutput-like ports!");
+    }
+
+    @Override
+    protected void onStart() {
+
+    }
+
+    @Override
+    protected void onStop() {
+
     }
 
     @Override

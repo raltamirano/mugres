@@ -9,22 +9,31 @@ import mugres.core.live.processors.Processor;
 import mugres.core.live.processors.transformer.config.Configuration;
 import mugres.core.filter.builtin.system.In;
 import mugres.core.filter.builtin.system.Out;
+import mugres.core.live.signaler.Signaler;
 
 public class Transformer extends Processor {
     private final Configuration config;
-    private final In input;
-    private final Out output;
+    private final In in;
+    private final Out out;
 
     public Transformer(final Context context,
                        final Input input,
                        final Output output,
                        final Configuration config) {
-        super(context, input, output);
+        super(context, input, output, config.getSignalers());
 
         this.config = config;
 
-        this.input = new In();
-        this.output = new Out(context, output);
+        this.in = new In(context, input);
+        this.out = new Out(context, output);
+    }
+
+    @Override
+    protected void onStart() {
+    }
+
+    @Override
+    protected void onStop() {
     }
 
     @Override
@@ -32,13 +41,13 @@ public class Transformer extends Processor {
         Signals signals = Signals.of(signal);
 
         // Pass through input filter
-        signals = input.accept(getContext(), signals);
+        signals = in.accept(getContext(), signals);
 
         // Pass through every user-defined filter
         for(Configuration.FilterEntry entry : config.getFilters())
             signals = entry.getFilter().accept(getContext(), signals, entry.getArgs());
 
         // Pass through output filter
-        output.accept(getContext(), signals);
+        out.accept(getContext(), signals);
     }
 }

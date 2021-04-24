@@ -3,6 +3,7 @@ package mugres.core.filter;
 import mugres.core.common.*;
 import mugres.core.filter.builtin.arp.Arpeggiate;
 import mugres.core.filter.builtin.chords.Chorder;
+import mugres.core.filter.builtin.misc.Random;
 import mugres.core.filter.builtin.misc.*;
 import mugres.core.filter.builtin.scales.ScaleEnforcer;
 import mugres.core.filter.builtin.system.Monitor;
@@ -14,6 +15,7 @@ import static java.util.Collections.emptyMap;
 
 public abstract class Filter {
     private final String name;
+    private Filter next;
 
     protected Filter(final String name) {
         this.name = name;
@@ -143,6 +145,7 @@ public abstract class Filter {
         new Ranges();
         new Clear();
         new Splitter();
+        new Random();
     }
 
     private static synchronized void register(final Filter filter) {

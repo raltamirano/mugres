@@ -1,17 +1,29 @@
 package mugres.core.live.processors.transformer.config;
 
 import mugres.core.filter.Filter;
+import mugres.core.live.signaler.Signaler;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.unmodifiableList;
+
 public class Configuration {
+    private final List<Signaler> signalers = new ArrayList<>();
     private final List<FilterEntry> filters = new ArrayList<>();
 
+    public List<Signaler> getSignalers() {
+        return unmodifiableList(signalers);
+    }
+
     public List<FilterEntry> getFilters() {
-        return filters;
+        return unmodifiableList(filters);
+    }
+
+    public void addSignaler(final Signaler signaler) {
+        signalers.add(signaler);
     }
 
     public void appendFilter(final String filter, final Map<String, Object> args) {

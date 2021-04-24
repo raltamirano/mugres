@@ -42,6 +42,10 @@ public class Played implements Cloneable {
         return of(pitch.down(interval), velocity);
     }
 
+    public Played repitch(Pitch newPitch) {
+        return of(newPitch, velocity);
+    }
+
     @Override
     protected Played clone() {
         return of(pitch, velocity);
@@ -50,5 +54,4 @@ public class Played implements Cloneable {
     public String toString() {
         return String.format("%s (%03d)", pitch, velocity);
     }
-
 }
