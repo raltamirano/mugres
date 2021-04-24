@@ -1,10 +1,12 @@
 package mugres.core.common.frequency;
 
+import mugres.core.common.Value;
 import mugres.core.common.frequency.builtin.Fixed;
 
 import java.util.HashSet;
 import java.util.Set;
 
+/** Artifact that ticks at certain times (regular or not). */
 public abstract class Frequency {
     private boolean running;
     private final Set<Listener> listeners = new HashSet<>();
@@ -40,6 +42,10 @@ public abstract class Frequency {
 
     public static Fixed fixed(final long intervalInMillis) {
         return Fixed.of(intervalInMillis);
+    }
+
+    public static Fixed fixed(final Value value, final int tempo) {
+        return Fixed.of(value, tempo);
     }
 
     protected void fireTick() {

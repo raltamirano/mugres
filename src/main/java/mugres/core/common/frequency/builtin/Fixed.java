@@ -1,7 +1,12 @@
 package mugres.core.common.frequency.builtin;
 
+import mugres.core.common.Value;
 import mugres.core.common.frequency.Frequency;
 
+/**
+ * Fixed interval frequency.
+ *
+ * @implNote Time drift is still an issue. */
 public class Fixed extends Frequency {
     private final long millis;
     private Thread worker;
@@ -16,6 +21,10 @@ public class Fixed extends Frequency {
 
     public static Fixed of(final long millis) {
         return new Fixed(millis);
+    }
+
+    public static Fixed of(final Value value, final int tempo) {
+        return new Fixed(value.length().toMillis(tempo));
     }
 
     @Override
