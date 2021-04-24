@@ -1,4 +1,4 @@
-package mugres.core.live.processors.drummer;
+package mugres.core.live.processor.drummer;
 
 import mugres.core.common.Context;
 import mugres.core.common.DrumKit;
@@ -7,11 +7,11 @@ import mugres.core.common.Signal;
 import mugres.core.common.io.Input;
 import mugres.core.common.io.MidiOutput;
 import mugres.core.common.io.Output;
-import mugres.core.live.processors.Processor;
-import mugres.core.live.processors.drummer.config.Action;
-import mugres.core.live.processors.drummer.config.Configuration;
-import mugres.core.live.processors.drummer.config.Groove;
-import mugres.core.live.processors.drummer.config.Part;
+import mugres.core.live.processor.Processor;
+import mugres.core.live.processor.drummer.config.Action;
+import mugres.core.live.processor.drummer.config.Configuration;
+import mugres.core.live.processor.drummer.config.Groove;
+import mugres.core.live.processor.drummer.config.Part;
 
 import javax.sound.midi.*;
 

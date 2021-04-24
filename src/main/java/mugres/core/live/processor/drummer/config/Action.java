@@ -1,8 +1,8 @@
-package mugres.core.live.processors.drummer.config;
+package mugres.core.live.processor.drummer.config;
 
 import mugres.core.common.Context;
-import mugres.core.live.processors.drummer.commands.Command;
-import mugres.core.live.processors.drummer.Drummer;
+import mugres.core.live.processor.drummer.commands.Command;
+import mugres.core.live.processor.drummer.Drummer;
 
 import java.util.*;
 

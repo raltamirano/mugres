@@ -1,4 +1,4 @@
-package mugres.core.live.processors;
+package mugres.core.live.processor;
 
 import mugres.core.common.Context;
 import mugres.core.common.Signal;

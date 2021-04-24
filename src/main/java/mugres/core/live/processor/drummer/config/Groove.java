@@ -1,4 +1,4 @@
-package mugres.core.live.processors.drummer.config;
+package mugres.core.live.processor.drummer.config;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
-package mugres.core.live.processors.drummer.commands;
+package mugres.core.live.processor.drummer.commands;
 
 import mugres.core.common.Context;
-import mugres.core.live.processors.drummer.Drummer;
+import mugres.core.live.processor.drummer.Drummer;
 
 import java.util.Map;
 

@@ -1,12 +1,12 @@
-package mugres.core.live.processors.drummer.commands;
+package mugres.core.live.processor.drummer.commands;
 
 import mugres.core.common.Context;
-import mugres.core.live.processors.drummer.Drummer;
+import mugres.core.live.processor.drummer.Drummer;
 
 import java.util.Map;
 
-public class Finish implements Command {
-    private Finish() {}
+public class NoOp implements Command {
+    private NoOp() {}
 
     @Override
     public String getName() {
@@ -17,9 +17,9 @@ public class Finish implements Command {
     public void execute(final Context context,
                         final Drummer drummer,
                         final Map<String, Object> parameters) {
-        drummer.finish();
+        // Do nothing!
     }
 
-    public static final Finish INSTANCE = new Finish();
-    public static final String NAME = "Finish";
+    public static final NoOp INSTANCE = new NoOp();
+    public static final String NAME = "NoOp";
 }

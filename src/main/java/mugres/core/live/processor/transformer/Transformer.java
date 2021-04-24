@@ -1,15 +1,14 @@
-package mugres.core.live.processors.transformer;
+package mugres.core.live.processor.transformer;
 
 import mugres.core.common.Context;
 import mugres.core.common.Signal;
 import mugres.core.common.Signals;
 import mugres.core.common.io.Input;
 import mugres.core.common.io.Output;
-import mugres.core.live.processors.Processor;
-import mugres.core.live.processors.transformer.config.Configuration;
+import mugres.core.live.processor.Processor;
+import mugres.core.live.processor.transformer.config.Configuration;
 import mugres.core.filter.builtin.system.In;
 import mugres.core.filter.builtin.system.Out;
-import mugres.core.live.signaler.Signaler;
 
 public class Transformer extends Processor {
     private final Configuration config;

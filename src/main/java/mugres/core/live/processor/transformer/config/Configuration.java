@@ -1,4 +1,4 @@
-package mugres.core.live.processors.transformer.config;
+package mugres.core.live.processor.transformer.config;
 
 import mugres.core.filter.Filter;
 import mugres.core.live.signaler.Signaler;

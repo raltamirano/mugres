@@ -1,12 +1,11 @@
-package mugres.core.live.processors.drummer.commands;
+package mugres.core.live.processor.drummer.commands;
 
 import mugres.core.common.Context;
 import mugres.core.common.DrumKit;
-import mugres.core.live.processors.drummer.Drummer;
+import mugres.core.live.processor.drummer.Drummer;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import static mugres.core.utils.Randoms.RND;
 

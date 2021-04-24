@@ -1,4 +1,4 @@
-package mugres.core.live.processors;
+package mugres.core.live.processor;
 
 public class Status<T> {
     private final String text;
