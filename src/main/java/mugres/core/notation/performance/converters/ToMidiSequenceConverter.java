@@ -1,8 +1,8 @@
-package mugres.core.performance.converters;
+package mugres.core.notation.performance.converters;
 
 import mugres.core.common.Event;
-import mugres.core.performance.Control;
-import mugres.core.performance.Performance;
+import mugres.core.notation.performance.Control;
+import mugres.core.notation.performance.Performance;
 
 import javax.sound.midi.*;
 
@@ -22,7 +22,7 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
             for(Control.ControlEvent controlEvent : performance.getControlEvents())
                 setControlParameters(controlTrack, controlEvent);
 
-            for(mugres.core.performance.Track track : performance.getTracks()) {
+            for(mugres.core.notation.performance.Track track : performance.getTracks()) {
                 final Track midiTrack = sequence.createTrack();
                 setTrackName(midiTrack, track.getParty());
                 for(Event event : track.getEvents())

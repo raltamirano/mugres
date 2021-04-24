@@ -5,10 +5,10 @@ import mugres.core.function.Function;
 import mugres.core.function.builtin.random.Random;
 import mugres.core.notation.Section;
 import mugres.core.notation.Song;
-import mugres.core.performance.Performance;
-import mugres.core.performance.Performer;
-import mugres.core.performance.Track;
-import mugres.core.performance.converters.ToMidiSequenceConverter;
+import mugres.core.notation.performance.Performance;
+import mugres.core.notation.performance.Performer;
+import mugres.core.notation.performance.Track;
+import mugres.core.notation.performance.converters.ToMidiSequenceConverter;
 import org.junit.jupiter.api.Test;
 
 import javax.sound.midi.Sequence;

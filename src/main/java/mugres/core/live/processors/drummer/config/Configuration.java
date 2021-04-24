@@ -6,8 +6,8 @@ import mugres.core.function.Call;
 import mugres.core.function.Function.Parameter.Variant;
 import mugres.core.function.builtin.drums.PreRecordedDrums;
 import mugres.core.notation.Song;
-import mugres.core.performance.Performer;
-import mugres.core.performance.converters.ToMidiSequenceConverter;
+import mugres.core.notation.performance.Performer;
+import mugres.core.notation.performance.converters.ToMidiSequenceConverter;
 
 import javax.sound.midi.Sequence;
 import java.util.HashMap;

@@ -10,9 +10,9 @@ import mugres.core.function.Function;
 import mugres.core.notation.Section;
 import mugres.core.notation.Song;
 import mugres.core.notation.readers.JSONReader;
-import mugres.core.performance.Performance;
-import mugres.core.performance.Performer;
-import mugres.core.performance.converters.ToMidiSequenceConverter;
+import mugres.core.notation.performance.Performance;
+import mugres.core.notation.performance.Performer;
+import mugres.core.notation.performance.converters.ToMidiSequenceConverter;
 
 import javax.sound.midi.*;
 import java.io.File;

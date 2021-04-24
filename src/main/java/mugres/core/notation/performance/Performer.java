@@ -1,4 +1,4 @@
-package mugres.core.performance;
+package mugres.core.notation.performance;
 
 import mugres.core.common.Context;
 import mugres.core.common.Event;
