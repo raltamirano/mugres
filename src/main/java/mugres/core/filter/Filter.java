@@ -3,7 +3,6 @@ package mugres.core.filter;
 import mugres.core.common.*;
 import mugres.core.filter.builtin.arp.Arpeggiate;
 import mugres.core.filter.builtin.chords.Chorder;
-import mugres.core.filter.builtin.misc.Randomizer;
 import mugres.core.filter.builtin.misc.*;
 import mugres.core.filter.builtin.scales.ScaleEnforcer;
 import mugres.core.filter.builtin.system.Monitor;
@@ -172,13 +171,31 @@ public abstract class Filter {
         }
     }
 
-    protected static void addSignalEventListener(final SignalEventListener listener) {
+    public static void addSignalEventListener(final SignalEventListener listener) {
         SIGNAL_EVENT_LISTENERS.add(listener);
     }
 
-    private static UUID getOriginalEventId(final Signal signal) {
+    public static boolean isSignalActive(final Signal signal) {
+        return isSignalActive(signal.getChannel(), signal.getPlayed().getPitch());
+    }
+
+    public static boolean isSignalActive(final int channel, final Pitch pitch) {
+        return ACTIVE_SIGNALS.values().stream().filter(e -> e.getChannel() == channel && e.getPlayed().getPitch().equals(pitch))
+                .findAny().isPresent();
+    }
+
+    protected Signal getActiveSignal(final Signal signal) {
+        return getActiveSignal(signal.getChannel(), signal.getPlayed().getPitch());
+    }
+
+    protected Signal getActiveSignal(final int channel, final Pitch pitch) {
+        return ACTIVE_SIGNALS.values().stream().filter(e -> e.getChannel() == channel && e.getPlayed().getPitch().equals(pitch))
+                .findAny().orElse(null);
+    }
+
+    protected static UUID getOriginalEventId(final Signal signal) {
         return ACTIVE_SIGNALS.entrySet().stream()
-                .filter(e -> e.getValue().getPlayed().getPitch().equals(signal.getPlayed().getPitch()))
+                .filter(e -> e.getValue().getChannel() == signal.getChannel() && e.getValue().getPlayed().getPitch().equals(signal.getPlayed().getPitch()))
                 .findFirst()
                 .map(Map.Entry::getKey)
                 .orElse(null);

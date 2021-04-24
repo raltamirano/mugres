@@ -5,6 +5,7 @@ import mugres.core.filter.Filter;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static mugres.core.common.Note.BASE_OCTAVE;
 import static mugres.core.utils.Randoms.random;
@@ -25,6 +26,7 @@ public class Randomizer extends Filter {
         final int startingOctave = getStartingOctave(arguments);
         final int octaves = getOctaves(arguments);
         final Mode mode = getMode(arguments);
+        final boolean deactivationFollows = getDeactivationFollowsFlag(arguments);
 
         Scale scale = Scale.CHROMATIC;
         Note root = getRoot(context, arguments);
@@ -33,10 +35,36 @@ public class Randomizer extends Filter {
 
         final List<Pitch> availablePitches = scale.pitches(root, octaves, startingOctave);
         for(final Signal in : signals.signals()) {
-            result.add(in.modifiedPlayed(in.getPlayed().repitch(random(availablePitches))));
+            System.out.println(in);
+            if (in.isActive()) {
+                final Pitch newPitch = random(availablePitches);
+                result.add(in.modifiedPlayed(in.getPlayed().repitch(newPitch)));
+                if (deactivationFollows)
+                    RANDOMIZER_MAP.put(in.discriminator(), newPitch);
+            } else {
+                if (deactivationFollows) {
+                    final Pitch randomizedPitch = RANDOMIZER_MAP.remove(in.discriminator());
+                    if (randomizedPitch != null)
+                        result.add(in.modifiedPlayed(in.getPlayed().repitch(randomizedPitch)));
+                    else
+                        result.add(in.modifiedPlayed(in.getPlayed().repitch(random(availablePitches))));
+                } else {
+                    result.add(in.modifiedPlayed(in.getPlayed().repitch(random(availablePitches))));
+                }
+            }
         }
 
         return result;
+    }
+
+    private boolean getDeactivationFollowsFlag(final Map<String, Object> arguments) {
+        try {
+            return arguments.containsKey("deactivationFollows") ?
+                    Boolean.parseBoolean(arguments.get("deactivationFollows").toString()) :
+                    true;
+        }  catch (final Throwable ignore) {
+            return true;
+        }
     }
 
     private Scale getScale(final Context context, final Map<String, Object> arguments) {
@@ -87,4 +115,6 @@ public class Randomizer extends Filter {
         CHROMATIC,
         DIATONIC
     }
+
+    private static final Map<Integer, Pitch> RANDOMIZER_MAP = new ConcurrentHashMap<>();
 }

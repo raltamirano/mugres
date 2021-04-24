@@ -10,6 +10,9 @@ public class Pitch implements Comparable<Pitch> {
     private final int octave;
 
     private Pitch(final int midi, final Note note, final int octave) {
+        if (!isValidMidiNoteNumber(midi))
+            throw new IllegalArgumentException("Invalid Midi note number: " + midi);
+
         this.midi = midi;
         this.note = note;
         this.octave = octave;
@@ -20,12 +23,7 @@ public class Pitch implements Comparable<Pitch> {
     }
 
     public Pitch up(final int semitones) {
-        final int targetNote = this.midi + semitones;
-
-        if (!isValidMidiNoteNumber(midi))
-            throw new IllegalArgumentException("Invalid Midi note number: " + targetNote);
-
-        return of(targetNote);
+        return of(this.midi + semitones);
     }
 
     public Pitch down(final Interval interval) {
@@ -53,9 +51,6 @@ public class Pitch implements Comparable<Pitch> {
     }
 
     public synchronized static Pitch of(final int midi) {
-        if (!isValidMidiNoteNumber(midi))
-            throw new IllegalArgumentException("Invalid Midi note number: " + midi);
-
         if (!CACHE.containsKey(midi))
             CACHE.put(midi, new Pitch(midi, Note.of(midi % 12), (midi / 12) - 1));
 

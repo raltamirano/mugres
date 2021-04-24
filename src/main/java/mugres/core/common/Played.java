@@ -6,8 +6,15 @@ public class Played implements Cloneable {
     private int velocity;
 
     private Played(final Pitch pitch, final int velocity) {
+        if (velocity < 0 || velocity > 127)
+            throw new IllegalArgumentException("velocity");
+
         this.pitch = pitch;
         this.velocity = velocity;
+    }
+
+    public static Played of(final int packed) {
+        return of(Pitch.of(packed/1000), packed % 1000);
     }
 
     public static Played of(final Pitch pitch, final int velocity) {
@@ -44,6 +51,10 @@ public class Played implements Cloneable {
 
     public Played repitch(Pitch newPitch) {
         return of(newPitch, velocity);
+    }
+
+    public int pack() {
+        return pitch.getMidi() * 1000 + velocity;
     }
 
     @Override
