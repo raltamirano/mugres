@@ -3,7 +3,7 @@ package mugres.core.filter;
 import mugres.core.common.*;
 import mugres.core.filter.builtin.arp.Arpeggiate;
 import mugres.core.filter.builtin.chords.Chorder;
-import mugres.core.filter.builtin.misc.Random;
+import mugres.core.filter.builtin.misc.Randomizer;
 import mugres.core.filter.builtin.misc.*;
 import mugres.core.filter.builtin.scales.ScaleEnforcer;
 import mugres.core.filter.builtin.system.Monitor;
@@ -145,7 +145,7 @@ public abstract class Filter {
         new Ranges();
         new Clear();
         new Splitter();
-        new Random();
+        new Randomizer();
     }
 
     private static synchronized void register(final Filter filter) {

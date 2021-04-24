@@ -20,9 +20,16 @@ public class Monitor extends Filter {
 
     @Override
     protected Signals internalHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
-        signals.signals().forEach(e -> System.out.println(String.format("%s %s %s",
+        final boolean onlyActives = getOnlyActives(arguments);
+
+        (onlyActives ? signals.actives().signals() : signals.signals()).forEach(e -> System.out.println(String.format("%s %s %s",
                 TIME_FORMAT.format(new Date()), getLabel(arguments), e)));
         return signals;
+    }
+
+    private boolean getOnlyActives(final Map<String, Object> arguments) {
+        return arguments.containsKey("onlyActives") ?
+                Boolean.parseBoolean(arguments.get("onlyActives").toString()) : false;
     }
 
     private String getLabel(final Map<String, Object> arguments) {

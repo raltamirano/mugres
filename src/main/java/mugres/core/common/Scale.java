@@ -41,7 +41,13 @@ public enum Scale {
 
     MINOR_PENTATONIC("Minor Pentatonic",
             new int[]       {3, 2, 2, 3, 2},
-            new Type[]      {MINOR_7TH, MAJOR_7TH, MINOR_7TH, MINOR_7TH, DOMINANT_7TH});
+            new Type[]      {MINOR_7TH, MAJOR_7TH, MINOR_7TH, MINOR_7TH, DOMINANT_7TH}),
+
+    CHROMATIC("Chromatic",
+            new int[]       {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+            new Type[]      {POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD,
+                             POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD,
+                             POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD});
 
     private final String name;
     private final int[] intervals;

@@ -34,7 +34,7 @@ public class Transpose extends Filter {
     private int getSemitonesToTranspose(final Map<String, Object> arguments) {
         try {
             return arguments.containsKey("semitones") ?
-                    Integer.valueOf(arguments.get("semitones").toString()) :
+                    Double.valueOf(arguments.get("semitones").toString()).intValue() :
                     0;
         } catch (final Throwable ignore) {
             return 0;

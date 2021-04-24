@@ -7,8 +7,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
-import static mugres.core.common.Interval.MAJOR_THIRD;
-import static mugres.core.common.Interval.MINOR_THIRD;
+import static mugres.core.common.Interval.*;
 
 /**
  * Types of chords.
@@ -28,8 +27,9 @@ public enum Type {
     HALF_DIMINISHED("Half Diminished", asList("min7b5", "-7b5"), asList(MINOR_THIRD, MINOR_THIRD, MAJOR_THIRD)),
     MIN_MAJ_7TH("Minor/Major 7th", asList("min/maj7", "min(maj)7", "mi/MA7"), asList(MINOR_THIRD, MAJOR_THIRD, MAJOR_THIRD)),
     AUGMENTED_7TH("Augmented 7th", asList("maj7#5", "maj7(#5)", "maj+7"), asList(MAJOR_THIRD, MAJOR_THIRD, MINOR_THIRD)),
-    DIMINISHED_7TH("Diminished 7th", asList("dim7", "o7"), asList(MINOR_THIRD, MINOR_THIRD, MINOR_THIRD));
-
+    DIMINISHED_7TH("Diminished 7th", asList("dim7", "o7"), asList(MINOR_THIRD, MINOR_THIRD, MINOR_THIRD)),
+    POWER_CHORD("Power Chord", asList("5"), asList(PERFECT_FIFTH)),
+    POWER_CHORD_SUS3RD("Power Chord sus3", asList("5sus3"), asList(MAJOR_SECOND, MAJOR_SECOND));
 
     private final String name;
     private final List<String> abbreviations;
