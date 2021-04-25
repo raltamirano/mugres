@@ -12,6 +12,7 @@ public class Signaler {
     private final Configuration config;
     private Input target;
     private Frequency frequency;
+    private long duration;
 
     private Signaler(final Configuration config) {
         if (config == null)
@@ -36,6 +37,8 @@ public class Signaler {
         frequency = createFrequency(context);
         frequency.addListener(createFrequencyListener());
 
+        duration = getDuration(context);
+
         this.frequency.start();
     }
 
@@ -46,6 +49,19 @@ public class Signaler {
         } catch(final NumberFormatException e) {
             final Value value = Value.forId(config.getFrequency().getValue().toString());
             return Frequency.fixed(value, context.getTempo());
+        }
+    }
+
+    private long getDuration(final Context context) {
+        try {
+            return Long.parseLong(config.getDuration());
+        } catch(final NumberFormatException e) {
+            try {
+                final Value value = Value.forId(config.getDuration());
+                return value.length().toMillis(context.getTempo());
+            } catch (final Throwable ignore) {
+                return 500;
+            }
         }
     }
 
@@ -62,7 +78,7 @@ public class Signaler {
             config.getTags().forEach(on::addTag);
             target.send(on);
 
-            final Signal off = Signal.off(UUID.randomUUID(), now + 500, DEFAULT_CHANNEL,
+            final Signal off = Signal.off(UUID.randomUUID(), now + duration, DEFAULT_CHANNEL,
                     Played.of(Pitch.MIDDLE_C, 100));
             config.getTags().forEach(off::addTag);
             target.send(off);

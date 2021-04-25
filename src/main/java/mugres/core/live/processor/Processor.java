@@ -17,6 +17,7 @@ public abstract class Processor<S> {
     private final List<StatusListener> statusListeners = new ArrayList<>();
     private final Context context;
     private final List<Signaler> signalers;
+    private Input.Listener inputListener;
 
     protected Processor(final Context context,
                         final Input input,
@@ -26,16 +27,6 @@ public abstract class Processor<S> {
         this.input = input;
         this.output = output;
         this.signalers = signalers;
-
-        input.addListener(this::process);
-    }
-
-    public void process(final Signal signal) {
-        try {
-            doProcess(signal);
-        } catch (final Throwable t) {
-            t.printStackTrace();
-        }
     }
 
     public Context getContext() {
@@ -56,11 +47,18 @@ public abstract class Processor<S> {
 
     public void start() {
         onStart();
+
+        inputListener = createSignalListener();
+        input.addListener(inputListener);
+
         if (signalers != null) signalers.forEach(signaler -> signaler.start(context, input));
     }
 
     public void stop() {
         if (signalers != null) signalers.forEach(signaler -> signaler.stop(context));
+
+        input.removeListener(inputListener);
+
         onStop();
     }
 
@@ -76,6 +74,18 @@ public abstract class Processor<S> {
 
     protected void reportStatus(final String text, final S data) {
         statusListeners.forEach(l -> l.report(Status.of(text, data)));
+    }
+
+    private Input.Listener createSignalListener() {
+        return this::doProcess;
+    }
+
+    private void process(final Signal signal) {
+        try {
+            doProcess(signal);
+        } catch (final Throwable t) {
+            t.printStackTrace();
+        }
     }
 
     public interface StatusListener {

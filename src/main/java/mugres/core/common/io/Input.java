@@ -14,7 +14,13 @@ public abstract class Input {
     }
 
     public final void addListener(final Listener listener) {
-        listeners.add(listener);
+        if (listener != null)
+            listeners.add(listener);
+    }
+
+    public final void removeListener(final Listener listener) {
+        if (listener != null)
+            listeners.remove(listener);
     }
 
     public void send(final Signal signal) {

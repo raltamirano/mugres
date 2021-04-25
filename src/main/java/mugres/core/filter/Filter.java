@@ -5,7 +5,9 @@ import mugres.core.filter.builtin.arp.Arpeggiate;
 import mugres.core.filter.builtin.chords.Chorder;
 import mugres.core.filter.builtin.misc.*;
 import mugres.core.filter.builtin.scales.ScaleEnforcer;
+import mugres.core.filter.builtin.system.In;
 import mugres.core.filter.builtin.system.Monitor;
+import mugres.core.filter.builtin.system.Out;
 
 import java.util.*;
 
@@ -14,7 +16,6 @@ import static java.util.Collections.emptyMap;
 
 public abstract class Filter {
     private final String name;
-    private Filter next;
 
     protected Filter(final String name) {
         this.name = name;
@@ -148,6 +149,9 @@ public abstract class Filter {
     }
 
     private static synchronized void register(final Filter filter) {
+        if (filter instanceof In) return;
+        if (filter instanceof Out) return;
+
         final String name = filter.getName();
         if (REGISTRY.containsKey(name))
             throw new IllegalArgumentException("Already registered filter: " + name);
@@ -158,63 +162,40 @@ public abstract class Filter {
         return REGISTRY.get(name);
     }
 
-    public static void activateSignal(final Signal signal) {
-        ACTIVE_SIGNALS.put(signal.getEventId(), signal);
-        fireActivatedSignalNotification(signal.getEventId());
+    public static void activateSignal(final int channel, final Pitch pitch, final UUID eventId) {
+        SIGNALS[channel-1][pitch.getMidi()] = eventId;
+        fireActivatedSignalNotification(eventId, channel, pitch);
     }
 
-    public static void deactivateSignal(final Signal signal) {
-        final UUID originalEventId = getOriginalEventId(signal);
-        if (originalEventId != null) {
-            ACTIVE_SIGNALS.remove(originalEventId);
-            fireDeactivatedSignalNotification(originalEventId);
-        }
+    public static void deactivateSignal(final int channel, final Pitch pitch) {
+        final UUID originalEventId = SIGNALS[channel-1][pitch.getMidi()];
+        SIGNALS[channel-1][pitch.getMidi()] = null;
+        if (originalEventId != null)
+            fireDeactivatedSignalNotification(originalEventId, channel, pitch);
     }
 
     public static void addSignalEventListener(final SignalEventListener listener) {
         SIGNAL_EVENT_LISTENERS.add(listener);
     }
 
-    public static boolean isSignalActive(final Signal signal) {
-        return isSignalActive(signal.getChannel(), signal.getPlayed().getPitch());
-    }
-
     public static boolean isSignalActive(final int channel, final Pitch pitch) {
-        return ACTIVE_SIGNALS.values().stream().filter(e -> e.getChannel() == channel && e.getPlayed().getPitch().equals(pitch))
-                .findAny().isPresent();
+        return SIGNALS[channel-1][pitch.getMidi()] != null;
     }
 
-    protected Signal getActiveSignal(final Signal signal) {
-        return getActiveSignal(signal.getChannel(), signal.getPlayed().getPitch());
+    private static void fireActivatedSignalNotification(final UUID eventId, final int channel, final Pitch pitch) {
+        SIGNAL_EVENT_LISTENERS.forEach(l -> l.activated(eventId, channel, pitch));
     }
 
-    protected Signal getActiveSignal(final int channel, final Pitch pitch) {
-        return ACTIVE_SIGNALS.values().stream().filter(e -> e.getChannel() == channel && e.getPlayed().getPitch().equals(pitch))
-                .findAny().orElse(null);
+    private static void fireDeactivatedSignalNotification(final UUID eventId, final int channel, final Pitch pitch) {
+        SIGNAL_EVENT_LISTENERS.forEach(l -> l.deactivated(eventId, channel, pitch));
     }
 
-    protected static UUID getOriginalEventId(final Signal signal) {
-        return ACTIVE_SIGNALS.entrySet().stream()
-                .filter(e -> e.getValue().getChannel() == signal.getChannel() && e.getValue().getPlayed().getPitch().equals(signal.getPlayed().getPitch()))
-                .findFirst()
-                .map(Map.Entry::getKey)
-                .orElse(null);
-    }
-
-    private static void fireActivatedSignalNotification(final UUID activated) {
-        SIGNAL_EVENT_LISTENERS.forEach(l -> l.activated(activated));
-    }
-
-    private static void fireDeactivatedSignalNotification(final UUID deactivated) {
-        SIGNAL_EVENT_LISTENERS.forEach(l -> l.deactivated(deactivated));
-    }
-
-    private static final Map<UUID, Signal> ACTIVE_SIGNALS = new HashMap<>();
     private static final Set<SignalEventListener> SIGNAL_EVENT_LISTENERS = new HashSet<>();
+    private static final UUID[][] SIGNALS = new UUID[16][128];
 
     public interface SignalEventListener {
-        void activated(final UUID activated);
-        void deactivated(final UUID deactivated);
+        void activated(final UUID activated, final int channel, final Pitch pitch);
+        void deactivated(final UUID deactivated, final int channel, final Pitch pitch);
     }
 
     public static class SplitByTagsResult {

@@ -17,6 +17,7 @@ public class Fixed extends Frequency {
 
         this.millis = millis;
         worker = createWorkerThread();
+        worker.setDaemon(true);
     }
 
     public static Fixed of(final long millis) {
@@ -35,9 +36,9 @@ public class Fixed extends Frequency {
     @Override
     protected void onStop() {
         try {
+            worker.interrupt();
             worker.join();
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
+        } catch (final Throwable ignore) {
         }
     }
 

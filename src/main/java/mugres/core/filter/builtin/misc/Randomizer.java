@@ -35,7 +35,6 @@ public class Randomizer extends Filter {
 
         final List<Pitch> availablePitches = scale.pitches(root, octaves, startingOctave);
         for(final Signal in : signals.signals()) {
-            System.out.println(in);
             if (in.isActive()) {
                 final Pitch newPitch = random(availablePitches);
                 result.add(in.modifiedPlayed(in.getPlayed().repitch(newPitch)));

@@ -7,7 +7,7 @@ import javax.sound.midi.Receiver;
 public interface Output {
     void send(final Signal signal);
 
-    static Output midiSink(final Receiver midiOutputPort) {
+    static Output midiOutput(final Receiver midiOutputPort) {
         return new MidiOutput(midiOutputPort);
     }
 }
