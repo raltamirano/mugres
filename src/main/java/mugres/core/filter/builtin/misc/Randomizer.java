@@ -115,5 +115,5 @@ public class Randomizer extends Filter {
         DIATONIC
     }
 
-    private static final Map<Integer, Pitch> RANDOMIZER_MAP = new ConcurrentHashMap<>();
+    private final Map<Integer, Pitch> RANDOMIZER_MAP = new ConcurrentHashMap<>();
 }

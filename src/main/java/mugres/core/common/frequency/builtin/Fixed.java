@@ -46,7 +46,7 @@ public class Fixed extends Frequency {
         return new Thread(() -> {
             while(isRunning())
                 try {
-                    fireTick();
+                    fireTick(System.currentTimeMillis());
                 } catch (final Throwable ignore) {
                     // Do nothing
                 } finally {

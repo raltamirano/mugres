@@ -48,8 +48,8 @@ public abstract class Frequency {
         return Fixed.of(value, tempo);
     }
 
-    protected void fireTick() {
-        listeners.forEach(Listener::tick);
+    protected void fireTick(final long time) {
+        listeners.forEach(listener -> listener.tick(time));
     }
 
     protected abstract void onStart();
@@ -57,6 +57,6 @@ public abstract class Frequency {
     protected abstract void onStop();
 
     public interface Listener {
-        void tick();
+        void tick(final long time);
     }
 }

@@ -6,19 +6,29 @@ import mugres.core.common.frequency.builtin.Fixed;
 import mugres.core.common.io.Input;
 import mugres.core.live.signaler.config.Configuration;
 
+import java.util.PriorityQueue;
 import java.util.UUID;
+
+import static java.util.Comparator.comparingLong;
 
 public class Signaler {
     private final Configuration config;
     private Input target;
     private Frequency frequency;
     private long duration;
+    private final Thread worker;
+    private final PriorityQueue<Signal> queue;
 
     private Signaler(final Configuration config) {
         if (config == null)
             throw new IllegalArgumentException("config");
 
         this.config = config;
+
+        queue = new PriorityQueue<>(comparingLong(Signal::getTime));
+        worker = createWorkerThread();
+        worker.setDaemon(true);
+        worker.start();
     }
 
     public static Signaler forConfig(final Configuration config) {
@@ -69,19 +79,41 @@ public class Signaler {
         frequency.stop();
     }
 
-    private Frequency.Listener createFrequencyListener() {
-        return () -> {
-            final long now = System.currentTimeMillis();
+    private Thread createWorkerThread() {
+        return new Thread(() -> {
+            while(true)
+                try {
+                    if(!queue.isEmpty()) {
+                        long now = System.currentTimeMillis();
+                        boolean run = true;
+                        while(run) {
+                            if (queue.peek().getTime() <= now) {
+                                target.send(queue.remove());
+                                run = !queue.isEmpty();
+                            } else {
+                                run = false;
+                            }
+                        }
+                    }
+                } catch (final Throwable ignore) {
+                    // Do nothing!
+                } finally {
+                    try { Thread.sleep(1); } catch (final Throwable ignore) {}
+                }
+        });
+    }
 
+    private Frequency.Listener createFrequencyListener() {
+        return now -> {
             final Signal on = Signal.on(UUID.randomUUID(), now, DEFAULT_CHANNEL,
                     Played.of(Pitch.MIDDLE_C, 100));
             config.getTags().forEach(on::addTag);
-            target.send(on);
+            queue.add(on);
 
             final Signal off = Signal.off(UUID.randomUUID(), now + duration, DEFAULT_CHANNEL,
                     Played.of(Pitch.MIDDLE_C, 100));
             config.getTags().forEach(off::addTag);
-            target.send(off);
+            queue.add(off);
         };
     }
 

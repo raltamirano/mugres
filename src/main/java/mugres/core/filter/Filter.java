@@ -178,20 +178,27 @@ public abstract class Filter {
         SIGNAL_EVENT_LISTENERS.add(listener);
     }
 
+    public static boolean isEventActive(final UUID eventId) {
+        return ACTIVE_EVENTS.contains(eventId);
+    }
+
     public static boolean isSignalActive(final int channel, final Pitch pitch) {
         return SIGNALS[channel-1][pitch.getMidi()] != null;
     }
 
     private static void fireActivatedSignalNotification(final UUID eventId, final int channel, final Pitch pitch) {
+        ACTIVE_EVENTS.add(eventId);
         SIGNAL_EVENT_LISTENERS.forEach(l -> l.activated(eventId, channel, pitch));
     }
 
     private static void fireDeactivatedSignalNotification(final UUID eventId, final int channel, final Pitch pitch) {
+        ACTIVE_EVENTS.remove(eventId);
         SIGNAL_EVENT_LISTENERS.forEach(l -> l.deactivated(eventId, channel, pitch));
     }
 
     private static final Set<SignalEventListener> SIGNAL_EVENT_LISTENERS = new HashSet<>();
     private static final UUID[][] SIGNALS = new UUID[16][128];
+    private static final Set<UUID> ACTIVE_EVENTS = new HashSet<>();
 
     public interface SignalEventListener {
         void activated(final UUID activated, final int channel, final Pitch pitch);
