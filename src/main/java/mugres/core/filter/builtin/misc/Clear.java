@@ -7,17 +7,24 @@ import mugres.core.filter.Filter;
 import java.util.Map;
 
 public class Clear extends Filter {
-    public Clear() {
-        super("Clear");
+    public static final String NAME = "Clear";
+
+    public Clear(final Map<String, Object> arguments) {
+        super(arguments);
     }
 
     @Override
-    protected boolean internalCanHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    protected boolean internalCanHandle(final Context context, final Signals signals) {
         return true;
     }
 
     @Override
-    protected Signals internalHandle(Context context, Signals signals, Map<String, Object> arguments) {
+    protected Signals internalHandle(final Context context, final Signals signals) {
         return Signals.create();
     }
 }

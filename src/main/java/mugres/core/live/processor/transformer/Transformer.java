@@ -5,6 +5,7 @@ import mugres.core.common.Signal;
 import mugres.core.common.Signals;
 import mugres.core.common.io.Input;
 import mugres.core.common.io.Output;
+import mugres.core.filter.Filter;
 import mugres.core.filter.builtin.system.In;
 import mugres.core.filter.builtin.system.Out;
 import mugres.core.live.processor.Processor;
@@ -43,8 +44,8 @@ public class Transformer extends Processor {
         signals = in.accept(getContext(), signals);
 
         // Pass through every user-defined filter
-        for(Configuration.FilterEntry entry : config.getFilters())
-            signals = entry.getFilter().accept(getContext(), signals, entry.getArgs());
+        for(final Filter filter : config.getFilters())
+            signals = filter.accept(getContext(), signals);
 
         // Pass through output filter
         out.accept(getContext(), signals);

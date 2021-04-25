@@ -9,17 +9,24 @@ import java.util.Date;
 import java.util.Map;
 
 public class Monitor extends Filter {
-    public Monitor() {
-        super("Monitor");
+    public static final String NAME = "Monitor";
+
+    public Monitor(final Map<String, Object> arguments) {
+        super(arguments);
     }
 
     @Override
-    protected boolean internalCanHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    protected boolean internalCanHandle(final Context context, final Signals signals) {
         return true;
     }
 
     @Override
-    protected Signals internalHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    protected Signals internalHandle(final Context context, final Signals signals) {
         final boolean onlyActives = getOnlyActives(arguments);
 
         (onlyActives ? signals.actives().signals() : signals.signals()).forEach(e -> System.out.println(String.format("%s %s %s",

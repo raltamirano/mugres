@@ -11,17 +11,24 @@ import java.util.Map;
 import static mugres.core.common.Pitch.isValidMidiNoteNumber;
 
 public class Transpose extends Filter {
-    public Transpose() {
-        super("Transpose");
+    public static final String NAME = "Transpose";
+
+    public Transpose(final Map<String, Object> arguments) {
+        super(arguments);
     }
 
     @Override
-    protected boolean internalCanHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    protected boolean internalCanHandle(final Context context, final Signals signals) {
         return true;
     }
 
     @Override
-    protected Signals internalHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    protected Signals internalHandle(final Context context, final Signals signals) {
         final Signals result = Signals.create();
         final int semitones = getSemitonesToTranspose(arguments);
 

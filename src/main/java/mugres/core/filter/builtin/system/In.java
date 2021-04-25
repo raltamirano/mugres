@@ -6,17 +6,26 @@ import mugres.core.common.Signals;
 import mugres.core.common.io.Input;
 import mugres.core.filter.Filter;
 
+import java.util.Collections;
 import java.util.Map;
 
+import static java.util.Collections.emptyMap;
+
 public final class In extends Filter {
+    public static final String NAME = "In";
     private final Context context;
     private final Input input;
 
     public In(final Context context, final Input input) {
-        super("In");
+        super(emptyMap());
 
         this.context = context;
         this.input = input;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Input getInput() {
@@ -24,12 +33,12 @@ public final class In extends Filter {
     }
 
     @Override
-    protected boolean internalCanHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    protected boolean internalCanHandle(final Context context, final Signals signals) {
         return true;
     }
 
     @Override
-    protected Signals internalHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    protected Signals internalHandle(final Context context, final Signals signals) {
         updateSignalsState(signals);
         return signals;
     }

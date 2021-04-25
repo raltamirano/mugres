@@ -7,20 +7,21 @@ import mugres.core.common.Signals;
 import mugres.core.common.io.Output;
 import mugres.core.filter.Filter;
 
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.UUID;
 
+import static java.util.Collections.emptyMap;
 import static java.util.Comparator.comparingLong;
 
 public final class Out extends Filter {
+    private static final String NAME = "Out";
     private final Context context;
     private final Output output;
     private final Thread worker;
     private final PriorityQueue<Signal> queue;
 
     public Out(final Context context, final Output output) {
-        super("Out");
+        super(emptyMap());
 
         this.context = context;
         this.output = output;
@@ -33,13 +34,19 @@ public final class Out extends Filter {
         addSignalEventListener(createSignalEventListener());
     }
 
+
     @Override
-    protected boolean internalCanHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    protected boolean internalCanHandle(final Context context, final Signals signals) {
         return true;
     }
 
     @Override
-    protected Signals internalHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    protected Signals internalHandle(final Context context, final Signals signals) {
         final long now = System.currentTimeMillis();
 
         for(Signal e : signals.signals())

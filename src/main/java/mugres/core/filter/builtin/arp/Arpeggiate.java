@@ -15,19 +15,26 @@ import java.util.regex.Pattern;
 import static mugres.core.utils.Randoms.random;
 
 public class Arpeggiate extends Filter {
-    public Arpeggiate() {
-        super("Arpeggiate");
+    public static final String NAME = "Arpeggiate";
+
+    public Arpeggiate(final Map<String, Object> arguments) {
+        super(arguments);
     }
 
     @Override
-    protected boolean internalCanHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    protected boolean internalCanHandle(final Context context, final Signals signals) {
         return !signals.actives().isEmpty();
     }
 
     @Override
-    protected Signals internalHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    protected Signals internalHandle(final Context context, final Signals signals) {
         final Signals result = Signals.create();
-        final List<ArpEntry> pattern = getPattern(context, arguments);
+        final List<ArpEntry> pattern = getPattern(context);
         final Signals actives = signals.actives();
 
         long startTime = actives.first().getTime();
@@ -60,9 +67,9 @@ public class Arpeggiate extends Filter {
         return result;
     }
 
-    private static List<ArpEntry> getPattern(final Context context, final Map<String, Object> arguments) {
+    private List<ArpEntry> getPattern(final Context context) {
         final List<ArpEntry> pattern = new ArrayList<>();
-        final Value defaultValue = getTimeSignature(context, arguments).getDenominator();
+        final Value defaultValue = getTimeSignature(context).getDenominator();
 
         final Matcher matcher = ARP_PATTERN.matcher(arguments.get("pattern").toString());
 
@@ -71,13 +78,13 @@ public class Arpeggiate extends Filter {
             final String duration = matcher.group(3);
             final ArpEntry.Type type = getArpEntryType(note);
             pattern.add(ArpEntry.of(type, type == ArpEntry.Type.NOTE ? Integer.valueOf(note) : null,
-                    parseEntryDuration(context, arguments, defaultValue, duration)));
+                    parseEntryDuration(context, defaultValue, duration)));
         }
 
         return pattern;
     }
 
-    private static ArpEntry.Type getArpEntryType(final String input) {
+    private ArpEntry.Type getArpEntryType(final String input) {
         switch (input) {
             case REST: return ArpEntry.Type.REST;
             case RANDOM_NOTE: return ArpEntry.Type.RANDOM;
@@ -85,12 +92,12 @@ public class Arpeggiate extends Filter {
         }
     }
 
-    private static long parseEntryDuration(final Context context, final Map<String, Object> arguments,
+    private long parseEntryDuration(final Context context,
                                            final Value defaultValue, final String input) {
         if (input != null && input.trim().endsWith(MILLIS))
             return Long.parseLong(input.substring(0, input.length() - MILLIS.length()));
 
-        final int bpm = getTempo(context, arguments);
+        final int bpm = getTempo(context);
         final Value value  = parseNoteValue(input, defaultValue);
 
         return value.length().toMillis(bpm);

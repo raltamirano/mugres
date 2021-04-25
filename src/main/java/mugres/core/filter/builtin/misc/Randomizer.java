@@ -11,17 +11,24 @@ import static mugres.core.common.Note.BASE_OCTAVE;
 import static mugres.core.utils.Randoms.random;
 
 public class Randomizer extends Filter {
-    public Randomizer() {
-        super("Randomizer");
+    public static final String NAME = "Randomizer";
+
+    public Randomizer(final Map<String, Object> arguments) {
+        super(arguments);
     }
 
     @Override
-    protected boolean internalCanHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    protected boolean internalCanHandle(final Context context, final Signals signals) {
         return true;
     }
 
     @Override
-    protected Signals internalHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    protected Signals internalHandle(final Context context, final Signals signals) {
         final Signals result = Signals.create();
         final int startingOctave = getStartingOctave(arguments);
         final int octaves = getOctaves(arguments);

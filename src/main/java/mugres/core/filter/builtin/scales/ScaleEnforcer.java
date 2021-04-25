@@ -8,17 +8,24 @@ import java.util.Map;
 import java.util.Random;
 
 public class ScaleEnforcer extends Filter {
-    public ScaleEnforcer() {
-        super("ScaleEnforcer");
+    public static final String NAME = "ScaleEnforcer";
+
+    public ScaleEnforcer(final Map<String, Object> arguments) {
+        super(arguments);
     }
 
     @Override
-    protected boolean internalCanHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    protected boolean internalCanHandle(final Context context, final Signals signals) {
         return true;
     }
 
     @Override
-    protected Signals internalHandle(final Context context, final  Signals signals, final Map<String, Object> arguments) {
+    protected Signals internalHandle(final Context context, final  Signals signals) {
         final Signals result = Signals.create();
         final List<Note> scaleNotes = getScaleNotes(context, arguments);
         final CorrectionMode correctionMode = getCorrectionMode(arguments);

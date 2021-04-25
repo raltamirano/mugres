@@ -8,21 +8,26 @@ import mugres.core.filter.Filter;
 import java.util.*;
 
 public class Latch extends Filter {
+    public static final String NAME = "Latch";
     private String lastLatched = null;
     private final List<Signal> latchedSignals = new ArrayList<>();
 
-
-    public Latch() {
-        super("Latch");
+    public Latch(final Map<String, Object> arguments) {
+        super(arguments);
     }
 
     @Override
-    protected boolean internalCanHandle(Context context, Signals signals, Map<String, Object> arguments) {
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    protected boolean internalCanHandle(final Context context, final Signals signals) {
         return true;
     }
 
     @Override
-    protected Signals internalHandle(Context context, Signals signals, Map<String, Object> arguments) {
+    protected Signals internalHandle(final Context context, final Signals signals) {
         final Signals result = Signals.create();
         final String latchKey = latchKey(signals);
 

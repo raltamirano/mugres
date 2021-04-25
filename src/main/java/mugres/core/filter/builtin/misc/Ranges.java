@@ -16,17 +16,24 @@ import java.util.regex.Pattern;
 import static java.util.Collections.emptyList;
 
 public class Ranges extends Filter {
-    public Ranges() {
-        super("Ranges");
+    public static final String NAME = "Ranges";
+
+    public Ranges(final Map<String, Object> arguments) {
+        super(arguments);
     }
 
     @Override
-    protected boolean internalCanHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    protected boolean internalCanHandle(final Context context, final Signals signals) {
         return true;
     }
 
     @Override
-    protected Signals internalHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    protected Signals internalHandle(final Context context, final Signals signals) {
         final List<Range> ranges = getRanges(arguments);
 
         for(final Signal in : signals.signals()) {

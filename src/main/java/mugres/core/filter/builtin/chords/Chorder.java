@@ -14,19 +14,25 @@ import static mugres.core.common.chords.Type.CUSTOM;
 import static mugres.core.utils.Randoms.random;
 
 public class Chorder extends Filter {
+    public static final String NAME = "Chorder";
     private static final int DEFAULT_NUMBER_OF_NOTES = 3;
 
-    public Chorder() {
-        super("Chorder");
+    public Chorder(final Map<String, Object> arguments) {
+        super(arguments);
     }
 
     @Override
-    protected boolean internalCanHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    protected boolean internalCanHandle(final Context context, final Signals signals) {
         return true;
     }
 
     @Override
-    protected Signals internalHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    protected Signals internalHandle(final Context context, final Signals signals) {
         final Signals result = Signals.create();
 
         for(final Signal in : signals.signals()) {
@@ -34,7 +40,7 @@ public class Chorder extends Filter {
             final List<Pitch> chordPitches;
             switch (getChordMode(arguments)) {
                 case DIATONIC:
-                    final Key key = getKey(context, arguments);
+                    final Key key = getKey(context);
                     if (key.notes().contains(in.getPlayed().getPitch().getNote())) {
                         final int numberOfNotes = getNumberOfNotes(arguments);
                         chordPitches = key.chord(in.getPlayed().getPitch(), numberOfNotes);

@@ -5,9 +5,7 @@ import mugres.core.filter.builtin.arp.Arpeggiate;
 import mugres.core.filter.builtin.chords.Chorder;
 import mugres.core.filter.builtin.misc.*;
 import mugres.core.filter.builtin.scales.ScaleEnforcer;
-import mugres.core.filter.builtin.system.In;
 import mugres.core.filter.builtin.system.Monitor;
-import mugres.core.filter.builtin.system.Out;
 
 import java.util.*;
 
@@ -15,23 +13,19 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 
 public abstract class Filter {
-    private final String name;
+    protected final Map<String, Object> arguments;
 
-    protected Filter(final String name) {
-        this.name = name;
-
-        register(this);
+    protected Filter(final Map<String, Object> arguments) {
+        this.arguments = arguments == null ? emptyMap() : arguments;
     }
 
-    public String getName() {
-        return name;
-    }
+    public abstract String getName();
 
-    protected abstract boolean internalCanHandle(final Context context, final Signals signals, final Map<String, Object> arguments);
+    protected abstract boolean internalCanHandle(final Context context, final Signals signals);
 
-    protected abstract Signals internalHandle(final Context context, final Signals signals, final Map<String, Object> arguments);
+    protected abstract Signals internalHandle(final Context context, final Signals signals);
 
-    protected static int getTempo(final Context context, final Map<String, Object> arguments) {
+    protected int getTempo(final Context context) {
         try {
             final Integer tempo = arguments.containsKey("tempo") ?
                     Integer.valueOf(arguments.get("tempo").toString()) :
@@ -45,7 +39,7 @@ public abstract class Filter {
         }
     }
 
-    protected static Key getKey(final Context context, final Map<String, Object> arguments) {
+    protected Key getKey(final Context context) {
         try {
             return arguments.containsKey("key") ?
                     Key.fromLabel(arguments.get("key").toString()) :
@@ -55,7 +49,7 @@ public abstract class Filter {
         }
     }
 
-    protected static TimeSignature getTimeSignature(final Context context, final Map<String, Object> arguments) {
+    protected TimeSignature getTimeSignature(final Context context) {
         try {
             return arguments.containsKey("timeSignature") ?
                     TimeSignature.of(arguments.get("timeSignature").toString()) :
@@ -65,19 +59,19 @@ public abstract class Filter {
         }
     }
 
-    public boolean canHandle(final Context context, final Signals signals, final Map<String, Object> arguments) {
-        final boolean tagFilter = checkTagFilter(context, signals, arguments);
-        return tagFilter && internalCanHandle(context, signals, arguments);
+    public boolean canHandle(final Context context, final Signals signals) {
+        final boolean tagFilter = checkTagFilter(context, signals);
+        return tagFilter && internalCanHandle(context, signals);
     }
 
-    public Signals handle(final Context context, final Signals signals, final Map<String, Object> arguments) {
-        final SplitByTagsResult splitByTagsResult = splitByTags(signals, arguments);
-        final Signals handledSignals = internalHandle(context, splitByTagsResult.getInside(), arguments);
+    public Signals handle(final Context context, final Signals signals) {
+        final SplitByTagsResult splitByTagsResult = splitByTags(signals);
+        final Signals handledSignals = internalHandle(context, splitByTagsResult.getInside());
         handledSignals.addAll(splitByTagsResult.getOutside());
         return handledSignals;
     }
 
-    private boolean checkTagFilter(final Context context, final Signals signals, final Map<String, Object> arguments) {
+    private boolean checkTagFilter(final Context context, final Signals signals) {
         try {
             if (!arguments.containsKey(TAG_FILTER))
                 return true;
@@ -94,7 +88,7 @@ public abstract class Filter {
         }
     }
 
-    private SplitByTagsResult splitByTags(final Signals signals, final Map<String, Object> arguments) {
+    private SplitByTagsResult splitByTags(final Signals signals) {
         try {
             if (!arguments.containsKey(TAG_FILTER))
                 return SplitByTagsResult.of(signals, Signals.create());
@@ -123,43 +117,43 @@ public abstract class Filter {
     }
 
     public final Signals accept(final Context context, final Signals signals) {
-        return accept(context, signals, emptyMap());
+        return canHandle(context, signals) ?
+                handle(context, signals) : signals;
     }
 
-    public final Signals accept(final Context context, final Signals signals, final Map<String, Object> arguments) {
-        return canHandle(context, signals, arguments == null ? emptyMap() : arguments) ?
-                handle(context, signals, arguments == null ? emptyMap() : arguments) : signals;
-    }
-
-    private static final Map<String, Filter> REGISTRY = new HashMap<>();
+    private static final Map<String, Class<? extends Filter>> REGISTRY = new HashMap<>();
     private static final String TAG_FILTER = "onlyForTags";
     private static final String TAG_FILTER_SEPARATOR = ",";
 
     static {
-        new Monitor();
-        new ScaleEnforcer();
-        new Chorder();
-        new Latch();
-        new Arpeggiate();
-        new Transpose();
-        new Ranges();
-        new Clear();
-        new Splitter();
-        new Randomizer();
+        register(Monitor.NAME, Monitor.class);
+        register(ScaleEnforcer.NAME, ScaleEnforcer.class);
+        register(Chorder.NAME, Chorder.class);
+        register(Latch.NAME, Latch.class);
+        register(Arpeggiate.NAME, Arpeggiate.class);
+        register(Transpose.NAME, Transpose.class);
+        register(Ranges.NAME, Ranges.class);
+        register(Clear.NAME, Clear.class);
+        register(Splitter.NAME, Splitter.class);
+        register(Randomizer.NAME, Randomizer.class);
     }
 
-    private static synchronized void register(final Filter filter) {
-        if (filter instanceof In) return;
-        if (filter instanceof Out) return;
-
-        final String name = filter.getName();
-        if (REGISTRY.containsKey(name))
-            throw new IllegalArgumentException("Already registered filter: " + name);
-        REGISTRY.put(name, filter);
+    public static synchronized void register(final String name, final Class<? extends Filter> clazz) {
+                if (REGISTRY.containsKey(name))
+            throw new IllegalArgumentException("Already registered filter class: " + name);
+        REGISTRY.put(name, clazz);
     }
 
-    public static Filter forName(final String name) {
-        return REGISTRY.get(name);
+    public static Filter of(final String name) {
+        return of(name, emptyMap());
+    }
+
+    public static Filter of(final String name, final Map<String, Object> arguments) {
+        try {
+            return REGISTRY.get(name).getDeclaredConstructor(Map.class).newInstance(arguments);
+        } catch (final Throwable t) {
+            throw new RuntimeException(t);
+        }
     }
 
     public static void activateSignal(final int channel, final Pitch pitch, final UUID eventId) {
