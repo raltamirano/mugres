@@ -314,6 +314,8 @@ public abstract class Function<T> {
             NOTE,
             /** {@link Pitch} */
             PITCH,
+            /** {@link Scale} */
+            SCALE,
             /** Plain text */
             TEXT,
             /** Integer numbers */

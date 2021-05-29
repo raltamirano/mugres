@@ -107,6 +107,9 @@ public class Call<T> {
                     case PITCH:
                         argument = Pitch.of(Integer.parseInt(argumentString));
                         break;
+                    case SCALE:
+                        argument = Scale.of(argumentString);
+                        break;
                     case TEXT:
                         if (!argumentString.startsWith("'") || !argumentString.endsWith("'"))
                             throw new IllegalArgumentException("TEXT function parameter's values must be " +
