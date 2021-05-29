@@ -11,6 +11,15 @@ import static javax.sound.midi.ShortMessage.NOTE_OFF;
 import static javax.sound.midi.ShortMessage.NOTE_ON;
 
 public class ToMidiSequenceConverter implements Converter<Sequence> {
+    private static final ToMidiSequenceConverter INSTANCE = new ToMidiSequenceConverter();
+
+    private ToMidiSequenceConverter() {
+    }
+
+    public static ToMidiSequenceConverter getInstance() {
+        return INSTANCE;
+    }
+
     @Override
     public Sequence convert(final Performance performance) {
         try {
@@ -47,7 +56,7 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
         final long ticks = controlEvent.getPosition().toPPQTicks(PPQ_RESOLUTION);
 
         // Tempo
-        int mpq = (int)(60_000_000 / controlEvent.getControl().getTempo());
+        int mpq = (60_000_000 / controlEvent.getControl().getTempo());
         final MetaMessage tempoMessage = new MetaMessage();
         tempoMessage.setMessage(0x51, new byte[] {
                 (byte)(mpq>>16 & 0xff),
@@ -81,7 +90,7 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
     private void setTrackName(final Track midiTrack, final String name)
             throws InvalidMidiDataException {
         final MetaMessage metaMessage = new MetaMessage(0x03, name.getBytes(), name.length());
-        midiTrack.add(new MidiEvent(metaMessage, (long) 0));
+        midiTrack.add(new MidiEvent(metaMessage, 0L));
     }
 
     private void addNoteEvent(final Track midiTrack, final int channel, Event event)

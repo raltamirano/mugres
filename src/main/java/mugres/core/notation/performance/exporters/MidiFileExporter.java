@@ -21,9 +21,8 @@ public class MidiFileExporter implements Exporter {
     @Override
     public void export(final Performance performance, final File outputFile)
         throws IOException {
-        MidiSystem.write(CONVERTER.convert(performance), midiFileType, outputFile);
+        MidiSystem.write(ToMidiSequenceConverter.getInstance().convert(performance), midiFileType, outputFile);
     }
 
     private static final int MIDI_FILE_TYPE_1 = 1;
-    private static final ToMidiSequenceConverter CONVERTER = new ToMidiSequenceConverter();
 }

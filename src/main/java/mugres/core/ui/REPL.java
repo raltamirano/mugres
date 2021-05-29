@@ -9,10 +9,10 @@ import mugres.core.function.Call;
 import mugres.core.function.Function;
 import mugres.core.notation.Section;
 import mugres.core.notation.Song;
-import mugres.core.notation.readers.JSONReader;
 import mugres.core.notation.performance.Performance;
 import mugres.core.notation.performance.Performer;
 import mugres.core.notation.performance.converters.ToMidiSequenceConverter;
+import mugres.core.notation.readers.JSONReader;
 
 import javax.sound.midi.*;
 import java.io.File;
@@ -34,7 +34,6 @@ public class REPL {
 
     private static final Map<String, java.util.function.Function<String[], Boolean>> HANDLERS = new HashMap<>();
     private static final JSONReader SONG_JSON_READER = new JSONReader();
-    private static final ToMidiSequenceConverter TO_MIDI_SEQUENCE_CONVERTER = new ToMidiSequenceConverter();
     private static FileWatcher songFileWatcher = null;
 
     public static void main(String[] args) {
@@ -297,7 +296,7 @@ public class REPL {
 
     private static void doPlaySong() {
         final Performance performance = Performer.perform(song);
-        final Sequence songMidiSequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
+        final Sequence songMidiSequence = ToMidiSequenceConverter.getInstance().convert(performance);
         playMidiSequence(songMidiSequence, false);
     }
 
@@ -313,7 +312,7 @@ public class REPL {
 
     private static Sequence createSectionSongMidiSequence(String sectionName) {
         final Performance performance = Performer.perform(song.createSectionSong(sectionName));
-        return TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
+        return ToMidiSequenceConverter.getInstance().convert(performance);
     }
 
     private static boolean sections(final String[] args) {
@@ -420,7 +419,7 @@ public class REPL {
 
             if (functionCallSong != null) {
                 final Performance performance = Performer.perform(functionCallSong);
-                final Sequence songMidiSequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
+                final Sequence songMidiSequence = ToMidiSequenceConverter.getInstance().convert(performance);
                 playMidiSequence(songMidiSequence, false);
             }
         }

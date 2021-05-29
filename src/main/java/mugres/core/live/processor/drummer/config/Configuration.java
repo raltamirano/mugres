@@ -104,7 +104,7 @@ public class Configuration {
 
     private Sequence generateSequence(final Context context, final PreRecordedDrums generator,
                                       final Map<String, Object> arguments) {
-        final Sequence sequence = CONVERTER.convert(Performer
+        final Sequence sequence = ToMidiSequenceConverter.getInstance().convert(Performer
                 .perform(Song.of(context, DRUMS.getParty(), Call.of(generator, arguments))));
 
         // Remove control track
@@ -134,6 +134,4 @@ public class Configuration {
     public Action getAction(final int midi) {
         return actions.get(midi);
     }
-
-    private static final ToMidiSequenceConverter CONVERTER = new ToMidiSequenceConverter();
 }

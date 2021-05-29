@@ -39,8 +39,7 @@ public class ConvertToMidiTests {
         assertEquals(8, track.getEvents().size());
 
         // Conversion
-        final ToMidiSequenceConverter converter = new ToMidiSequenceConverter();
-        final Sequence sequence = converter.convert(performance);
+        final Sequence sequence = ToMidiSequenceConverter.getInstance().convert(performance);
 
         assertNotNull(sequence);
         // # tracks for a type 1 Midi file = one for control of tempo, key, etc + one per party
