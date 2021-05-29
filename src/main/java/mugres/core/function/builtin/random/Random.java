@@ -7,20 +7,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static mugres.core.common.Note.BASE_OCTAVE;
+import static mugres.core.common.Note.C;
+import static mugres.core.common.Scale.MINOR_PENTATONIC;
 import static mugres.core.common.Value.QUARTER;
-import static mugres.core.function.Function.Parameter.DataType.INTEGER;
-import static mugres.core.function.Function.Parameter.DataType.VALUE;
+import static mugres.core.function.Function.Parameter.DataType.*;
 import static mugres.core.utils.Randoms.RND;
 
 public class Random extends EventsFunction {
     public Random() {
         super("random", "Generates random pitches",
                 Parameter.of("startingOctave", "Starting octave",
-                        INTEGER, true, 3),
+                        INTEGER, true, BASE_OCTAVE),
                 Parameter.of("octavesToGenerate", "Octaves to generate",
                         INTEGER, true, 2),
                 Parameter.of("noteValue", "Note value",
-                        VALUE, true, QUARTER)
+                        VALUE, true, QUARTER),
+                Parameter.of("scale", "Scale to pick notes from",
+                        SCALE, true, MINOR_PENTATONIC),
+                Parameter.of("root", "Scale root",
+                        NOTE, true, C)
         );
     }
 
@@ -29,9 +35,11 @@ public class Random extends EventsFunction {
         final List<Event> events = new ArrayList<>();
         final Length length = lengthFromNumberOfMeasures(context, arguments);
         final Value noteValue = (Value)arguments.get("noteValue");
+        final Scale scale = (Scale)arguments.get("scale");
+        final Note root = (Note)arguments.get("root");
         final int startingOctave = (int)arguments.get("startingOctave");
         final int octavesToGenerate = (int)arguments.get("octavesToGenerate");
-        final List<Pitch> pitches = Scale.MAJOR_PENTATONIC.pitches(Note.C, octavesToGenerate, startingOctave);
+        final List<Pitch> pitches = scale.pitches(root, octavesToGenerate, startingOctave);
 
         Length actualPosition = Length.ZERO;
         while(actualPosition.getLength() < length.getLength()) {
