@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
 
+import static mugres.core.utils.Randoms.RND;
+
 public class REPL {
     private static File songFile;
     private static Song song;
@@ -55,9 +57,11 @@ public class REPL {
     }
 
     private static void loadCommandHandlers() {
+        HANDLERS.put("help", REPL::help);
         HANDLERS.put("status", REPL::status);
         HANDLERS.put("load-song", REPL::loadSong);
         HANDLERS.put("play-song", REPL::playSong);
+        HANDLERS.put("random-song", REPL::randomSong);
         HANDLERS.put("sections", REPL::sections);
         HANDLERS.put("play-section", REPL::playSection);
         HANDLERS.put("loop-section", REPL::loopSection);
@@ -101,6 +105,20 @@ public class REPL {
             System.out.println("Unknown command: " + command);
             return true;
         }
+    }
+
+    private static boolean help(final String[] args) {
+        if (args.length != 1) {
+            System.out.println(args[0] + ": no arguments expected");
+        } else {
+            System.out.println("Available commands:");
+            final List<String> commandNames = new ArrayList<>(HANDLERS.keySet());
+            Collections.sort(commandNames);
+            for(String name : commandNames)
+                System.out.println(String.format("\t%s", name));
+        }
+
+        return true;
     }
 
     private static boolean status(final String[] args) {
@@ -196,9 +214,46 @@ public class REPL {
         } else if (!isSongLoaded()) {
             System.out.println(args[0] + ": no song loaded");
         } else {
-            final Performance performance = Performer.perform(song);
-            final Sequence songMidiSequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
-            playMidiSequence(songMidiSequence, false);
+            doPlaySong();
+        }
+
+        return true;
+    }
+
+    private static boolean randomSong(final String[] args) {
+        if (args.length != 1) {
+            System.out.println(args[0] + ": no arguments expected");
+        } else {
+            song = Song.of("Random " + UUID.randomUUID(),
+                    Context.createBasicContext().setTempo(RND.nextInt(181) + 20));
+
+            final Section verse = song.createSection("Verse", 2);
+            final Section chorus = song.createSection("Chorus", 2);
+            chorus.getContext().setTempo(RND.nextBoolean() ? verse.getContext().getTempo() * 2 : verse.getContext().getTempo() / 2);
+            final Section middle = song.createSection("Middle", 4);
+
+            verse.addPart(Party.WellKnownParties.BASS.getParty(), Call.of("random", verse.getMeasures()));
+            verse.addPart(Party.WellKnownParties.CHOIR1.getParty(), Call.of("random", verse.getMeasures()));
+            verse.addPart(Party.WellKnownParties.STRINGS1.getParty(), Call.of("random", verse.getMeasures()));
+
+            chorus.addPart(Party.WellKnownParties.BASS.getParty(), Call.of("random", chorus.getMeasures()));
+            chorus.addPart(Party.WellKnownParties.CHOIR1.getParty(), Call.of("random", chorus.getMeasures()));
+            chorus.addPart(Party.WellKnownParties.STRINGS1.getParty(), Call.of("random", chorus.getMeasures()));
+
+            middle.addPart(Party.WellKnownParties.BASS.getParty(), Call.of("random", middle.getMeasures()));
+            middle.addPart(Party.WellKnownParties.CHOIR1.getParty(), Call.of("random", middle.getMeasures()));
+            middle.addPart(Party.WellKnownParties.STRINGS1.getParty(), Call.of("random", middle.getMeasures()));
+
+            song.getArrangement().addEntry(chorus, 1);
+            song.getArrangement().addEntry(verse, 2);
+            song.getArrangement().addEntry(chorus, 1);
+            song.getArrangement().addEntry(verse, 1);
+            song.getArrangement().addEntry(chorus, 2);
+            song.getArrangement().addEntry(chorus, 2);
+            song.getArrangement().addEntry(middle, 1);
+            song.getArrangement().addEntry(chorus, 4);
+
+            doPlaySong();
         }
 
         return true;
@@ -238,6 +293,12 @@ public class REPL {
         }
 
         return true;
+    }
+
+    private static void doPlaySong() {
+        final Performance performance = Performer.perform(song);
+        final Sequence songMidiSequence = TO_MIDI_SEQUENCE_CONVERTER.convert(performance);
+        playMidiSequence(songMidiSequence, false);
     }
 
     private static void doPlaySection(final String sectionName, final boolean loop) {
