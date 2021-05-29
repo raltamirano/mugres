@@ -1,14 +1,14 @@
 package mugres.core.notation.performance.converters;
 
 import mugres.core.common.Event;
+import mugres.core.common.Instrument;
 import mugres.core.notation.performance.Control;
 import mugres.core.notation.performance.Performance;
 
 import javax.sound.midi.*;
 
 import static javax.sound.midi.Sequence.PPQ;
-import static javax.sound.midi.ShortMessage.NOTE_OFF;
-import static javax.sound.midi.ShortMessage.NOTE_ON;
+import static javax.sound.midi.ShortMessage.*;
 
 public class ToMidiSequenceConverter implements Converter<Sequence> {
     private static final ToMidiSequenceConverter INSTANCE = new ToMidiSequenceConverter();
@@ -27,13 +27,14 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
 
             // Control track (tempo, key, time signature)
             final Track controlTrack = sequence.createTrack();
-            setTrackName(controlTrack, CONTROL_TRACK);
+            trackName(controlTrack, CONTROL_TRACK);
             for(Control.ControlEvent controlEvent : performance.getControlEvents())
                 setControlParameters(controlTrack, controlEvent);
 
             for(mugres.core.notation.performance.Track track : performance.getTracks()) {
                 final Track midiTrack = sequence.createTrack();
-                setTrackName(midiTrack, track.getParty());
+                trackName(midiTrack, track.getParty().getName());
+                programChange(midiTrack, track.getChannel(), track.getInstrument());
                 for(Event event : track.getEvents())
                     addNoteEvent(midiTrack, track.getChannel(), event);
             }
@@ -87,10 +88,16 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
         // TODO: Key
     }
 
-    private void setTrackName(final Track midiTrack, final String name)
+    private void trackName(final Track midiTrack, final String name)
             throws InvalidMidiDataException {
         final MetaMessage metaMessage = new MetaMessage(0x03, name.getBytes(), name.length());
         midiTrack.add(new MidiEvent(metaMessage, 0L));
+    }
+
+    private void programChange(final Track midiTrack, final int channel, final Instrument instrument)
+            throws InvalidMidiDataException {
+        final MidiMessage midiMessage = new ShortMessage(PROGRAM_CHANGE, channel, instrument.getMidi(), 0);
+        midiTrack.add(new MidiEvent(midiMessage, 0L));
     }
 
     private void addNoteEvent(final Track midiTrack, final int channel, Event event)

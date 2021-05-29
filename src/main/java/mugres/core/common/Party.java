@@ -50,6 +50,15 @@ public class Party {
         return Objects.hash(name);
     }
 
+    @Override
+    public String toString() {
+        return "Party{" +
+                "name='" + name + '\'' +
+                ", instrument=" + instrument +
+                ", channel=" + channel +
+                '}';
+    }
+
     // A handful of commonly used parties.
     public enum WellKnownParties {
         DRUMS(new Party("Drums", Instrument.DrumKit, 9)),

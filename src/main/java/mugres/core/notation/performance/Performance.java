@@ -39,10 +39,10 @@ public class Performance {
     }
 
     public Track createTrack(final Party party) {
-        if (tracks.stream().anyMatch(t -> t.getParty().equalsIgnoreCase(party.getName())))
+        if (tracks.stream().anyMatch(t -> t.getParty().getName().equalsIgnoreCase(party.getName())))
             throw new IllegalArgumentException("party");
 
-        final Track track = new Track(party.getName(), party.getChannel());
+        final Track track = new Track(party);
         tracks.add(track);
         return track;
     }

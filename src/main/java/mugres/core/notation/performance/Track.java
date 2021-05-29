@@ -1,6 +1,8 @@
 package mugres.core.notation.performance;
 
 import mugres.core.common.Event;
+import mugres.core.common.Instrument;
+import mugres.core.common.Party;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,21 +10,23 @@ import java.util.List;
 import java.util.Objects;
 
 public class Track {
-    private final String party;
-    private final int channel;
+    private final Party party;
     private final List<Event> events = new ArrayList<>();
 
-    public Track(final String party, final int channel) {
+    public Track(final Party party) {
         this.party = party;
-        this.channel = channel;
     }
 
-    public String getParty() {
+    public Party getParty() {
         return party;
     }
 
     public int getChannel() {
-        return channel;
+        return party.getChannel();
+    }
+
+    public Instrument getInstrument() {
+        return party.getInstrument();
     }
 
     public List<Event> getEvents() {
@@ -49,6 +53,6 @@ public class Track {
 
     @Override
     public String toString() {
-        return party;
+        return party.toString();
     }
 }
