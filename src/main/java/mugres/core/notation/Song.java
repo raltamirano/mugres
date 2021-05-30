@@ -3,11 +3,13 @@ package mugres.core.notation;
 import mugres.core.common.Context;
 import mugres.core.common.Event;
 import mugres.core.common.Instrument;
+import mugres.core.common.Note;
 import mugres.core.common.Party;
 import mugres.core.common.Scale;
 import mugres.core.common.Tonality;
 import mugres.core.function.Call;
 import mugres.core.function.builtin.random.Random;
+import mugres.core.function.builtin.text.TextMelody;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,7 +63,6 @@ public class Song {
         for(int i = 0; i < numberOfParties; i++)
             parties.add(new Party("Party " + i, random(Instrument.values(), Instrument.DrumKit), i));
 
-
         final List<Section> sections = new ArrayList<>();
         final int numberOfSections = RND.nextInt(RANDOM_MAX_SECTIONS) + 1;
         for(int i = 0; i < numberOfSections; i++) {
@@ -71,22 +72,40 @@ public class Song {
             sections.add(section);
         }
 
-        for(final Section section : sections) {
-            final boolean useSameTonality = RND.nextBoolean();
-            final boolean useSameScale = RND.nextBoolean();
-            final Tonality tonality = useSameTonality ? random(Tonality.values()) : null;
-            final Set<Scale> scales = useSameTonality ? Scale.byTonality(tonality) :
-                    Arrays.stream(Scale.values()).collect(Collectors.toSet());
-            final Scale scale = random(scales);
+        final boolean useSameTonality = RND.nextBoolean();
+        final boolean useSameScale = RND.nextBoolean();
+        final Tonality tonality = useSameTonality ? random(Tonality.values()) : null;
+        final Set<Scale> scales = useSameTonality ? Scale.byTonality(tonality) :
+                Arrays.stream(Scale.values()).collect(Collectors.toSet());
+        final Scale scale = random(scales);
 
+        for(final Section section : sections) {
             for (final Party party : parties) {
-                //if (RND.nextBoolean())
-                final Map<String, Object> arguments = toMap(
-                        Random.SCALE, useSameScale ? scale : random(scales),
-                        Random.STARTING_OCTAVE, random(RANDOM_STARTING_OCTAVE_OPTIONS),
-                        Random.OCTAVES_TO_GENERATE, random(RANDOM_OCTAVE_TO_GENERATE_OPTIONS)
-                );
-                section.addPart(party, Call.of("random", section.getMeasures(), arguments));
+                final int startingOctave = random(RANDOM_STARTING_OCTAVE_OPTIONS);
+                final int octavesToGenerate = startingOctave < 4 ? random(RANDOM_OCTAVE_TO_GENERATE_OPTIONS) : 1;
+                if (RND.nextBoolean()) {
+                    final Map<String, Object> arguments = toMap(
+                            Random.SCALE, useSameScale ? scale : random(scales),
+                            Random.STARTING_OCTAVE, startingOctave,
+                            Random.OCTAVES_TO_GENERATE, octavesToGenerate,
+                            Random.ROOT, random(Note.values())
+                    );
+                    section.addPart(party, Call.of("random", section.getMeasures(), arguments));
+                } else {
+                    final Map<String, Object> arguments = toMap(
+                            TextMelody.SCALE, useSameScale ? scale : random(scales),
+                            TextMelody.STARTING_OCTAVE, startingOctave,
+                            TextMelody.OCTAVES_TO_GENERATE, octavesToGenerate,
+                            TextMelody.ROOT, random(Note.values()),
+                            TextMelody.SOURCE_TEXT, random(asList(
+                                    UUID.randomUUID().toString(),
+                                    UUID.randomUUID().toString(),
+                                    UUID.randomUUID().toString(),
+                                    UUID.randomUUID().toString(),
+                                    UUID.randomUUID().toString()))
+                    );
+                    section.addPart(party, Call.of("textMelody", section.getMeasures(), arguments));
+                }
             }
         }
 

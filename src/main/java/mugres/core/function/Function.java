@@ -11,6 +11,7 @@ import mugres.core.function.builtin.drums.HipHopBeat;
 import mugres.core.function.builtin.random.Random;
 import mugres.core.function.builtin.riffer.Riffer;
 import mugres.core.function.builtin.song.LoFiHipHopSongGenerator;
+import mugres.core.function.builtin.text.TextMelody;
 import mugres.core.notation.Song;
 
 import java.util.*;
@@ -206,6 +207,7 @@ public abstract class Function<T> {
         new Arp();
         new BlackMetal();
         new LoFiHipHopSongGenerator();
+        new TextMelody();
     }
 
     private static synchronized void register(final Function function) {

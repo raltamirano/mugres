@@ -57,6 +57,10 @@ public class Length implements Comparable<Length> {
         return this.n < other.n;
     }
 
+    public boolean lessThanOrEqual(final Length other) {
+        return this.equals(other) || this.lessThan(other);
+    }
+
     public static final Length ZERO = Length.of(0);
 
     @Override

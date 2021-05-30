@@ -11,6 +11,15 @@ import static java.util.Arrays.asList;
 public class Randoms {
     private Randoms() {}
 
+    public static int randomBetween(final int lower, final int upper) {
+        if (lower > upper)
+            throw new IllegalArgumentException("upper");
+        if (lower == upper)
+            return lower;
+
+        return lower + RND.nextInt((upper - lower) + 1);
+    }
+
     public static <X> X random(final X[] items, final X... avoid) {
         return random(new ArrayList<X>(Arrays.asList(items)), avoid);
     }
