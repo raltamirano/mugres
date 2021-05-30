@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -80,8 +81,12 @@ public class Song {
 
             for (final Party party : parties) {
                 //if (RND.nextBoolean())
-                    section.addPart(party, Call.of("random", section.getMeasures(),
-                            toMap(Random.SCALE, useSameScale ? scale : random(scales))));
+                final Map<String, Object> arguments = toMap(
+                        Random.SCALE, useSameScale ? scale : random(scales),
+                        Random.STARTING_OCTAVE, random(RANDOM_STARTING_OCTAVE_OPTIONS),
+                        Random.OCTAVES_TO_GENERATE, random(RANDOM_OCTAVE_TO_GENERATE_OPTIONS)
+                );
+                section.addPart(party, Call.of("random", section.getMeasures(), arguments));
             }
         }
 
@@ -195,6 +200,8 @@ public class Song {
     private static final Set<Integer> RANDOM_MIDDLE8_REPETITIONS = new HashSet<>(asList( 1, 2, 4 ));
     private static final int RANDOM_BASIC_ARRANGEMENT_ENTRIES = 8;
     private static final Set<Integer> RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS = new HashSet<>(asList( 1, 2 ));
+    private static final Set<Integer> RANDOM_STARTING_OCTAVE_OPTIONS = new HashSet<>(asList( 1, 2, 3, 4, 5 ));
+    private static final Set<Integer> RANDOM_OCTAVE_TO_GENERATE_OPTIONS = new HashSet<>(asList( 1, 2, 3 ));
     private static final int RANDOM_MIN_TEMPO = 20;
     private static final int RANDOM_MAX_TEMPO = 200;
 }
