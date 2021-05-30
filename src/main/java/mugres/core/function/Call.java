@@ -1,6 +1,12 @@
 package mugres.core.function;
 
-import mugres.core.common.*;
+import mugres.core.common.Context;
+import mugres.core.common.DrumKit;
+import mugres.core.common.Length;
+import mugres.core.common.Note;
+import mugres.core.common.Pitch;
+import mugres.core.common.Scale;
+import mugres.core.common.Value;
 import mugres.core.function.Function.Parameter.Variant;
 
 import java.util.Collections;
@@ -49,6 +55,20 @@ public class Call<T> {
 
     public static <X> Call of(final Function<X> function, final int lengthInMeasures) {
         return new Call(function, lengthInMeasures);
+    }
+
+    public static <X> Call of(final String functionName, final int lengthInMeasures,
+            final Map<String, Object> arguments) {
+        final Map<String, Object> theArgs = arguments != null ? arguments : Collections.emptyMap();
+        theArgs.put(LENGTH_PARAMETER.getName(), lengthInMeasures);
+        return of(functionName, theArgs);
+    }
+
+    public static <X> Call of(final Function<X> function, final int lengthInMeasures,
+                              final Map<String, Object> arguments) {
+        final Map<String, Object> theArgs = arguments != null ? arguments : Collections.emptyMap();
+        theArgs.put(LENGTH_PARAMETER.getName(), lengthInMeasures);
+        return of(function, theArgs);
     }
 
     public static <X> Call<X> parse(final String input) {

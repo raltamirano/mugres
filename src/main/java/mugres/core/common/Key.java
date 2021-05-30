@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static mugres.core.common.Key.Mode.MAJOR;
-import static mugres.core.common.Key.Mode.MINOR;
+import static mugres.core.common.Tonality.MAJOR;
+import static mugres.core.common.Tonality.MINOR;
 
 public enum Key {
     C("C", Note.C, MAJOR),
@@ -37,12 +37,12 @@ public enum Key {
     private final String label;
     private final Note root;
     private final List<Note> notes;
-    private final Mode mode;
+    private final Tonality tonality;
 
-    Key(final String label, final Note root, final Mode mode) {
+    Key(final String label, final Note root, final Tonality tonality) {
         this.label = label;
         this.root = root;
-        this.mode = mode;
+        this.tonality = tonality;
         this.notes = Collections.unmodifiableList(defaultScale().pitches(root, 1)
                 .stream().map(Pitch::getNote).collect(Collectors.toList()));
     }
@@ -55,12 +55,12 @@ public enum Key {
         return root;
     }
 
-    public Mode getMode() {
-        return mode;
+    public Tonality getTonality() {
+        return tonality;
     }
 
     public Scale defaultScale() {
-        return mode == MAJOR ? Scale.MAJOR : Scale.MINOR;
+        return tonality == MAJOR ? Scale.MAJOR : Scale.MINOR;
     }
 
     public List<Note> notes() {
@@ -84,10 +84,5 @@ public enum Key {
             if (key.label.equals(label))
                 return key;
         throw new IllegalArgumentException("Invalid Key label: " + label);
-    }
-
-    enum Mode {
-        MAJOR,
-        MINOR
     }
 }

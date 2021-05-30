@@ -4,25 +4,28 @@ import mugres.core.common.chords.Chord;
 import mugres.core.common.chords.Type;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static mugres.core.common.Note.BASE_OCTAVE;
 import static mugres.core.common.chords.Type.*;
 
 public enum Scale {
-    MAJOR("Major",
+    MAJOR("Major", Tonality.MAJOR,
             new int[]       {2, 2, 1, 2, 2, 2, 1},
             new Type[]      {MAJOR_7TH, MINOR_7TH, MINOR_7TH, MAJOR_7TH, DOMINANT_7TH, MINOR_7TH, HALF_DIMINISHED }),
 
-    MINOR("Minor",
+    MINOR("Minor", Tonality.MINOR,
             new int[]       {2, 1, 2, 2, 1, 2, 2},
             new Type[]      {MINOR_7TH, HALF_DIMINISHED, MAJOR_7TH, MINOR_7TH, MINOR_7TH, MAJOR_7TH, DOMINANT_7TH}),
 
-    HARMONIC_MINOR("Harmonic Minor",
+    HARMONIC_MINOR("Harmonic Minor", Tonality.MINOR,
             new int[]       {2, 1, 2, 2, 1, 3, 1},
             new Type[]      {MIN_MAJ_7TH, HALF_DIMINISHED, AUGMENTED_7TH, MINOR_7TH, DOMINANT_7TH, MAJOR_7TH, DIMINISHED_7TH }),
 
-    MELODIC_MINOR("Melodic Minor",
+    MELODIC_MINOR("Melodic Minor", Tonality.MINOR,
             new int[]       {2, 1, 2, 2, 2, 2, 1},
             new Type[]      {MIN_MAJ_7TH, MINOR_7TH, AUGMENTED_7TH, DOMINANT_7TH, DOMINANT_7TH, HALF_DIMINISHED, HALF_DIMINISHED }),
 
@@ -35,29 +38,31 @@ public enum Scale {
     fuller tonal context.
     */
 
-    MAJOR_PENTATONIC("Major Pentatonic",
+    MAJOR_PENTATONIC("Major Pentatonic", Tonality.MAJOR,
             new int[]       {2, 2, 3, 2, 3},
             new Type[]      {MAJOR_7TH, MINOR_7TH, MINOR_7TH, DOMINANT_7TH, MINOR_7TH }),
 
-    MINOR_PENTATONIC("Minor Pentatonic",
+    MINOR_PENTATONIC("Minor Pentatonic", Tonality.MINOR,
             new int[]       {3, 2, 2, 3, 2},
             new Type[]      {MINOR_7TH, MAJOR_7TH, MINOR_7TH, MINOR_7TH, DOMINANT_7TH}),
 
-    CHROMATIC("Chromatic",
+    CHROMATIC("Chromatic", Tonality.UNDETERMINED,
             new int[]       {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             new Type[]      {POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD,
                              POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD,
                              POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD});
 
     private final String name;
+    private final Tonality tonality;
     private final int[] intervals;
     private final Type[] chordTypesByDegree;
 
-    Scale(final String name, final int[] intervals, final Type[] chordTypesByDegree) {
+    Scale(final String name, final Tonality tonality, final int[] intervals, final Type[] chordTypesByDegree) {
         if (intervals.length <= 0 || intervals.length > 12)
             throw new IllegalArgumentException("Number of intervals for a scale must be 0 < n <= 12!");
 
         this.name = name;
+        this.tonality = tonality;
         this.intervals = intervals;
         this.chordTypesByDegree = chordTypesByDegree;
     }
@@ -72,6 +77,10 @@ public enum Scale {
 
     public String getName() {
         return name;
+    }
+
+    public Tonality tonality() {
+        return tonality;
     }
 
     public int degrees() {
@@ -176,5 +185,9 @@ public enum Scale {
         }
 
         return result;
+    }
+
+    public static Set<Scale> byTonality(final Tonality tonality) {
+        return Arrays.stream(values()).filter(s -> s.tonality() == tonality).collect(Collectors.toSet());
     }
 }

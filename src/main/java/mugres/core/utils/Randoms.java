@@ -1,6 +1,7 @@
 package mugres.core.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -9,6 +10,10 @@ import static java.util.Arrays.asList;
 
 public class Randoms {
     private Randoms() {}
+
+    public static <X> X random(final X[] items, final X... avoid) {
+        return random(new ArrayList<X>(Arrays.asList(items)), avoid);
+    }
 
     public static <X> X random(final Set<X> items, final X... avoid) {
         return random(new ArrayList<>(items), avoid);

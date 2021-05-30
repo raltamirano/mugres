@@ -2,10 +2,27 @@ package mugres.core.notation;
 
 import mugres.core.common.Context;
 import mugres.core.common.Event;
+import mugres.core.common.Instrument;
 import mugres.core.common.Party;
+import mugres.core.common.Scale;
+import mugres.core.common.Tonality;
 import mugres.core.function.Call;
+import mugres.core.function.builtin.random.Random;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
+import static mugres.core.utils.Randoms.RND;
+import static mugres.core.utils.Randoms.random;
+import static mugres.core.utils.Utils.toMap;
 
 /** MUGRES internal representation of a song. */
 public class Song {
@@ -32,6 +49,67 @@ public class Song {
         section.addPart(functionCallsParty, call);
         functionCallSong.arrangement.addEntry(section, 1);
         return functionCallSong;
+    }
+
+    public static Song randomSong() {
+        final Song song = Song.of("Song " + UUID.randomUUID(),
+                Context.createBasicContext().setTempo(RND.nextInt(RANDOM_MAX_TEMPO - RANDOM_MIN_TEMPO) + RANDOM_MIN_TEMPO ));
+
+        final List<Party> parties = new ArrayList<>();
+        final int numberOfParties = RND.nextInt(RANDOM_MAX_PARTIES) + 1;
+        for(int i = 0; i < numberOfParties; i++)
+            parties.add(new Party("Party " + i, random(Instrument.values(), Instrument.DrumKit), i));
+
+
+        final List<Section> sections = new ArrayList<>();
+        final int numberOfSections = RND.nextInt(RANDOM_MAX_SECTIONS) + 1;
+        for(int i = 0; i < numberOfSections; i++) {
+            final Section section = song.createSection("Section " + i, random(RANDOM_SECTIONS_LENGTHS));
+            section.getContext().setTempo(RND.nextBoolean() ? section.getContext().getTempo() :
+                    RND.nextBoolean() ? section.getContext().getTempo() / 2 : section.getContext().getTempo() * 2);
+            sections.add(section);
+        }
+
+        for(final Section section : sections) {
+            final boolean useSameTonality = RND.nextBoolean();
+            final boolean useSameScale = RND.nextBoolean();
+            final Tonality tonality = useSameTonality ? random(Tonality.values()) : null;
+            final Set<Scale> scales = useSameTonality ? Scale.byTonality(tonality) :
+                    Arrays.stream(Scale.values()).collect(Collectors.toSet());
+            final Scale scale = random(scales);
+
+            for (final Party party : parties) {
+                //if (RND.nextBoolean())
+                    section.addPart(party, Call.of("random", section.getMeasures(),
+                            toMap(Random.SCALE, useSameScale ? scale : random(scales))));
+            }
+        }
+
+        switch(numberOfSections) {
+            case 1:
+                song.getArrangement().addEntry(sections.get(0), random(RANDOM_SINGLE_SECTION_REPETITIONS));
+                break;
+            case 2:
+                for(int i = 0; i < RANDOM_BASIC_ARRANGEMENT_ENTRIES; i++)
+                    song.getArrangement().addEntry(sections.get(i % 2), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
+                break;
+            case 3:
+                final boolean thirdAsMiddle8 = RND.nextBoolean();
+                if (thirdAsMiddle8) {
+                    for(int i = 0; i < RANDOM_BASIC_ARRANGEMENT_ENTRIES -2; i++)
+                        song.getArrangement().addEntry(sections.get(i % 2), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
+                    song.getArrangement().addEntry(sections.get(2), random(RANDOM_MIDDLE8_REPETITIONS));
+                    song.getArrangement().addEntry(sections.get(0), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
+                } else {
+                    for(int i = 0; i < RANDOM_BASIC_ARRANGEMENT_ENTRIES; i++)
+                        song.getArrangement().addEntry(sections.get(i % 3), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
+                }
+                for(int i = 0; i < RANDOM_BASIC_ARRANGEMENT_ENTRIES; i++)
+                    song.getArrangement().addEntry(sections.get(i % 2), random(RANDOM_SINGLE_SECTION_REPETITIONS));
+                break;
+        }
+
+        return song;
     }
 
     public String getTitle() {
@@ -109,4 +187,14 @@ public class Song {
     public int hashCode() {
         return Objects.hash(title);
     }
+
+    private static final int RANDOM_MAX_PARTIES = 4;
+    private static final int RANDOM_MAX_SECTIONS = 3;
+    private static final Set<Integer> RANDOM_SECTIONS_LENGTHS = new HashSet<>(asList(8, 16, 32 ));
+    private static final Set<Integer> RANDOM_SINGLE_SECTION_REPETITIONS = new HashSet<>(asList( 8, 12, 16, 20, 24 ));
+    private static final Set<Integer> RANDOM_MIDDLE8_REPETITIONS = new HashSet<>(asList( 1, 2, 4 ));
+    private static final int RANDOM_BASIC_ARRANGEMENT_ENTRIES = 8;
+    private static final Set<Integer> RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS = new HashSet<>(asList( 1, 2 ));
+    private static final int RANDOM_MIN_TEMPO = 20;
+    private static final int RANDOM_MAX_TEMPO = 200;
 }

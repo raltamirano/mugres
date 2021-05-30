@@ -14,12 +14,20 @@ import mugres.core.notation.performance.Performer;
 import mugres.core.notation.performance.converters.ToMidiSequenceConverter;
 import mugres.core.notation.readers.JSONReader;
 
-import javax.sound.midi.*;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Receiver;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.Sequencer;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.*;
-
-import static mugres.core.utils.Randoms.RND;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 public class REPL {
     private static File songFile;
@@ -223,35 +231,7 @@ public class REPL {
         if (args.length != 1) {
             System.out.println(args[0] + ": no arguments expected");
         } else {
-            song = Song.of("Random " + UUID.randomUUID(),
-                    Context.createBasicContext().setTempo(RND.nextInt(181) + 20));
-
-            final Section verse = song.createSection("Verse", 2);
-            final Section chorus = song.createSection("Chorus", 2);
-            chorus.getContext().setTempo(RND.nextBoolean() ? verse.getContext().getTempo() * 2 : verse.getContext().getTempo() / 2);
-            final Section middle = song.createSection("Middle", 4);
-
-            verse.addPart(Party.WellKnownParties.BASS.getParty(), Call.of("random", verse.getMeasures()));
-            verse.addPart(Party.WellKnownParties.CHOIR1.getParty(), Call.of("random", verse.getMeasures()));
-            verse.addPart(Party.WellKnownParties.STRINGS1.getParty(), Call.of("random", verse.getMeasures()));
-
-            chorus.addPart(Party.WellKnownParties.BASS.getParty(), Call.of("random", chorus.getMeasures()));
-            chorus.addPart(Party.WellKnownParties.CHOIR1.getParty(), Call.of("random", chorus.getMeasures()));
-            chorus.addPart(Party.WellKnownParties.STRINGS1.getParty(), Call.of("random", chorus.getMeasures()));
-
-            middle.addPart(Party.WellKnownParties.BASS.getParty(), Call.of("random", middle.getMeasures()));
-            middle.addPart(Party.WellKnownParties.CHOIR1.getParty(), Call.of("random", middle.getMeasures()));
-            middle.addPart(Party.WellKnownParties.STRINGS1.getParty(), Call.of("random", middle.getMeasures()));
-
-            song.getArrangement().addEntry(chorus, 1);
-            song.getArrangement().addEntry(verse, 2);
-            song.getArrangement().addEntry(chorus, 1);
-            song.getArrangement().addEntry(verse, 1);
-            song.getArrangement().addEntry(chorus, 2);
-            song.getArrangement().addEntry(chorus, 2);
-            song.getArrangement().addEntry(middle, 1);
-            song.getArrangement().addEntry(chorus, 4);
-
+            song = Song.randomSong();
             doPlaySong();
         }
 
