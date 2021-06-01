@@ -129,7 +129,7 @@ public class Song {
                         song.getArrangement().addEntry(sections.get(i % 3), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
                 }
                 for(int i = 0; i < RANDOM_BASIC_ARRANGEMENT_ENTRIES; i++)
-                    song.getArrangement().addEntry(sections.get(i % 2), random(RANDOM_SINGLE_SECTION_REPETITIONS));
+                    song.getArrangement().addEntry(sections.get(i % 2), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
                 break;
         }
 
