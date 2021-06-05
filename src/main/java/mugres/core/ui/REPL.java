@@ -60,7 +60,7 @@ public class REPL {
                 running = executeCommand(line.split("\\s"));
         }
 
-        System.out.print("Goodbye.");
+        System.out.println("Goodbye.");
         System.exit(0);
     }
 
