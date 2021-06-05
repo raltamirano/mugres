@@ -164,6 +164,7 @@ public class DyadElementPatternParser implements ElementPatternParser<DyadElemen
         }
     }
 
+    // TODO: refactor dyad parsing to leverage Pitch.of(String)
     private static final Pattern DYAD = Pattern.compile("((?:C|D|E|F|G|A|B)#?)(b2|2|b3|3|4|#4|b5|5|b6|6|bb7|b7|7|8)?(\\[-?\\d\\])?(\\{[1-9][0-9]*\\})?");
     private static final Pattern DYAD_EVENTS = Pattern.compile("(" + DYAD.pattern() + "|\\s+|-)");
 }

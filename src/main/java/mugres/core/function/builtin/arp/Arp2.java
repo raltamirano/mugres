@@ -6,30 +6,24 @@ import mugres.core.common.Length;
 import mugres.core.common.Pitch;
 import mugres.core.common.Value;
 import mugres.core.function.Function.EventsFunction;
-import mugres.core.function.Result;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
-import static mugres.core.common.Value.QUARTER;
-import static mugres.core.function.Function.Parameter.DataType.BOOLEAN;
-import static mugres.core.function.Function.Parameter.DataType.INTEGER;
+import static mugres.core.common.Pitch.DEFAULT_VELOCITY;
 import static mugres.core.function.Function.Parameter.DataType.PITCH;
 import static mugres.core.function.Function.Parameter.DataType.TEXT;
 import static mugres.core.function.builtin.arp.Utils.ARP_PATTERN;
-import static mugres.core.utils.Randoms.random;
-import static mugres.core.utils.Utils.rangeClosed;
 import static mugres.core.function.builtin.arp.Utils.REST;
+import static mugres.core.function.builtin.arp.Utils.parseNoteValue;
 
 public class Arp2 extends EventsFunction {
     public Arp2() {
         super("arp2", "Arpeggiates provided pitches",
-                Parameter.of(PITCHES, "Ordered pitches to arpeggiate",
+                Parameter.of(PITCHES, "Ordered list of pitches to arpeggiate",
                         PITCH, false, emptyList(), true),
                 Parameter.of(PATTERN, "Arp pattern",
                         TEXT, false, null)
@@ -38,25 +32,24 @@ public class Arp2 extends EventsFunction {
 
     @Override
     protected List<Event> doExecute(final Context context, final Map<String, Object> arguments) {
-        final List<Event> events = new ArrayList<>();
-        final String pattern = (String) arguments.get("pattern");
+        final Length length = lengthFromNumberOfMeasures(context, arguments);
+        final List<Pitch> pitches = (List<Pitch>) arguments.get(PITCHES);
+        final String pattern = (String) arguments.get(PATTERN);
         final Matcher matcher = ARP_PATTERN.matcher(pattern);
 
-        return events;
+        if (!matcher.matches())
+            return emptyList();
+
+        return arpeggiate(pitches, matcher, length);
     }
 
 
-    private static List<Event> arpeggiate(final List<Event> chord, final Matcher matcher,
-                                          final int octavesUp, final int octavesDown,
-                                          final boolean restart) {
+    private static List<Event> arpeggiate(final List<Pitch> pitches, final Matcher matcher,
+                                          final Length totalLength) {
         final List<Event> arpeggio = new ArrayList<>();
-        final Length totalLength = chord.get(0).getValue().length();
 
-        Length position = chord.get(0).getPosition();
+        Length position = Length.ZERO;
         Length controlLength = Length.ZERO;
-
-        if (restart)
-            matcher.reset();
 
         while(controlLength.lessThan(totalLength)) {
             if (matcher.hitEnd())
@@ -70,9 +63,9 @@ public class Arp2 extends EventsFunction {
                         Value.forLength(totalLength.minus(controlLength)) : value;
 
                 if (!isRest) {
-                    final int index = isRest ? 0 : Integer.parseInt(element);
-                    final Event event = index < chord.size() ? chord.get(index) : chord.get(0);
-                    arpeggio.add(Event.of(position, getActualPitch(event.getPlayed().getPitch(), octavesUp, octavesDown), actualValue, event.getPlayed().getVelocity()));
+                    final int index = Integer.parseInt(element) - 1;
+                    if (index >= 0 && index < pitches.size())
+                        arpeggio.add(Event.of(position, pitches.get(index), actualValue, DEFAULT_VELOCITY));
                 }
 
                 position = position.plus(value.length());

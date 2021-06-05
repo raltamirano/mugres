@@ -100,6 +100,10 @@ public enum Scale {
         return notes;
     }
 
+    public List<Pitch> pitches(final Note root) {
+        return pitches(root, 1, BASE_OCTAVE);
+    }
+
     public List<Pitch> pitches(final Note root, final int octavesToGenerate) {
         return pitches(root, octavesToGenerate, BASE_OCTAVE);
     }
@@ -165,21 +169,21 @@ public enum Scale {
     }
 
     public List<Pitch> harmonize(final Note scaleRoot, final Note startingAt,
-                                 final Interval.Type type, final int numberOfNotes) {
-        return harmonize(scaleRoot, startingAt, type, numberOfNotes, BASE_OCTAVE);
+                                 final Interval.Type intervalType, final int numberOfNotes) {
+        return harmonize(scaleRoot, startingAt, intervalType, numberOfNotes, BASE_OCTAVE);
     }
 
     public List<Pitch> harmonize(final Note scaleRoot, final Note startingAt,
-                                 final Interval.Type type, final int numberOfNotes,
+                                 final Interval.Type intervalType, final int numberOfNotes,
                                  final int baseOctave) {
         final List<Pitch> result = new ArrayList<>();
 
-        final List<Pitch> pitches = pitches(scaleRoot, 3, baseOctave - 1);
+        final List<Pitch> pitches = pitches(scaleRoot, 4, baseOctave - 1);
         for(int i = 0; i < pitches.size(); i++) {
             Pitch pitch = pitches.get(i);
             if (pitch.getNote().equals(startingAt) && pitch.getOctave() == baseOctave) {
                 for(int j = 0; j < numberOfNotes; j ++)
-                    result.add(pitches.get(i + (j * type.getScaleSteps())));
+                    result.add(pitches.get(i + (j * intervalType.getScaleSteps())));
                 break;
             }
         }

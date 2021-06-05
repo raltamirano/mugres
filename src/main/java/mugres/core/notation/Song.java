@@ -3,11 +3,14 @@ package mugres.core.notation;
 import mugres.core.common.Context;
 import mugres.core.common.Event;
 import mugres.core.common.Instrument;
+import mugres.core.common.Interval;
 import mugres.core.common.Note;
 import mugres.core.common.Party;
 import mugres.core.common.Scale;
 import mugres.core.common.Tonality;
+import mugres.core.common.Value;
 import mugres.core.function.Call;
+import mugres.core.function.builtin.arp.Arp2;
 import mugres.core.function.builtin.random.Random;
 import mugres.core.function.builtin.text.TextMelody;
 
@@ -72,33 +75,37 @@ public class Song {
             sections.add(section);
         }
 
+        final boolean useSameRoot = RND.nextBoolean();
         final boolean useSameTonality = RND.nextBoolean();
         final boolean useSameScale = RND.nextBoolean();
         final Tonality tonality = useSameTonality ? random(Tonality.values()) : null;
         final Set<Scale> scales = useSameTonality ? Scale.byTonality(tonality) :
                 Arrays.stream(Scale.values()).collect(Collectors.toSet());
         final Scale scale = random(scales);
+        final Note root = random(Note.values());
 
         for(final Section section : sections) {
             for (final Party party : parties) {
+                final Note actualRoot = useSameRoot ? root : random(Note.values());
+                final Scale actualScale = useSameScale ? scale : random(scales);
                 final int startingOctave = random(RANDOM_STARTING_OCTAVE_OPTIONS);
                 final int octavesToGenerate = startingOctave < 4 ? random(RANDOM_OCTAVE_TO_GENERATE_OPTIONS) : 1;
                 switch(RND.nextInt(3)) {
                     case 0: // Random
                         final Map<String, Object> randomArguments = toMap(
-                                Random.SCALE, useSameScale ? scale : random(scales),
+                                Random.SCALE, actualScale,
                                 Random.STARTING_OCTAVE, startingOctave,
                                 Random.OCTAVES_TO_GENERATE, octavesToGenerate,
-                                Random.ROOT, random(Note.values())
+                                Random.ROOT, actualRoot
                         );
                         section.addPart(party, Call.of("random", section.getMeasures(), randomArguments));
                         break;
                     case 1: // Text Melody
                         final Map<String, Object> textMelodyArguments = toMap(
-                                TextMelody.SCALE, useSameScale ? scale : random(scales),
+                                TextMelody.SCALE, actualScale,
                                 TextMelody.STARTING_OCTAVE, startingOctave,
                                 TextMelody.OCTAVES_TO_GENERATE, octavesToGenerate,
-                                TextMelody.ROOT, random(Note.values()),
+                                TextMelody.ROOT, actualRoot,
                                 TextMelody.SOURCE_TEXT, random(asList(
                                         UUID.randomUUID().toString(),
                                         UUID.randomUUID().toString(),
@@ -110,18 +117,11 @@ public class Song {
                         break;
                     case 2: // Arp
                         final Map<String, Object> arpArguments = toMap(
-                                TextMelody.SCALE, useSameScale ? scale : random(scales),
-                                TextMelody.STARTING_OCTAVE, startingOctave,
-                                TextMelody.OCTAVES_TO_GENERATE, octavesToGenerate,
-                                TextMelody.ROOT, random(Note.values()),
-                                TextMelody.SOURCE_TEXT, random(asList(
-                                        UUID.randomUUID().toString(),
-                                        UUID.randomUUID().toString(),
-                                        UUID.randomUUID().toString(),
-                                        UUID.randomUUID().toString(),
-                                        UUID.randomUUID().toString()))
+                                Arp2.PITCHES, actualScale.harmonize(actualRoot, actualRoot, Interval.Type.THIRD,
+                                        RANDOM_MAX_ARP_PITCHES, startingOctave),
+                                Arp2.PATTERN, randomArpPattern()
                         );
-                        section.addPart(party, Call.of("arp", section.getMeasures(), arpArguments));
+                        section.addPart(party, Call.of("arp2", section.getMeasures(), arpArguments));
                         break;
                 }
             }
@@ -152,6 +152,22 @@ public class Song {
         }
 
         return song;
+    }
+
+    private static String randomArpPattern() {
+        if (RND.nextBoolean())
+            return random(asList(
+                    "12", "13", "123", "1232", "1234", "123432",
+                    "1e2e", "1e3e", "1e2e3e", "1e2e3e2", "1e2e3e4e", "1e2e3e4e3e2e"
+            ));
+
+        final List<String> steps = new ArrayList<>();
+        for(int i=0; i<RANDOM_MAX_ARP_PITCHES; i++) {
+            final int index = i == 0 ? 1 : RND.nextInt(RANDOM_MAX_ARP_PITCHES) + 1;
+            final String duration = random(Value.values()).id();
+        }
+
+        return String.join("", steps);
     }
 
     public String getTitle() {
@@ -230,7 +246,7 @@ public class Song {
         return Objects.hash(title);
     }
 
-    private static final int RANDOM_MAX_PARTIES = 4;
+    private static final int RANDOM_MAX_PARTIES = 5;
     private static final int RANDOM_MAX_SECTIONS = 3;
     private static final Set<Integer> RANDOM_SECTIONS_LENGTHS = new HashSet<>(asList(8, 16, 32 ));
     private static final Set<Integer> RANDOM_SINGLE_SECTION_REPETITIONS = new HashSet<>(asList( 8, 12, 16, 20, 24 ));
@@ -241,4 +257,5 @@ public class Song {
     private static final Set<Integer> RANDOM_OCTAVE_TO_GENERATE_OPTIONS = new HashSet<>(asList( 1, 2, 3 ));
     private static final int RANDOM_MIN_TEMPO = 20;
     private static final int RANDOM_MAX_TEMPO = 200;
+    private static final int RANDOM_MAX_ARP_PITCHES = 5;
 }

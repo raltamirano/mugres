@@ -3,6 +3,10 @@ package mugres.core.common;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static mugres.core.common.Note.BASE_OCTAVE;
 
 public class Pitch implements Comparable<Pitch> {
     private final int midi;
@@ -50,6 +54,19 @@ public class Pitch implements Comparable<Pitch> {
         return of(note.number() + ((octave + 1) * 12));
     }
 
+    public static Pitch of(final String input) {
+        try {
+            return of(Integer.parseInt(input));
+        } catch (final NumberFormatException e) {
+            final Matcher matcher = PITCH.matcher(input);
+            if (!matcher.matches())
+                throw new IllegalArgumentException("Invalid pitch: " + input);
+            final Note root = Note.of(matcher.group(1));
+            final int octave = matcher.group(2) == null ? BASE_OCTAVE : Integer.valueOf(matcher.group(2).trim());
+            return of(root, octave);
+        }
+    }
+
     public synchronized static Pitch of(final int midi) {
         if (!CACHE.containsKey(midi))
             CACHE.put(midi, new Pitch(midi, Note.of(midi % 12), (midi / 12) - 1));
@@ -87,7 +104,9 @@ public class Pitch implements Comparable<Pitch> {
     }
 
     private static final Map<Integer, Pitch> CACHE = new HashMap<>();
+    private static final Pattern PITCH = Pattern.compile("((?:C|D|E|F|G|A|B)#?)(\\[-?\\d\\])?");
 
     public static final Pitch MIDDLE_C = of(Note.C, 4);
     public static final Pitch CONCERT_PITCH = of(Note.A, 4);
+    public static final int DEFAULT_VELOCITY = 100;
 }

@@ -129,7 +129,7 @@ public class Call<T> {
                         argument = Note.of(argumentString);
                         break;
                     case PITCH:
-                        argument = Pitch.of(Integer.parseInt(argumentString));
+                        argument = Pitch.of(argumentString);
                         break;
                     case SCALE:
                         argument = Scale.of(argumentString);
