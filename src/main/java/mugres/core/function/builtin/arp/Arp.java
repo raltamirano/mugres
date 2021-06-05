@@ -8,11 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 import java.util.stream.Collectors;
 
 import static mugres.core.common.Value.QUARTER;
 import static mugres.core.function.Function.Parameter.DataType.*;
+import static mugres.core.function.builtin.arp.Utils.ARP_PATTERN;
+import static mugres.core.function.builtin.arp.Utils.REST;
 import static mugres.core.utils.Randoms.random;
 import static mugres.core.utils.Utils.rangeClosed;
 
@@ -91,7 +93,7 @@ public class Arp extends EventsFunction {
                         Value.forLength(totalLength.minus(controlLength)) : value;
 
                 if (!isRest) {
-                    final int index = isRest ? 0 : Integer.parseInt(element);
+                    final int index = Integer.parseInt(element);
                     final Event event = index < chord.size() ? chord.get(index) : chord.get(0);
                     arpeggio.add(Event.of(position, getActualPitch(event.getPlayed().getPitch(), octavesUp, octavesDown), actualValue, event.getPlayed().getVelocity()));
                 }
@@ -128,7 +130,4 @@ public class Arp extends EventsFunction {
     private static Value parseNoteValue(final String input) {
         return input == null || input.trim().isEmpty() ? QUARTER : Value.forId(input);
     }
-
-    private static final String REST = "R";
-    private static final Pattern ARP_PATTERN = Pattern.compile("((\\d|" + REST + ")(w|h|q|e|s|t|m)?)+?");
 }

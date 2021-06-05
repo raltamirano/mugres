@@ -2,6 +2,7 @@ package mugres.core.function;
 
 import mugres.core.common.*;
 import mugres.core.function.builtin.arp.Arp;
+import mugres.core.function.builtin.arp.Arp2;
 import mugres.core.function.builtin.bm.BlackMetal;
 import mugres.core.function.builtin.chords.Chords;
 import mugres.core.function.builtin.drums.BlastBeat;
@@ -205,6 +206,7 @@ public abstract class Function<T> {
         new Riffer();
         new Chords();
         new Arp();
+        new Arp2();
         new BlackMetal();
         new LoFiHipHopSongGenerator();
         new TextMelody();
@@ -253,25 +255,34 @@ public abstract class Function<T> {
         private final DataType dataType;
         private final boolean optional;
         private final Object defaultValue;
+        private final boolean multiple;
 
-        private Parameter(String name, String documentation, DataType dataType) {
-            this(name, documentation, dataType, false, null);
+        private Parameter(final String name, final String documentation, final DataType dataType) {
+            this(name, documentation, dataType, false, null, false);
         }
 
-        private Parameter(String name, String documentation, DataType dataType, boolean optional, Object defaultValue) {
+        private Parameter(final String name, final String documentation, final DataType dataType,
+                          final boolean optional, final Object defaultValue, final boolean multiple) {
             this.name = name;
             this.documentation = documentation;
             this.dataType = dataType;
             this.optional = optional;
             this.defaultValue = defaultValue;
+            this.multiple = multiple;
         }
 
-        public static Parameter of(String name, String documentation, DataType dataType) {
+        public static Parameter of(final String name, final String documentation, final DataType dataType) {
             return new Parameter(name, documentation, dataType);
         }
 
-        public static Parameter of(String name, String documentation, DataType dataType, boolean optional, Object defaultValue) {
-            return new Parameter(name, documentation, dataType, optional, defaultValue);
+        public static Parameter of(final String name, final String documentation, final DataType dataType,
+                                   boolean optional, final Object defaultValue) {
+            return new Parameter(name, documentation, dataType, optional, defaultValue, false);
+        }
+
+        public static Parameter of(final String name, final String documentation, final DataType dataType,
+                                   final boolean optional, final Object defaultValue, final boolean multiple) {
+            return new Parameter(name, documentation, dataType, optional, defaultValue, multiple);
         }
 
         public String getName() {
@@ -292,6 +303,10 @@ public abstract class Function<T> {
 
         public Object getDefaultValue() {
             return defaultValue;
+        }
+
+        public boolean isMultiple() {
+            return multiple;
         }
 
         @Override

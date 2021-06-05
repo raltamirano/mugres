@@ -83,28 +83,46 @@ public class Song {
             for (final Party party : parties) {
                 final int startingOctave = random(RANDOM_STARTING_OCTAVE_OPTIONS);
                 final int octavesToGenerate = startingOctave < 4 ? random(RANDOM_OCTAVE_TO_GENERATE_OPTIONS) : 1;
-                if (RND.nextBoolean()) {
-                    final Map<String, Object> arguments = toMap(
-                            Random.SCALE, useSameScale ? scale : random(scales),
-                            Random.STARTING_OCTAVE, startingOctave,
-                            Random.OCTAVES_TO_GENERATE, octavesToGenerate,
-                            Random.ROOT, random(Note.values())
-                    );
-                    section.addPart(party, Call.of("random", section.getMeasures(), arguments));
-                } else {
-                    final Map<String, Object> arguments = toMap(
-                            TextMelody.SCALE, useSameScale ? scale : random(scales),
-                            TextMelody.STARTING_OCTAVE, startingOctave,
-                            TextMelody.OCTAVES_TO_GENERATE, octavesToGenerate,
-                            TextMelody.ROOT, random(Note.values()),
-                            TextMelody.SOURCE_TEXT, random(asList(
-                                    UUID.randomUUID().toString(),
-                                    UUID.randomUUID().toString(),
-                                    UUID.randomUUID().toString(),
-                                    UUID.randomUUID().toString(),
-                                    UUID.randomUUID().toString()))
-                    );
-                    section.addPart(party, Call.of("textMelody", section.getMeasures(), arguments));
+                switch(RND.nextInt(3)) {
+                    case 0: // Random
+                        final Map<String, Object> randomArguments = toMap(
+                                Random.SCALE, useSameScale ? scale : random(scales),
+                                Random.STARTING_OCTAVE, startingOctave,
+                                Random.OCTAVES_TO_GENERATE, octavesToGenerate,
+                                Random.ROOT, random(Note.values())
+                        );
+                        section.addPart(party, Call.of("random", section.getMeasures(), randomArguments));
+                        break;
+                    case 1: // Text Melody
+                        final Map<String, Object> textMelodyArguments = toMap(
+                                TextMelody.SCALE, useSameScale ? scale : random(scales),
+                                TextMelody.STARTING_OCTAVE, startingOctave,
+                                TextMelody.OCTAVES_TO_GENERATE, octavesToGenerate,
+                                TextMelody.ROOT, random(Note.values()),
+                                TextMelody.SOURCE_TEXT, random(asList(
+                                        UUID.randomUUID().toString(),
+                                        UUID.randomUUID().toString(),
+                                        UUID.randomUUID().toString(),
+                                        UUID.randomUUID().toString(),
+                                        UUID.randomUUID().toString()))
+                        );
+                        section.addPart(party, Call.of("textMelody", section.getMeasures(), textMelodyArguments));
+                        break;
+                    case 2: // Arp
+                        final Map<String, Object> arpArguments = toMap(
+                                TextMelody.SCALE, useSameScale ? scale : random(scales),
+                                TextMelody.STARTING_OCTAVE, startingOctave,
+                                TextMelody.OCTAVES_TO_GENERATE, octavesToGenerate,
+                                TextMelody.ROOT, random(Note.values()),
+                                TextMelody.SOURCE_TEXT, random(asList(
+                                        UUID.randomUUID().toString(),
+                                        UUID.randomUUID().toString(),
+                                        UUID.randomUUID().toString(),
+                                        UUID.randomUUID().toString(),
+                                        UUID.randomUUID().toString()))
+                        );
+                        section.addPart(party, Call.of("arp", section.getMeasures(), arpArguments));
+                        break;
                 }
             }
         }

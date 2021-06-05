@@ -112,6 +112,10 @@ public class Call<T> {
                 throw new RuntimeException(String.format("Unexpected parameter '%s' for function '%s'",
                         parameterName, functionName));
 
+            if (parameter.isMultiple())
+                throw new RuntimeException(String.format("Unsupported attribute 'multiple' on parameter '%s' for function '%s'",
+                        parameterName, functionName));
+
             Object argument = null;
             if (argumentString != null && !argumentString.isEmpty()) {
                 switch(parameter.getDataType()) {
