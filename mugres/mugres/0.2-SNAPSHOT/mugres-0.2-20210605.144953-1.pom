@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>mugres</groupId>
-    <artifactId>mugres-core</artifactId>
-    <version>0.15-SNAPSHOT</version>
-    <name>MUGRES Core lib</name>
+    <artifactId>mugres</artifactId>
+    <version>0.2-SNAPSHOT</version>
+    <name>MUGRES</name>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.6</version>
+            <version>2.7</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -52,7 +52,7 @@
                     <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
                     <branch>refs/heads/mvn-repo</branch> <!-- remote branch name -->
                     <includes><include>**/*</include></includes>
-                    <repositoryName>mugres-core</repositoryName> <!-- github repo name -->
+                    <repositoryName>mugres</repositoryName> <!-- github repo name -->
                     <repositoryOwner>raltamirano</repositoryOwner> <!-- organization or user name  -->
                 </configuration>
                 <executions> <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
