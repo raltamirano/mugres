@@ -14,6 +14,14 @@ public class MUGRES {
     private static Transmitter midiInputPort = null;
     private static Receiver midiOutputPort = null;
 
+    /** Port name for Gervill, the built-in Java synth. */
+    private static final String GERVILL = "Gervill";
+
+    static {
+        if (midiOutputPortName == null || midiOutputPortName.trim().isEmpty())
+            midiOutputPortName = GERVILL;
+    }
+
     private MUGRES() {}
 
     public static void useMidiInputPort(final String name) {
