@@ -3,9 +3,10 @@
   <groupId>mugres</groupId>
   <artifactId>mugres</artifactId>
   <versioning>
+    <release>0.2.0</release>
     <versions>
-      <version>0.2-SNAPSHOT</version>
+      <version>0.2.0</version>
     </versions>
-    <lastUpdated>20210605144953</lastUpdated>
+    <lastUpdated>20210605145244</lastUpdated>
   </versioning>
 </metadata>
