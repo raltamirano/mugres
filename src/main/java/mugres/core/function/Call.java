@@ -132,13 +132,14 @@ public class Call<T> {
                         argument = Pitch.of(argumentString);
                         break;
                     case SCALE:
-                        argument = Scale.of(argumentString);
+                        argument = Scale.of((areTextDelimitersPresent(argumentString) ? removeTextDelimiters(argumentString) : argumentString));
                         break;
                     case TEXT:
-                        if (!argumentString.startsWith("'") || !argumentString.endsWith("'"))
+                        if (areTextDelimitersPresent(argumentString))
+                            argument = removeTextDelimiters(argumentString);
+                        else
                             throw new IllegalArgumentException("TEXT function parameter's values must be " +
                                     "enclosed in single quotes (')");
-                        argument = argumentString.substring(1, argumentString.length() - 1);
                         break;
                     case INTEGER:
                         argument = Integer.parseInt(argumentString);
@@ -163,6 +164,14 @@ public class Call<T> {
             throw new IllegalArgumentException("Invalid function call arguments format: " + functionArguments);
 
         return of(function, arguments);
+    }
+
+    private static boolean areTextDelimitersPresent(final String input) {
+        return input.startsWith("'") && input.endsWith("'");
+    }
+
+    private static String removeTextDelimiters(final String input) {
+        return input.substring(1, input.length() - 1);
     }
 
     private static Function getFunction(final String functionName) {

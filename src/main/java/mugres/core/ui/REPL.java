@@ -22,6 +22,7 @@ import javax.sound.midi.Sequencer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -380,28 +381,24 @@ public class REPL {
     }
 
     private static boolean callsExecute(final String[] args) {
-        if (args.length != 2) {
-            System.out.println(args[0] + ": single argument expected: call function specification");
-        } else {
-            final Call call = Call.parse(args[1]);
+        final Call call = Call.parse(String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
 
-            Song functionCallSong = null;
-            switch(call.getFunction().getArtifact()) {
-                case SONG:
-                    functionCallSong = (Song)call.execute(functionCallsContext).getData();
-                    break;
-                case EVENTS:
-                    functionCallSong = Song.of(functionCallsContext, functionCallsParty, call);
-                    break;
-                default:
-                    System.out.println("Unhandled function artifact: " + call.getFunction().getArtifact());
-            }
+        Song functionCallSong = null;
+        switch(call.getFunction().getArtifact()) {
+            case SONG:
+                functionCallSong = (Song)call.execute(functionCallsContext).getData();
+                break;
+            case EVENTS:
+                functionCallSong = Song.of(functionCallsContext, functionCallsParty, call);
+                break;
+            default:
+                System.out.println("Unhandled function artifact: " + call.getFunction().getArtifact());
+        }
 
-            if (functionCallSong != null) {
-                final Performance performance = Performer.perform(functionCallSong);
-                final Sequence songMidiSequence = ToMidiSequenceConverter.getInstance().convert(performance);
-                playMidiSequence(songMidiSequence, false);
-            }
+        if (functionCallSong != null) {
+            final Performance performance = Performer.perform(functionCallSong);
+            final Sequence songMidiSequence = ToMidiSequenceConverter.getInstance().convert(performance);
+            playMidiSequence(songMidiSequence, false);
         }
 
         return true;
