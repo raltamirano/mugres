@@ -1,12 +1,28 @@
 package mugres.core.ui;
 
+import be.tarsos.dsp.pitch.PitchProcessor;
 import mugres.core.MUGRES;
+import mugres.core.audio.pitch.PitchDetector;
+import mugres.core.audio.utils.Mixers;
 import mugres.core.common.Context;
 import mugres.core.common.Key;
 import mugres.core.common.Party;
+import mugres.core.common.Pitch;
+import mugres.core.common.Played;
+import mugres.core.common.Signal;
 import mugres.core.common.TimeSignature;
+import mugres.core.common.io.Input;
+import mugres.core.common.io.MidiInput;
+import mugres.core.common.io.MidiOutput;
+import mugres.core.common.io.Output;
+import mugres.core.common.io.SimpleInput;
+import mugres.core.filter.builtin.arp.Arpeggiate;
+import mugres.core.filter.builtin.chords.Chorder;
+import mugres.core.filter.builtin.scales.ScaleEnforcer;
+import mugres.core.filter.builtin.system.Monitor;
 import mugres.core.function.Call;
 import mugres.core.function.Function;
+import mugres.core.live.processor.transformer.Transformer;
 import mugres.core.notation.Section;
 import mugres.core.notation.Song;
 import mugres.core.notation.performance.Performance;
@@ -19,6 +35,7 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
+import javax.sound.sampled.Mixer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -29,6 +46,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.UUID;
+
+import static mugres.core.audio.utils.Mixers.MixerCapabilities.RECORD;
+import static mugres.core.utils.Utils.toMap;
 
 public class REPL {
     private static File songFile;
@@ -37,6 +58,8 @@ public class REPL {
     private static Sequencer sequencer;
     private static Context functionCallsContext = Context.createBasicContext();
     private static Party functionCallsParty = Party.WellKnownParties.PIANO.getParty();
+    private static PitchDetector a2mPitchDetector = null;
+    private static Pitch lastDetectedPitch = null;
 
     private static String loopingSection = null;
     private static Sequence loopingSectionMidiSequence = null;
@@ -44,12 +67,18 @@ public class REPL {
     private static final Map<String, java.util.function.Function<String[], Boolean>> HANDLERS = new HashMap<>();
     private static final JSONReader SONG_JSON_READER = new JSONReader();
     private static FileWatcher songFileWatcher = null;
+    private static final PitchDetector.Listener a2mListener = createPitchDetectorListener();
+    private static Transformer transformer;
+    private static Input mugresInput;
+    private static Output mugresOutput;
 
     public static void main(String[] args) {
         loadCommandHandlers();
         createMidiSequencer();
+        setupIO();
+        configureTransformer();
 
-        System.out.println("Welcome to MUGRES.");
+        System.out.println("Welcome to MUGRES");
 
         final Scanner scanner = new Scanner(System.in);
         boolean running = true;
@@ -60,8 +89,13 @@ public class REPL {
                 running = executeCommand(line.split("\\s"));
         }
 
-        System.out.println("Goodbye.");
+        System.out.println("Goodbye");
         System.exit(0);
+    }
+
+    private static void setupIO() {
+        mugresInput = new MidiInput(MUGRES.getMidiInputPort());
+        mugresOutput = new MidiOutput(MUGRES.getMidiOutputPort());
     }
 
     private static void loadCommandHandlers() {
@@ -81,6 +115,9 @@ public class REPL {
         HANDLERS.put("calls-show-functions", REPL::callsShowFunctions);
         HANDLERS.put("calls-show-parties", REPL::callsShowAvailableParties);
         HANDLERS.put("call", REPL::callsExecute);
+        HANDLERS.put("a2m-start", REPL::a2mStart);
+        HANDLERS.put("a2m-stop", REPL::a2mStop);
+        HANDLERS.put("a2m-status", REPL::a2mStatus);
         HANDLERS.put("stop", REPL::stop);
         HANDLERS.put("quit", REPL::quit);
     }
@@ -416,6 +453,69 @@ public class REPL {
         return true;
     }
 
+    private static boolean a2mStart(final String[] args) {
+        if (args.length != 1) {
+            System.out.println(args[0] + ": no arguments expected");
+        } else {
+            if (a2mPitchDetector == null) {
+                final List<Mixer> mixers = Mixers.getMixers(RECORD);
+//                for (int i = 0; i < mixers.size(); i++) {
+//                    System.out.println(String.format("%d\t: %s", i, mixers.get(i).getMixerInfo().getName()));
+//                    for (final Line.Info target : mixers.get(i).getTargetLineInfo())
+//                        System.out.println(String.format("\t%s", target.toString()));
+//                }
+
+                a2mPitchDetector = PitchDetector.of(mixers.get(13), PitchProcessor.PitchEstimationAlgorithm.MPM);
+                a2mPitchDetector.addListener(a2mListener);
+                a2mPitchDetector.start();
+            } else {
+                System.out.println("Audio2MIDI already started!");
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean a2mStop(final String[] args) {
+        if (args.length != 1) {
+            System.out.println(args[0] + ": no arguments expected");
+        } else {
+            if (a2mPitchDetector != null) {
+                a2mPitchDetector.removeListener(a2mListener);
+                a2mPitchDetector.stop();
+                a2mPitchDetector = null;
+            } else {
+                System.out.println("Audio2MIDI not started!");
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean a2mStatus(final String[] args) {
+        if (args.length != 1) {
+            System.out.println(args[0] + ": no arguments expected");
+        } else {
+            System.out.println("Audio2MIDI started: " + (a2mPitchDetector != null));
+        }
+
+        return true;
+    }
+
+    private static PitchDetector.Listener createPitchDetectorListener() {
+        return ((timestamp, frequency, pitch, probability, rms) -> {
+//            System.out.println(pitch);
+            if (lastDetectedPitch != null && !lastDetectedPitch.equals(pitch))
+                mugresInput.send(Signal.of(UUID.randomUUID(), System.currentTimeMillis(), 1,
+                        Played.of(lastDetectedPitch, 100), false));
+            if (lastDetectedPitch == null || !lastDetectedPitch.equals(pitch)) {
+                lastDetectedPitch = pitch;
+                mugresInput.send(Signal.of(UUID.randomUUID(), System.currentTimeMillis(), 1,
+                        Played.of(pitch, 100), true));
+            }
+        });
+    }
+
     private static void playMidiSequence(final Sequence midiSequence, final boolean loop) {
         doStop();
 
@@ -448,5 +548,24 @@ public class REPL {
 
         if (sequencer.isRunning())
             sequencer.stop();
+    }
+
+    private static void configureTransformer() {
+        final mugres.core.live.processor.transformer.config.Configuration config =
+                new mugres.core.live.processor.transformer.config.Configuration();
+
+        final Context playContext = Context.ComposableContext.of(functionCallsContext);
+        config.appendFilter(Monitor.NAME, toMap("label", "MUGRES In"));
+        config.appendFilter(ScaleEnforcer.NAME, toMap("root", "C",
+                "scale", "Major",
+                "correctionMode", "UP"));
+        config.appendFilter(Chorder.NAME, toMap("chordMode", "DIATONIC"));
+        config.appendFilter(Arpeggiate.NAME, toMap("pattern", "1232"));
+
+        transformer = new Transformer(playContext,
+                mugresInput,
+                mugresOutput,
+                config);
+        transformer.start();
     }
 }

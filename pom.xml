@@ -26,6 +26,13 @@
             <version>2.7</version>
         </dependency>
         <dependency>
+            <groupId>be.tarsos</groupId>
+            <artifactId>tarsosdsp</artifactId>
+            <scope>system</scope>
+            <version>2.4</version>
+            <systemPath>${basedir}\src\lib\TarsosDSP-2.4.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.1.0</version>
