@@ -157,13 +157,13 @@ public abstract class Filter {
     }
 
     public static void activateSignal(final int channel, final Pitch pitch, final UUID eventId) {
-        SIGNALS[channel-1][pitch.getMidi()] = eventId;
+        SIGNALS[channel][pitch.getMidi()] = eventId;
         fireActivatedSignalNotification(eventId, channel, pitch);
     }
 
     public static void deactivateSignal(final int channel, final Pitch pitch) {
-        final UUID originalEventId = SIGNALS[channel-1][pitch.getMidi()];
-        SIGNALS[channel-1][pitch.getMidi()] = null;
+        final UUID originalEventId = SIGNALS[channel][pitch.getMidi()];
+        SIGNALS[channel][pitch.getMidi()] = null;
         if (originalEventId != null)
             fireDeactivatedSignalNotification(originalEventId, channel, pitch);
     }
@@ -177,7 +177,7 @@ public abstract class Filter {
     }
 
     public static boolean isSignalActive(final int channel, final Pitch pitch) {
-        return SIGNALS[channel-1][pitch.getMidi()] != null;
+        return SIGNALS[channel][pitch.getMidi()] != null;
     }
 
     private static void fireActivatedSignalNotification(final UUID eventId, final int channel, final Pitch pitch) {

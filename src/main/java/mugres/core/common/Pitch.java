@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.Math.log;
 import static mugres.core.common.Note.BASE_OCTAVE;
 
 public class Pitch implements Comparable<Pitch> {
@@ -20,6 +21,11 @@ public class Pitch implements Comparable<Pitch> {
         this.midi = midi;
         this.note = note;
         this.octave = octave;
+    }
+
+    public static Pitch ofFrequency(final float frequency) {
+        final int midi = (int) ((12 * log(frequency / 220.0) / log(2.0)) + 57.01);
+        return of(midi);
     }
 
     public Pitch up(final Interval interval) {

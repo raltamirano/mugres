@@ -77,7 +77,7 @@ public abstract class Processor<S> {
     }
 
     private Input.Listener createSignalListener() {
-        return this::doProcess;
+        return this::process;
     }
 
     private void process(final Signal signal) {
