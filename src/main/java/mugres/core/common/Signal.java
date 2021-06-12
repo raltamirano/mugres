@@ -20,6 +20,13 @@ public class Signal implements Cloneable {
         this.active = active;
     }
 
+    public static Signal of(final int packed) {
+        final boolean active = (packed % 10) == 1;
+        final int channelAndPlayed = packed / 10;
+        final int channel = channelAndPlayed % 100;
+        return Signal.of(UUID.randomUUID(), System.currentTimeMillis(), channel, Played.of(channelAndPlayed / 100), active);
+    }
+
     public static Signal on(final UUID eventId, final long time, final int channel, final Played played) {
         return of(eventId, time, channel, played, true);
     }
@@ -156,6 +163,10 @@ public class Signal implements Cloneable {
 
         final Set<String> tags = getAttribute(TAGS);
         return tags == null ? false : tags.contains(tag);
+    }
+
+    public int pack() {
+        return (((played.pack() * 100) + channel) * 10) + (active ? 1 : 0);
     }
 
     @Override

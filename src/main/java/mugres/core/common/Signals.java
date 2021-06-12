@@ -65,6 +65,10 @@ public class Signals {
         return signals.isEmpty();
     }
 
+    public int size() {
+        return signals.size();
+    }
+
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
