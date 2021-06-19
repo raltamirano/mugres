@@ -1,23 +1,20 @@
 package mugres.ipc.tcpip;
 
 import aquelarre.Client;
+import aquelarre.Node;
 import mugres.ipc.protocol.Message;
-import mugres.ipc.stream.DataInputStreamReader;
-import mugres.ipc.stream.DataOutputStreamWriter;
 
 import java.io.IOException;
 
 import static mugres.ipc.tcpip.MUGRESTCPIPServer.DEFAULT_PORT;
 
-public class MUGRESTCPIPClient {
+public class MUGRESTCPIPClient extends MUGRESTCPIPNode {
     private Client<Message> client;
-    private final AquelarreMessageReaderAdapter messageReader;
-    private final AquelarreMessageWriterAdapter messageWriter;
 
     private MUGRESTCPIPClient(final String host, final int port) {
-        messageReader = new AquelarreMessageReaderAdapter(new DataInputStreamReader());
-        messageWriter = new AquelarreMessageWriterAdapter(new DataOutputStreamWriter());
-        client = Client.of(host, port, messageReader, messageWriter);
+        super();
+
+        client = Client.of(host, port, reader(), writer());
     }
 
     public static MUGRESTCPIPClient of(final String host) {
@@ -48,7 +45,8 @@ public class MUGRESTCPIPClient {
         client.disconnect();
     }
 
-    public void broadcast(final Message message) throws IOException {
-        client.broadcast(message);
+    @Override
+    protected Node<Message> getAquelarreNode() {
+        return client;
     }
 }
