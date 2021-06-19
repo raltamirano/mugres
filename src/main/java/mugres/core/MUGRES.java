@@ -39,7 +39,8 @@ public class MUGRES {
             return midiInputPort;
 
         final String portName = midiInputPortName;
-        final List<MidiDevice.Info> candidates = Arrays.stream(MidiSystem.getMidiDeviceInfo())
+        final MidiDevice.Info[] midiDeviceInfo = MidiSystem.getMidiDeviceInfo();
+        final List<MidiDevice.Info> candidates = Arrays.stream(midiDeviceInfo)
                 .filter(d -> d.getName().equals(portName)).collect(Collectors.toList());
 
         MidiDevice midiDevice = null;
@@ -58,7 +59,12 @@ public class MUGRES {
             }
         }
 
-        throw new RuntimeException("Invalid MUGRES Midi input port: " + portName);
+        throw new RuntimeException(String.format("Invalid MUGRES MIDI input port: '%s'. Available ports: \n %s",
+                portName, Arrays.stream(midiDeviceInfo)
+                        .filter(MUGRES::isInputMidiDevice)
+                        .map(i -> String.format("\t%s", i.getName()))
+                        .collect(Collectors.joining("\n"))
+        ));
     }
 
     public static synchronized Receiver getMidiOutputPort() {
@@ -66,7 +72,8 @@ public class MUGRES {
             return midiOutputPort;
 
         final String portName = midiOutputPortName;
-        final List<MidiDevice.Info> candidates = Arrays.stream(MidiSystem.getMidiDeviceInfo())
+        final MidiDevice.Info[] midiDeviceInfo = MidiSystem.getMidiDeviceInfo();
+        final List<MidiDevice.Info> candidates = Arrays.stream(midiDeviceInfo)
                 .filter(d -> d.getName().equals(portName)).collect(Collectors.toList());
 
         MidiDevice midiDevice = null;
@@ -85,6 +92,49 @@ public class MUGRES {
             }
         }
 
-        throw new RuntimeException("Invalid MUGRES Midi output port: " + portName);
+        throw new RuntimeException(String.format("Invalid MUGRES MIDI output port: '%s'. Available ports: \n %s",
+                portName, Arrays.stream(midiDeviceInfo)
+                        .filter(MUGRES::isOutputMidiDevice)
+                        .map(i -> String.format("\t%s", i.getName()))
+                        .collect(Collectors.joining("\n"))
+        ));
+    }
+
+    private static boolean isInputMidiDevice(final MidiDevice.Info info) {
+        MidiDevice midiDevice = null;
+        try {
+            midiDevice = MidiSystem.getMidiDevice(info);
+            midiDevice.open();
+            midiDevice.getTransmitter();
+            return true;
+        } catch (final Throwable ignore) {
+            return false;
+        } finally {
+            if (midiDevice != null) {
+                try {
+                    midiDevice.close();
+                } catch (final Throwable ignore) {
+                }
+            }
+        }
+    }
+
+    private static boolean isOutputMidiDevice(final MidiDevice.Info info) {
+        MidiDevice midiDevice = null;
+        try {
+            midiDevice = MidiSystem.getMidiDevice(info);
+            midiDevice.open();
+            midiDevice.getReceiver();
+            return true;
+        } catch (final Throwable ignore) {
+            return false;
+        } finally {
+            if (midiDevice != null) {
+                try {
+                    midiDevice.close();
+                } catch (final Throwable ignore) {
+                }
+            }
+        }
     }
 }
