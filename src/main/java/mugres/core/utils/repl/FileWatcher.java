@@ -1,4 +1,4 @@
-package mugres.core.ui;
+package mugres.core.utils.repl;
 
 import java.io.File;
 import java.nio.file.*;

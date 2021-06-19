@@ -1,4 +1,4 @@
-package mugres.core.ui;
+package mugres.core.utils.repl;
 
 import mugres.core.MUGRES;
 import mugres.core.common.Context;
@@ -49,7 +49,7 @@ public class REPL {
         loadCommandHandlers();
         createMidiSequencer();
 
-        System.out.println("Welcome to MUGRES.");
+        System.out.println("Welcome to MUGRES");
 
         final Scanner scanner = new Scanner(System.in);
         boolean running = true;
@@ -60,7 +60,7 @@ public class REPL {
                 running = executeCommand(line.split("\\s"));
         }
 
-        System.out.println("Goodbye.");
+        System.out.println("Goodbye");
         System.exit(0);
     }
 
