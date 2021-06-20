@@ -11,7 +11,7 @@ public class MUGRESTCPIPServer extends MUGRESTCPIPNode {
     private MUGRESTCPIPServer(final int port) {
         super();
 
-        server = aquelarre.Server.of(port, MAX_CLIENTS, reader(), writer(), routingManager());
+        server = aquelarre.Server.of(port, MAX_CLIENTS, true, reader(), writer(), routingManager());
     }
 
     public static MUGRESTCPIPServer of() {
