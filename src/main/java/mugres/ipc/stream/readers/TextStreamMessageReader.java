@@ -9,6 +9,6 @@ import java.io.IOException;
 public class TextStreamMessageReader implements StreamMessageReader<TextMessage> {
     @Override
     public TextMessage read(final MessageType messageType, final DataInputStream dataInputStream) throws IOException {
-        return new TextMessage(dataInputStream.readUTF());
+        return TextMessage.of(dataInputStream.readUTF());
     }
 }

@@ -7,13 +7,17 @@ import mugres.ipc.protocol.MessageType;
 public class SignalsMessage extends Message {
     private final Signals signals;
 
-    public SignalsMessage(final Signals signals) {
+    private SignalsMessage(final Signals signals) {
         super(MessageType.SIGNALS);
 
         if (signals == null)
             throw new IllegalArgumentException("signals");
 
         this.signals = signals;
+    }
+
+    public static SignalsMessage of(final Signals signals) {
+        return new SignalsMessage(signals);
     }
 
     public Signals signals() {

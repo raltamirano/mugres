@@ -8,11 +8,10 @@ import java.io.IOException;
 
 public class MUGRESTCPIPServer extends MUGRESTCPIPNode {
     private final Server<Message> server;
-
     private MUGRESTCPIPServer(final int port) {
         super();
 
-        server = aquelarre.Server.of(port, reader(), writer());
+        server = aquelarre.Server.of(port, reader(), writer(), routingManager());
     }
 
     public static MUGRESTCPIPServer of() {
@@ -35,10 +34,15 @@ public class MUGRESTCPIPServer extends MUGRESTCPIPNode {
         server.stop();
     }
 
+    private AquelarreRoutingManager routingManager() {
+        return ROUTING_MANAGER;
+    }
+
     @Override
     protected Node<Message> getAquelarreNode() {
         return server;
     }
 
     public static final int DEFAULT_PORT = 6477;
+    private static final AquelarreRoutingManager ROUTING_MANAGER = new AquelarreRoutingManager();
 }

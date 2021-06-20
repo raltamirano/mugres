@@ -23,6 +23,6 @@ public class SignalsStreamMessageReader implements StreamMessageReader<SignalsMe
             signals.add(Signal.of(packedSignal));
         }
 
-        return new SignalsMessage(signals);
+        return SignalsMessage.of(signals);
     }
 }
