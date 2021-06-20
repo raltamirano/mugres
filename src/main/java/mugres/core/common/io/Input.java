@@ -1,5 +1,6 @@
 package mugres.core.common.io;
 
+import mugres.core.common.InstrumentChange;
 import mugres.core.common.Signal;
 
 import javax.sound.midi.Transmitter;
@@ -27,7 +28,12 @@ public abstract class Input {
         listeners.forEach(listener -> listener.receive(signal));
     }
 
+    public void send(final InstrumentChange instrumentChange) {
+        listeners.forEach(listener -> listener.receive(instrumentChange));
+    }
+
     public interface Listener {
         void receive(final Signal signal);
+        void receive(final InstrumentChange instrumentChange);
     }
 }

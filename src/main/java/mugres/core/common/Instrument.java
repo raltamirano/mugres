@@ -163,11 +163,19 @@ public enum Instrument {
                 id;
     }
 
-    public static Instrument getById(final int id) {
+    public static Instrument of(final int id) {
         for(Instrument instrument : values())
             if (instrument.id == id)
                 return instrument;
 
         throw new IllegalArgumentException("Unknown instrument with id=" + id);
+    }
+
+    public static Instrument of(final String name) {
+        for(Instrument instrument : values())
+            if (instrument.name.equals(name))
+                return instrument;
+
+        throw new IllegalArgumentException("Unknown instrument with name=" + name);
     }
 }

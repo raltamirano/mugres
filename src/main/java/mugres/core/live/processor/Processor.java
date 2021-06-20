@@ -1,6 +1,7 @@
 package mugres.core.live.processor;
 
 import mugres.core.common.Context;
+import mugres.core.common.InstrumentChange;
 import mugres.core.common.Signal;
 import mugres.core.common.io.Output;
 import mugres.core.common.io.Input;
@@ -77,7 +78,17 @@ public abstract class Processor<S> {
     }
 
     private Input.Listener createSignalListener() {
-        return this::process;
+        return new Input.Listener() {
+            @Override
+            public void receive(final Signal signal) {
+                doProcess(signal);
+            }
+
+            @Override
+            public void receive(final InstrumentChange instrumentChange) {
+                throw new RuntimeException("Not implemented!");
+            }
+        };
     }
 
     private void process(final Signal signal) {

@@ -18,7 +18,7 @@ public class PartyListStreamMessageReader implements StreamMessageReader<PartyLi
         final List<Party> partyList = new ArrayList<>();
         for(int i=0; i<numberOfParties; i++) {
             final String name = dataInputStream.readUTF();
-            final Instrument instrument = Instrument.getById(dataInputStream.readInt());
+            final Instrument instrument = Instrument.of(dataInputStream.readInt());
             partyList.add(new Party(name, instrument, 0));
         }
         return PartyListMessage.of(partyList);

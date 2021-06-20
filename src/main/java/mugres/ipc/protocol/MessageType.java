@@ -1,7 +1,7 @@
 package mugres.ipc.protocol;
 
 public enum MessageType {
-    SIGNALS(0, true, false),
+    SIGNALS(0, false, false),
     BYE(1, true, false),
     TEXT(2, false, false),
     SET_PARTY(3, true, false),

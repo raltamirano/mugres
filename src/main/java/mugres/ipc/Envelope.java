@@ -30,4 +30,9 @@ public class Envelope<T> {
     public T payload() {
         return payload;
     }
+
+    @Override
+    public String toString() {
+        return String.format("[%s->%s] %s", header.from(), header.to(), payload.toString());
+    }
 }

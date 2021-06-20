@@ -10,6 +10,6 @@ import java.io.IOException;
 public class SetPartyStreamMessageReader implements StreamMessageReader<SetPartyMessage> {
     @Override
     public SetPartyMessage read(final MessageType messageType, final DataInputStream dataInputStream) throws IOException {
-        return SetPartyMessage.of(Instrument.getById(dataInputStream.readInt()));
+        return SetPartyMessage.of(Instrument.of(dataInputStream.readInt()));
     }
 }

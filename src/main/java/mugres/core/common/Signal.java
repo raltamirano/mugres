@@ -85,6 +85,12 @@ public class Signal implements Cloneable {
         }
     }
 
+    public Signal modifiedChannel(final int newChannel) {
+        synchronized (attributesSyncObject) {
+            return of(eventId, time, newChannel, played, active, attributes);
+        }
+    }
+
     public Signal toOn() {
         if (active)
             return this;

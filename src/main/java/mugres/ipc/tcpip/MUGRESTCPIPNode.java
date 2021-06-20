@@ -42,6 +42,15 @@ public abstract class MUGRESTCPIPNode {
         getAquelarreNode().setMessageListener(listenerAdapter);
     }
 
+    public void send(final String to, final Message message) throws IOException {
+        getAquelarreNode().send(to, message);
+    }
+
+    /** Send a message targeted at the MUGRES server */
+    public void sendToServer(final Message message) throws IOException {
+        send(Node.SERVER, message);
+    }
+
     public void broadcast(final Message message) throws IOException {
         getAquelarreNode().broadcast(message);
     }

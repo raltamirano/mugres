@@ -11,11 +11,11 @@ public class MUGRESTCPIPServer extends MUGRESTCPIPNode {
     private MUGRESTCPIPServer(final int port) {
         super();
 
-        server = aquelarre.Server.of(port, reader(), writer(), routingManager());
+        server = aquelarre.Server.of(port, MAX_CLIENTS, reader(), writer(), routingManager());
     }
 
     public static MUGRESTCPIPServer of() {
-        return new MUGRESTCPIPServer(DEFAULT_PORT);
+        return of(DEFAULT_PORT);
     }
 
     public static MUGRESTCPIPServer of(final int port) {
@@ -44,5 +44,6 @@ public class MUGRESTCPIPServer extends MUGRESTCPIPNode {
     }
 
     public static final int DEFAULT_PORT = 6477;
+    public static final int MAX_CLIENTS = 16;
     private static final AquelarreRoutingManager ROUTING_MANAGER = new AquelarreRoutingManager();
 }
