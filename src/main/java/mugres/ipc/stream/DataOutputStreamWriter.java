@@ -6,6 +6,7 @@ import mugres.ipc.protocol.MessageType;
 import mugres.ipc.stream.writers.PlainStreamMessageWriter;
 import mugres.ipc.stream.writers.SignalsStreamMessageWriter;
 import mugres.ipc.stream.writers.StreamMessageWriter;
+import mugres.ipc.stream.writers.TextStreamMessageWriter;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -36,5 +37,6 @@ public class DataOutputStreamWriter implements Writer {
     private void configureWriters() {
         WRITERS.put(MessageType.SIGNALS, new SignalsStreamMessageWriter());
         WRITERS.put(MessageType.BYE, new PlainStreamMessageWriter());
+        WRITERS.put(MessageType.TEXT, new TextStreamMessageWriter());
     }
 }

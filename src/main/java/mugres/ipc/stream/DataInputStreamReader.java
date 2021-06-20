@@ -6,6 +6,7 @@ import mugres.ipc.protocol.MessageType;
 import mugres.ipc.stream.readers.PlainStreamMessageReader;
 import mugres.ipc.stream.readers.SignalsStreamMessageReader;
 import mugres.ipc.stream.readers.StreamMessageReader;
+import mugres.ipc.stream.readers.TextStreamMessageReader;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -36,5 +37,6 @@ public class DataInputStreamReader implements Reader {
     private void configureReaders() {
         READERS.put(MessageType.SIGNALS, new SignalsStreamMessageReader());
         READERS.put(MessageType.BYE, new PlainStreamMessageReader());
+        READERS.put(MessageType.TEXT, new TextStreamMessageReader());
     }
 }

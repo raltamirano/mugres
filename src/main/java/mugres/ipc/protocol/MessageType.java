@@ -2,7 +2,8 @@ package mugres.ipc.protocol;
 
 public enum MessageType {
     SIGNALS(0),
-    BYE(1);
+    BYE(1),
+    TEXT(2);
 
     private final int identifier;
 
