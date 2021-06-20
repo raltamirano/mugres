@@ -7,7 +7,6 @@ import mugres.ipc.stream.DataInputStreamReader;
 import mugres.ipc.stream.DataOutputStreamWriter;
 
 import java.io.IOException;
-import java.util.UUID;
 
 public abstract class MUGRESTCPIPNode {
     private Listener listener;
@@ -41,10 +40,6 @@ public abstract class MUGRESTCPIPNode {
             listenerAdapter = new AquelarreMessageListenerAdapter(listener);
 
         getAquelarreNode().setMessageListener(listenerAdapter);
-    }
-
-    public UUID nodeId() {
-        return getAquelarreNode().nodeId();
     }
 
     public void broadcast(final Message message) throws IOException {
