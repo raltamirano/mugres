@@ -6,5 +6,5 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 public interface Reader {
-    Message read(final DataInputStream dataInputStream) throws IOException;
+    Envelope<Message> read(final DataInputStream dataInputStream) throws IOException;
 }

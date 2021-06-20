@@ -1,5 +1,7 @@
 package mugres.ipc.stream;
 
+import mugres.ipc.Envelope;
+import mugres.ipc.Header;
 import mugres.ipc.Reader;
 import mugres.ipc.protocol.Message;
 import mugres.ipc.protocol.MessageType;
@@ -21,9 +23,11 @@ public class DataInputStreamReader implements Reader {
     }
 
     @Override
-    public Message read(final DataInputStream dataInputStream) throws IOException {
+    public Envelope<Message> read(final DataInputStream dataInputStream) throws IOException {
         if (dataInputStream == null)
             throw new IllegalArgumentException("dataInputStream");
+
+        final Header header = readEnvelopeHeader(dataInputStream);
 
         final int read = dataInputStream.readInt();
         final MessageType messageType = MessageType.forIdentifier(read);
@@ -31,7 +35,13 @@ public class DataInputStreamReader implements Reader {
         if (streamMessageReader == null)
             throw new RuntimeException(String.format("Internal error: No reader for Message Type '%s'", messageType));
 
-        return streamMessageReader.read(messageType, dataInputStream);
+        return Envelope.of(header, streamMessageReader.read(messageType, dataInputStream));
+    }
+
+    private Header readEnvelopeHeader(final DataInputStream dataInputStream) throws IOException {
+        final String from = dataInputStream.readUTF();
+        final String to = dataInputStream.readUTF();
+        return Header.of(from, to);
     }
 
     private void configureReaders() {

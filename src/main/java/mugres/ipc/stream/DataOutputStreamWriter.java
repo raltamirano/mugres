@@ -1,5 +1,7 @@
 package mugres.ipc.stream;
 
+import mugres.ipc.Envelope;
+import mugres.ipc.Header;
 import mugres.ipc.Writer;
 import mugres.ipc.protocol.Message;
 import mugres.ipc.protocol.MessageType;
@@ -21,17 +23,25 @@ public class DataOutputStreamWriter implements Writer {
     }
 
     @Override
-    public void write(final Message message, final DataOutputStream dataOutputStream) throws IOException {
+    public void write(final Envelope<Message> message, final DataOutputStream dataOutputStream) throws IOException {
         if (message == null)
             throw new IllegalArgumentException("message");
         if (dataOutputStream == null)
             throw new IllegalArgumentException("dataOutputStream");
 
-        final StreamMessageWriter writer = WRITERS.get(message.type());
-        if (writer == null)
-            throw new RuntimeException(String.format("Internal error: No writer for Message Type '%s'", message.type()));
+        writeEnvelopeHeader(message.header(), dataOutputStream);
 
-        writer.write(message, dataOutputStream);
+        final StreamMessageWriter writer = WRITERS.get(message.payload().type());
+        if (writer == null)
+            throw new RuntimeException(String.format("Internal error: No writer for Message Type '%s'",
+                    message.payload().type()));
+
+        writer.write(message.payload(), dataOutputStream);
+    }
+
+    private void writeEnvelopeHeader(final Header header, final DataOutputStream dataOutputStream) throws IOException {
+        dataOutputStream.writeUTF(header.from());
+        dataOutputStream.writeUTF(header.to());
     }
 
     private void configureWriters() {
