@@ -11,6 +11,7 @@ import mugres.core.common.Tonality;
 import mugres.core.common.Value;
 import mugres.core.function.Call;
 import mugres.core.function.builtin.arp.Arp2;
+import mugres.core.function.builtin.euclides.EuclidesPattern;
 import mugres.core.function.builtin.random.Random;
 import mugres.core.function.builtin.text.TextMelody;
 
@@ -26,8 +27,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static mugres.core.common.Value.EIGHTH;
+import static mugres.core.common.Value.HALF;
+import static mugres.core.common.Value.QUARTER;
 import static mugres.core.utils.Randoms.RND;
 import static mugres.core.utils.Randoms.random;
+import static mugres.core.utils.Randoms.randomBetween;
 import static mugres.core.utils.Utils.toMap;
 
 /** MUGRES internal representation of a song. */
@@ -90,7 +95,7 @@ public class Song {
                 final Scale actualScale = useSameScale ? scale : random(scales);
                 final int startingOctave = random(RANDOM_STARTING_OCTAVE_OPTIONS);
                 final int octavesToGenerate = startingOctave < 4 ? random(RANDOM_OCTAVE_TO_GENERATE_OPTIONS) : 1;
-                switch(RND.nextInt(3)) {
+                switch(RND.nextInt(4)) {
                     case 0: // Random
                         final Map<String, Object> randomArguments = toMap(
                                 Random.SCALE, actualScale,
@@ -122,6 +127,22 @@ public class Song {
                                 Arp2.PATTERN, randomArpPattern()
                         );
                         section.addPart(party, Call.of("arp2", section.getMeasures(), arpArguments));
+                        break;
+                    case 3: // Euclidean pattern
+                        int size = randomBetween(4, 32);
+
+                        final Map<String, Object> euclideanArguments = toMap(
+                                EuclidesPattern.SIZE, size,
+                                EuclidesPattern.EVENTS, randomBetween(1, size),
+                                EuclidesPattern.OFFSET, randomBetween(0, 4),
+                                EuclidesPattern.NOTE_VALUE, random(asList(HALF, QUARTER, EIGHTH)),
+                                EuclidesPattern.SCALE, actualScale,
+                                EuclidesPattern.STARTING_OCTAVE, startingOctave,
+                                EuclidesPattern.OCTAVES_TO_GENERATE, octavesToGenerate,
+                                EuclidesPattern.ROOT, actualRoot
+
+                        );
+                        section.addPart(party, Call.of("euclides", section.getMeasures(), euclideanArguments));
                         break;
                 }
             }
