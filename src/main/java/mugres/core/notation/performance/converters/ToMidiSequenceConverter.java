@@ -2,6 +2,7 @@ package mugres.core.notation.performance.converters;
 
 import mugres.core.common.Event;
 import mugres.core.common.Instrument;
+import mugres.core.common.Length;
 import mugres.core.notation.performance.Control;
 import mugres.core.notation.performance.Performance;
 
@@ -9,6 +10,7 @@ import javax.sound.midi.*;
 
 import static javax.sound.midi.Sequence.PPQ;
 import static javax.sound.midi.ShortMessage.*;
+import static mugres.core.common.Length.PPQN;
 
 public class ToMidiSequenceConverter implements Converter<Sequence> {
     private static final ToMidiSequenceConverter INSTANCE = new ToMidiSequenceConverter();
@@ -23,7 +25,7 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
     @Override
     public Sequence convert(final Performance performance) {
         try {
-            final Sequence sequence = new Sequence(PPQ, PPQ_RESOLUTION);
+            final Sequence sequence = new Sequence(PPQ, PPQN);
 
             // Control track (tempo, key, time signature)
             final Track controlTrack = sequence.createTrack();
@@ -39,12 +41,16 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
                     addNoteEvent(midiTrack, track.getChannel(), event);
             }
 
-            setSequenceLength(sequence, performance.getLength().toPPQTicks(PPQ_RESOLUTION));
+            setSequenceLength(sequence, performance.getLength());
 
             return sequence;
         } catch (final InvalidMidiDataException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void setSequenceLength(final Sequence sequence, final Length length) {
+        setSequenceLength(sequence, length.getLength());
     }
 
     public static void setSequenceLength(final Sequence sequence, final long lengthInTicks) {
@@ -54,7 +60,7 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
     private void setControlParameters(final Track controlTrack,
                                       final Control.ControlEvent controlEvent)
             throws InvalidMidiDataException {
-        final long ticks = controlEvent.getPosition().toPPQTicks(PPQ_RESOLUTION);
+        final long ticks = controlEvent.getPosition().getLength();
 
         // Tempo
         int mpq = (60_000_000 / controlEvent.getControl().getTempo());
@@ -80,7 +86,7 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
         timeSignatureMessage.setMessage(0x58, new byte[] {
                 (byte) numerator,
                 (byte) denominator,
-                (byte) PPQ_RESOLUTION,
+                (byte) PPQN,
                 (byte) 8 },4);
         final MidiEvent timeSignatureEvent = new MidiEvent(timeSignatureMessage, ticks);
         controlTrack.add(timeSignatureEvent);
@@ -102,7 +108,7 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
 
     private void addNoteEvent(final Track midiTrack, final int channel, Event event)
             throws InvalidMidiDataException {
-        long startTicks = event.getPosition().toPPQTicks(PPQ_RESOLUTION);
+        long startTicks = event.getPosition().getLength();
 
         final ShortMessage noteOn = new ShortMessage(NOTE_ON, channel, event.getPlayed().getPitch().getMidi(),
                 event.getPlayed().getVelocity());
@@ -110,9 +116,8 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
         final ShortMessage noteOff = new ShortMessage(NOTE_OFF, channel, event.getPlayed().getPitch().getMidi(),
                 0);
         midiTrack.add(new MidiEvent(noteOff, startTicks + event.getValue().length()
-                .toPPQTicks(PPQ_RESOLUTION)));
+                .getLength()));
     }
 
-    private static final int PPQ_RESOLUTION = 480;
     private static final String CONTROL_TRACK = "Control Track";
 }

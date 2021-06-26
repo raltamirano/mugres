@@ -1,13 +1,15 @@
 package mugres.core.common;
 
+import static mugres.core.common.Length.PPQN;
+
 public enum Value {
-    WHOLE("whole", Length.of(64), "w", 1),
-    HALF("half", Length.of(32), "h", 2),
-    QUARTER("quarter", Length.of(16), "q", 4),
-    EIGHTH("8th", Length.of(8), "e", 8),
-    SIXTEENTH("16th", Length.of(4), "s", 16),
-    THIRTY_SECOND("32th", Length.of(2), "t", 32),
-    SIXTY_FOURTH("64th", Length.of(1), "m", 64);
+    WHOLE("whole", Length.of(PPQN * 4), "w", 1),
+    HALF("half", Length.of(PPQN * 2), "h", 2),
+    QUARTER("quarter", Length.of(PPQN), "q", 4),
+    EIGHTH("8th", Length.of(PPQN/2), "e", 8),
+    SIXTEENTH("16th", Length.of(PPQN/4), "s", 16),
+    THIRTY_SECOND("32th", Length.of(PPQN/8), "t", 32),
+    SIXTY_FOURTH("64th", Length.of(PPQN/16), "m", 64);
 
     private final String label;
     private final Length length;

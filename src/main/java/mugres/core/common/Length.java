@@ -3,7 +3,7 @@ package mugres.core.common;
 import java.util.Objects;
 
 /**
- Lengths are measured with Value.SIXTY_FOURTH as the unit.
+ Lengths are measured as pulses per quarter note (PPQN). 1 quarter note = {@link #PPQN} pulses
  */
 public class Length implements Comparable<Length> {
     private final int n;
@@ -24,11 +24,7 @@ public class Length implements Comparable<Length> {
     }
 
     public long toMillis(final int bpm) {
-        return Math.round((60000.0 / bpm / 16.0) * n);
-    }
-
-    public long toPPQTicks(final int ppqResolution) {
-        return Math.round(n / 16.0 * (double)ppqResolution);
+        return Math.round((60000.0 / (float)bpm) * n);
     }
 
     public Length plus(final Value value) {
@@ -85,4 +81,14 @@ public class Length implements Comparable<Length> {
     public String toString() {
         return String.valueOf(n);
     }
+
+    /**
+     * Pulses Per Quarter Note
+     */
+    public static final int PPQN = 480;
+
+    /**
+     * Quarter Note Length
+     */
+    public static final Length QUARTER = Length.of(PPQN);
 }
