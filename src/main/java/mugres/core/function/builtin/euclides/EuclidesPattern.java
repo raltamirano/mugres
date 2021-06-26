@@ -22,14 +22,14 @@ import static mugres.core.utils.Randoms.RND;
 
 public class EuclidesPattern extends EventsFunction {
     public EuclidesPattern() {
-        super("euclides", "Generates an Euclidean pattern",
+        super("euclides-pattern", "Generates an Euclidean pattern",
                 Parameter.of(SIZE, "Total number of steps",
                         Parameter.DataType.INTEGER, false, 0),
                 Parameter.of(EVENTS, "Events to play",
                         Parameter.DataType.INTEGER, false, 0),
                 Parameter.of(OFFSET, "Pattern offset",
                         Parameter.DataType.INTEGER, true, 0),
-                Parameter.of(FIXED_PITCH, "Fixed pitch to play",
+                Parameter.of(PITCH, "Fixed pitch to play",
                         Parameter.DataType.PITCH, true, null),
                 Parameter.of(STARTING_OCTAVE, "Starting octave",
                         Parameter.DataType.INTEGER, true, BASE_OCTAVE),
@@ -51,7 +51,7 @@ public class EuclidesPattern extends EventsFunction {
         final int size = (int)arguments.get(SIZE);
         final int numberOfEvents = (int)arguments.get(EVENTS);
         final int offset = (int)arguments.get(OFFSET);
-        final Pitch fixedPitch = (Pitch)arguments.get(FIXED_PITCH);
+        final Pitch fixedPitch = (Pitch)arguments.get(PITCH);
         final Value noteValue = (Value)arguments.get(NOTE_VALUE);
         final Scale scale = (Scale)arguments.get(SCALE);
         final Note root = (Note)arguments.get(ROOT);
@@ -75,7 +75,7 @@ public class EuclidesPattern extends EventsFunction {
     public static final String SIZE = "size";
     public static final String EVENTS = "events";
     public static final String OFFSET = "offset";
-    public static final String FIXED_PITCH = "pitch";
+    public static final String PITCH = "pitch";
     public static final String STARTING_OCTAVE = "startingOctave";
     public static final String OCTAVES_TO_GENERATE = "octavesToGenerate";
     public static final String NOTE_VALUE = "noteValue";

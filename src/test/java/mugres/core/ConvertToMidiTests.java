@@ -23,7 +23,7 @@ public class ConvertToMidiTests {
     public void convertSimpleSong() {
         final Song song = Song.of("We will unit test you", createBasicContext());
         final Section section = song.createSection("A", 2);
-        song.getArrangement().addEntry(section, 1);
+        song.arrangement().append(section, 1);
 
         section.addPart(GUITAR1.getParty(), Call.of(random(), section.getMeasures()));
 
@@ -43,7 +43,7 @@ public class ConvertToMidiTests {
 
         assertNotNull(sequence);
         // # tracks for a type 1 Midi file = one for control of tempo, key, etc + one per party
-        assertEquals(song.getParties().size() + 1, sequence.getTracks().length);
+        assertEquals(song.parties().size() + 1, sequence.getTracks().length);
         // Expected events: set track name, tempo, time signature, and end-of-track
         assertEquals(4, sequence.getTracks()[0].size());
         // Expected events: one set track name, 16 note events (8 notes, each one get both a NOTE_ON

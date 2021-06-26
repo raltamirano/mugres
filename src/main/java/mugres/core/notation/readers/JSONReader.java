@@ -95,7 +95,7 @@ public class JSONReader implements Reader {
             if (section == null)
                 throw new RuntimeException("Invalid arrangement section: " + sectionName);
 
-            song.getArrangement().addEntry(section, repetitions);
+            song.arrangement().append(section, repetitions);
         }
 
         return song;

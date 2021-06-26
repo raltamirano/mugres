@@ -14,7 +14,11 @@ import mugres.core.function.builtin.arp.Arp2;
 import mugres.core.function.builtin.euclides.EuclidesPattern;
 import mugres.core.function.builtin.random.Random;
 import mugres.core.function.builtin.text.TextMelody;
+import mugres.core.notation.performance.Performance;
+import mugres.core.notation.performance.Performer;
+import mugres.core.notation.performance.converters.ToMidiSequenceConverter;
 
+import javax.sound.midi.Sequence;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,7 +62,7 @@ public class Song {
         final Song functionCallSong = new Song("Untitled", functionCallsContext);
         final Section section = functionCallSong.createSection("A", call.getLengthInMeasures());
         section.addPart(functionCallsParty, call);
-        functionCallSong.arrangement.addEntry(section, 1);
+        functionCallSong.arrangement.append(section, 1);
         return functionCallSong;
     }
 
@@ -142,7 +146,7 @@ public class Song {
                                 EuclidesPattern.ROOT, actualRoot
 
                         );
-                        section.addPart(party, Call.of("euclides", section.getMeasures(), euclideanArguments));
+                        section.addPart(party, Call.of("euclides-pattern", section.getMeasures(), euclideanArguments));
                         break;
                 }
             }
@@ -150,25 +154,25 @@ public class Song {
 
         switch(numberOfSections) {
             case 1:
-                song.getArrangement().addEntry(sections.get(0), random(RANDOM_SINGLE_SECTION_REPETITIONS));
+                song.arrangement().append(sections.get(0), random(RANDOM_SINGLE_SECTION_REPETITIONS));
                 break;
             case 2:
                 for(int i = 0; i < RANDOM_BASIC_ARRANGEMENT_ENTRIES; i++)
-                    song.getArrangement().addEntry(sections.get(i % 2), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
+                    song.arrangement().append(sections.get(i % 2), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
                 break;
             case 3:
                 final boolean thirdAsMiddle8 = RND.nextBoolean();
                 if (thirdAsMiddle8) {
                     for(int i = 0; i < RANDOM_BASIC_ARRANGEMENT_ENTRIES -2; i++)
-                        song.getArrangement().addEntry(sections.get(i % 2), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
-                    song.getArrangement().addEntry(sections.get(2), random(RANDOM_MIDDLE8_REPETITIONS));
-                    song.getArrangement().addEntry(sections.get(0), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
+                        song.arrangement().append(sections.get(i % 2), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
+                    song.arrangement().append(sections.get(2), random(RANDOM_MIDDLE8_REPETITIONS));
+                    song.arrangement().append(sections.get(0), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
                 } else {
                     for(int i = 0; i < RANDOM_BASIC_ARRANGEMENT_ENTRIES; i++)
-                        song.getArrangement().addEntry(sections.get(i % 3), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
+                        song.arrangement().append(sections.get(i % 3), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
                 }
                 for(int i = 0; i < RANDOM_BASIC_ARRANGEMENT_ENTRIES; i++)
-                    song.getArrangement().addEntry(sections.get(i % 2), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
+                    song.arrangement().append(sections.get(i % 2), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
                 break;
         }
 
@@ -222,7 +226,7 @@ public class Song {
         final Song sectionSong = Song.of(sectionName, context);
         sectionSong.parties.addAll(parties);
         sectionSong.sections.add(section);
-        sectionSong.arrangement.addEntry(section, 1);
+        sectionSong.arrangement.append(section, 1);
 
         return sectionSong;
     }
@@ -234,7 +238,7 @@ public class Song {
         parties.add(party);
     }
 
-    public Set<Section> getSections() {
+    public Set<Section> sections() {
         return Collections.unmodifiableSet(sections);
     }
 
@@ -246,12 +250,17 @@ public class Song {
         return null;
     }
 
-    public Set<Party> getParties() {
+    public Set<Party> parties() {
         return Collections.unmodifiableSet(parties);
     }
 
-    public Arrangement getArrangement() {
+    public Arrangement arrangement() {
         return arrangement;
+    }
+
+    public Sequence toMidiSequence() {
+        final Performance performance = Performer.perform(this);
+        return ToMidiSequenceConverter.getInstance().convert(performance);
     }
 
     @Override

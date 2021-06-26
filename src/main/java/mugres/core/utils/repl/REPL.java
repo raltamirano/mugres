@@ -184,7 +184,7 @@ public class REPL {
                 songFileWatcher.start();
 
                 int sectionId = 1;
-                final List<Section> sections = new ArrayList<>(song.getSections());
+                final List<Section> sections = new ArrayList<>(song.sections());
                 sections.sort(Comparator.comparing(Section::getName));
                 for (final Section section : sections)
                     sectionsMap.put(sectionId++, section.getName());
@@ -276,9 +276,7 @@ public class REPL {
     }
 
     private static void doPlaySong() {
-        final Performance performance = Performer.perform(song);
-        final Sequence songMidiSequence = ToMidiSequenceConverter.getInstance().convert(performance);
-        playMidiSequence(songMidiSequence, false);
+        playMidiSequence(song.toMidiSequence(), false);
     }
 
     private static void doPlaySection(final String sectionName, final boolean loop) {

@@ -29,6 +29,18 @@ public class EuclideanPattern {
         return new EuclideanPattern(size, events, offset);
     }
 
+    public int size() {
+        return size;
+    }
+
+    public int events() {
+        return events;
+    }
+
+    public int offset() {
+        return offset;
+    }
+
     public int[] pattern() {
         return pattern;
     }

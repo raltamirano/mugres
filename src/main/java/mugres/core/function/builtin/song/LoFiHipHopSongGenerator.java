@@ -38,7 +38,7 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
         // Alter prototype as a way of making an intro
 
         // Song's main development
-        song.getArrangement().addEntry(prototypeSection, 1);
+        song.arrangement().append(prototypeSection, 1);
 
         // Alter prototype as a way of making a bridge / variation
 

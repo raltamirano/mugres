@@ -60,6 +60,13 @@ public class Section {
         return Collections.unmodifiableMap(matrix);
     }
 
+    public void addPart(final Party.WellKnownParties party, final Call<List<Event>> call) {
+        if (party == null)
+            throw new IllegalArgumentException("party");
+
+        addPart(party.getParty(), call);
+    }
+
     public void addPart(final Party party, final Call<List<Event>> call) {
         if (party == null)
             throw new IllegalArgumentException("party");

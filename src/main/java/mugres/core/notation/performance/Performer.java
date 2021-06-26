@@ -21,10 +21,10 @@ public class Performer {
         addControlEvents(song, performance);
 
         Length offset = Length.ZERO;
-        for(Party party : song.getParties()) {
+        for(Party party : song.parties()) {
             final Track track = performance.createTrack(party);
             offset = Length.ZERO;
-            for(Arrangement.Entry arrangementEntry : song.getArrangement().getEntries()) {
+            for(Arrangement.Entry arrangementEntry : song.arrangement().entries()) {
                 for(int arrangementEntryIndex = 1; arrangementEntryIndex <= arrangementEntry.getRepetitions();
                     arrangementEntryIndex++) {
                     if (arrangementEntry.getSection().hasPartsFor(party)) {
@@ -83,7 +83,7 @@ public class Performer {
 
     private static void addControlEvents(final Song song, final Performance performance) {
         Length offset = Length.ZERO;
-        for(Arrangement.Entry arrangementEntry : song.getArrangement().getEntries()) {
+        for(Arrangement.Entry arrangementEntry : song.arrangement().entries()) {
             for (int arrangementEntryIndex = 1; arrangementEntryIndex <= arrangementEntry.getRepetitions();
                  arrangementEntryIndex++) {
 

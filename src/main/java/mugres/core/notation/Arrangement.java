@@ -7,11 +7,11 @@ import java.util.List;
 public class Arrangement {
     private final List<Entry> entries = new ArrayList<>();
 
-    public void addEntry(final Section section, final int repetitions) {
+    public void append(final Section section, final int repetitions) {
         entries.add(new Entry(section, repetitions));
     }
 
-    public List<Entry> getEntries() {
+    public List<Entry> entries() {
         return Collections.unmodifiableList(entries);
     }
 
