@@ -87,7 +87,8 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
                 (byte) numerator,
                 (byte) denominator,
                 (byte) PPQN,
-                (byte) 8 },4);
+                (byte) 8
+        },4);
         final MidiEvent timeSignatureEvent = new MidiEvent(timeSignatureMessage, ticks);
         controlTrack.add(timeSignatureEvent);
 

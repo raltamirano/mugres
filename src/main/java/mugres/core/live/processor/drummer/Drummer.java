@@ -18,6 +18,7 @@ import javax.sound.midi.*;
 import java.util.UUID;
 
 import static java.lang.System.currentTimeMillis;
+import static mugres.core.common.MIDI.END_OF_TRACK;
 import static mugres.core.common.Party.WellKnownParties.DRUMS;
 
 public class Drummer extends Processor {
@@ -44,6 +45,7 @@ public class Drummer extends Processor {
         checkSuitableOutput(output);
 
         this.configuration = configuration;
+        // FIXME
         this.outputPort = ((MidiOutput)output).getMidiOutputPort();
         this.sequencer = createSequencer();
 
@@ -261,8 +263,6 @@ public class Drummer extends Processor {
             }
         }
     }
-
-    private static final int END_OF_TRACK = 0x2F;
 
     public enum SwitchMode {
         NORMAL,

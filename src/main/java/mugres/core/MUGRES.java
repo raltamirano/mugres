@@ -1,5 +1,10 @@
 package mugres.core;
 
+import mugres.core.common.io.Input;
+import mugres.core.common.io.MidiInput;
+import mugres.core.common.io.MidiOutput;
+import mugres.core.common.io.Output;
+
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Receiver;
@@ -11,6 +16,8 @@ import java.util.stream.Collectors;
 public class MUGRES {
     private static String midiInputPortName = System.getProperty("mugres.inputPort");
     private static String midiOutputPortName = System.getProperty("mugres.outputPort");
+    private static Input input = null;
+    private static Output output = null;
     private static Transmitter midiInputPort = null;
     private static Receiver midiOutputPort = null;
 
@@ -32,6 +39,22 @@ public class MUGRES {
     public static void useMidiOutputPort(final String name) {
         midiOutputPortName = name;
         midiOutputPort = null;
+    }
+
+    public static synchronized Input input() {
+        if (input != null)
+            return input;
+
+        input = MidiInput.of(getMidiInputPort());
+        return input;
+    }
+
+    public static synchronized Output output() {
+        if (output != null)
+            return output;
+
+        output = MidiOutput.of(getMidiOutputPort());
+        return output;
     }
 
     public static synchronized Transmitter getMidiInputPort() {

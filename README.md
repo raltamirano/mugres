@@ -1,6 +1,12 @@
 # mugres
 MUGRES is a tool to ease music composition and performance
 
+### Programmatic usage
+
+Try making some noise by using the following code:
+
+    Song.of(Call.of("random", 4)).play();
+
 ### REPL
 MUGRES comes with a basic REPL so you can play with it, test features and more.
 

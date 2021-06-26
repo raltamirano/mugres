@@ -13,6 +13,7 @@ import mugres.core.notation.performance.Performance;
 import mugres.core.notation.performance.Performer;
 import mugres.core.notation.performance.converters.ToMidiSequenceConverter;
 import mugres.core.notation.readers.JSONReader;
+import mugres.core.utils.RandomSong;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
@@ -37,10 +38,8 @@ public class REPL {
     private static Sequencer sequencer;
     private static Context functionCallsContext = Context.createBasicContext();
     private static Party functionCallsParty = Party.WellKnownParties.PIANO.getParty();
-
     private static String loopingSection = null;
     private static Sequence loopingSectionMidiSequence = null;
-
     private static final Map<String, java.util.function.Function<String[], Boolean>> HANDLERS = new HashMap<>();
     private static final JSONReader SONG_JSON_READER = new JSONReader();
     private static FileWatcher songFileWatcher = null;
@@ -181,6 +180,7 @@ public class REPL {
                     } catch (final Throwable t) {
                     }
                 songFileWatcher = new FileWatcher(songFile, REPL::onSongFileChanged);
+                songFileWatcher.setDaemon(true);
                 songFileWatcher.start();
 
                 int sectionId = 1;
@@ -232,7 +232,7 @@ public class REPL {
         if (args.length != 1) {
             System.out.println(args[0] + ": no arguments expected");
         } else {
-            song = Song.randomSong();
+            song = RandomSong.randomSong();
             doPlaySong();
         }
 
@@ -289,9 +289,8 @@ public class REPL {
         }
     }
 
-    private static Sequence createSectionSongMidiSequence(String sectionName) {
-        final Performance performance = Performer.perform(song.createSectionSong(sectionName));
-        return ToMidiSequenceConverter.getInstance().convert(performance);
+    private static Sequence createSectionSongMidiSequence(final String sectionName) {
+        return song.createSectionSong(sectionName).toMidiSequence();
     }
 
     private static boolean sections(final String[] args) {
