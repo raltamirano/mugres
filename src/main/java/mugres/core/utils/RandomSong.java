@@ -104,11 +104,11 @@ public class RandomSong {
                         section.addPart(party, Call.of("arp2", section.getMeasures(), arpArguments));
                         break;
                     case 3: // Euclidean pattern
-                        int size = randomBetween(4, 32);
+                        int steps = randomBetween(4, 32);
 
                         final Map<String, Object> euclideanArguments = toMap(
-                                EuclidesPattern.SIZE, size,
-                                EuclidesPattern.EVENTS, randomBetween(1, size),
+                                EuclidesPattern.STEPS, steps,
+                                EuclidesPattern.EVENTS, randomBetween(1, steps),
                                 EuclidesPattern.OFFSET, randomBetween(0, 4),
                                 EuclidesPattern.NOTE_VALUE, random(asList(HALF, QUARTER, EIGHTH)),
                                 EuclidesPattern.SCALE, actualScale,

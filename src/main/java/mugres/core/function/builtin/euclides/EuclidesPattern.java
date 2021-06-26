@@ -23,7 +23,7 @@ import static mugres.core.utils.Randoms.RND;
 public class EuclidesPattern extends EventsFunction {
     public EuclidesPattern() {
         super("euclides-pattern", "Generates an Euclidean pattern",
-                Parameter.of(SIZE, "Total number of steps",
+                Parameter.of(STEPS, "Total number of steps",
                         Parameter.DataType.INTEGER, false, 0),
                 Parameter.of(EVENTS, "Events to play",
                         Parameter.DataType.INTEGER, false, 0),
@@ -48,7 +48,7 @@ public class EuclidesPattern extends EventsFunction {
     protected List<Event> doExecute(final Context context, final Map<String, Object> arguments) {
         final List<Event> events = new ArrayList<>();
         final Length length = lengthFromNumberOfMeasures(context, arguments);
-        final int size = (int)arguments.get(SIZE);
+        final int size = (int)arguments.get(STEPS);
         final int numberOfEvents = (int)arguments.get(EVENTS);
         final int offset = (int)arguments.get(OFFSET);
         final Pitch fixedPitch = (Pitch)arguments.get(PITCH);
@@ -60,19 +60,20 @@ public class EuclidesPattern extends EventsFunction {
         final List<Pitch> pitches = scale.pitches(root, octavesToGenerate, startingOctave);
         final EuclideanPattern pattern = EuclideanPattern.of(size, numberOfEvents, offset);
 
+        final Length stepSize = length.divide(pattern.steps());
         Length actualPosition = Length.ZERO;
         int counter = 0;
         while(actualPosition.getLength() < length.getLength()) {
             if (pattern.eventAt(counter++))
                 events.add(Event.of(actualPosition, fixedPitch != null ? fixedPitch : pitches.get(RND.nextInt(pitches.size())),
                         noteValue, 100));
-            actualPosition = actualPosition.plus(noteValue);
+            actualPosition = actualPosition.plus(stepSize);
         }
 
         return events;
     }
 
-    public static final String SIZE = "size";
+    public static final String STEPS = "steps";
     public static final String EVENTS = "events";
     public static final String OFFSET = "offset";
     public static final String PITCH = "pitch";

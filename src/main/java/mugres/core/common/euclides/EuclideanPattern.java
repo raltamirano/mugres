@@ -1,36 +1,36 @@
 package mugres.core.common.euclides;
 
 public class EuclideanPattern {
-    private final int size;
+    private final int steps;
     private final int events;
     private final int offset;
     private final int[] pattern;
 
-    private EuclideanPattern(final int size, final int events, final int offset) {
-        if (size <= 0)
-            throw new IllegalArgumentException("Size must be > 0");
+    private EuclideanPattern(final int steps, final int events, final int offset) {
+        if (steps <= 0)
+            throw new IllegalArgumentException("Steps must be > 0");
         if (events < 0)
             throw new IllegalArgumentException("Events must be >= 0");
-        if (events > size)
+        if (events > steps)
             throw new IllegalArgumentException("Events must be <= Size");
 
-        this.size = size;
+        this.steps = steps;
         this.events = events;
         this.offset = offset;
 
         pattern = calculatePattern();
     }
 
-    public static EuclideanPattern of(final int size, final int events) {
-        return of(size, events, 0);
+    public static EuclideanPattern of(final int steps, final int events) {
+        return of(steps, events, 0);
     }
 
-    public static EuclideanPattern of(final int size, final int events, final int offset) {
-        return new EuclideanPattern(size, events, offset);
+    public static EuclideanPattern of(final int steps, final int events, final int offset) {
+        return new EuclideanPattern(steps, events, offset);
     }
 
-    public int size() {
-        return size;
+    public int steps() {
+        return steps;
     }
 
     public int events() {
@@ -46,21 +46,21 @@ public class EuclideanPattern {
     }
 
     public boolean eventAt(final int position) {
-        return pattern[position % size] == 1;
+        return pattern[position % steps] == 1;
     }
 
     private int[] calculatePattern() {
-        final int[] pattern = new int[size];
+        final int[] pattern = new int[steps];
 
         int bucket = 0;
-        for(int i=0; i<size; i++) {
+        for(int s = 0; s < steps; s++) {
             bucket += events;
 
-            if (bucket >= size) {
-                bucket -= size;
-                pattern[i] = 1;
-            } else if (bucket < size)
-                pattern[i] = 0;
+            if (bucket >= steps) {
+                bucket -= steps;
+                pattern[s] = 1;
+            } else if (bucket < steps)
+                pattern[s] = 0;
         }
 
         return rotate(pattern, offset + 1);
@@ -70,8 +70,8 @@ public class EuclideanPattern {
         final int[] rotated = new int[pattern.length];
         final int val = pattern.length - offset;
 
-        for(int i=0; i<pattern.length; i++)
-            rotated[i] = pattern[Math.abs((i+val) % pattern.length)];
+        for(int s = 0; s < pattern.length; s++)
+            rotated[s] = pattern[Math.abs((s+val) % pattern.length)];
 
         return rotated;
     }

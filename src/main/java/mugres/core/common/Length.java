@@ -43,6 +43,10 @@ public class Length implements Comparable<Length> {
         return new Length(this.n * factor);
     }
 
+    public Length divide(final int factor) {
+        return new Length(this.n / factor);
+    }
+
     /** Greater than */
     public boolean greaterThan(final Length other) {
         return this.n > other.n;
