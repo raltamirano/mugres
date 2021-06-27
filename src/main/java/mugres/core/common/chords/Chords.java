@@ -19,7 +19,7 @@ public class Chords {
         final Scale scale = key.defaultScale();
         final List<Integer> scaleDegrees = rangeClosed(1, scale.degrees());
         final List<Integer> roots = randoms(scaleDegrees, 4, false);
-        final ChordProgression progression = ChordProgression.of(measures);
+        final ChordProgression progression = ChordProgression.of(context, measures);
         final boolean alterChords = measures > 4 || RND.nextBoolean();
 
         Length at = Length.ZERO;

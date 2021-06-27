@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.unmodifiableList;
 import static mugres.core.common.Note.BASE_OCTAVE;
 
 /**
@@ -20,10 +21,13 @@ public class Chord {
     private final List<Interval> intervals;
 
     private Chord(final Note root, final String name, final List<Interval> intervals) {
+        if (intervals == null || intervals.isEmpty())
+            throw new IllegalArgumentException("No intervals specified!");
+
         this.root = root;
         this.type = Type.CUSTOM;
         this.name = name;
-        this.intervals = null;
+        this.intervals = intervals;
     }
 
     private Chord(final Note root, final Type type) {
@@ -44,11 +48,15 @@ public class Chord {
         return new Chord(root, type);
     }
 
-    public Note getRoot() {
+    public String name() {
+        return name;
+    }
+
+    public Note root() {
         return root;
     }
 
-    public Type getType() {
+    public Type type() {
         return type;
     }
 
@@ -56,15 +64,15 @@ public class Chord {
         return String.format("%s%s", root.label(), type.notation() );
     }
 
-    public List<Interval> getIntervals() {
-        return type == Type.CUSTOM ? intervals : type.getIntervals();
+    public List<Interval> intervals() {
+        return unmodifiableList(type == Type.CUSTOM ? intervals : type.getIntervals());
     }
 
     public List<Note> notes() {
         final List<Note> notes = new ArrayList<>();
 
         notes.add(root);
-        notes.addAll(getIntervals().stream().map(Interval::semitonesFromRoot).map(root::up).collect(Collectors.toList()));
+        notes.addAll(intervals().stream().map(Interval::semitonesFromRoot).map(root::up).collect(Collectors.toList()));
 
         return notes;
     }
@@ -79,7 +87,7 @@ public class Chord {
         final Pitch rootPitch = root.pitch(octave);
         pitches.add(rootPitch);
 
-        final List<Interval> intervalList = getIntervals();
+        final List<Interval> intervalList = intervals();
         int semitones = 0;
         for(int index = 0; index < intervalList.size(); index++) {
             semitones += intervalList.get(index).semitonesFromRoot();

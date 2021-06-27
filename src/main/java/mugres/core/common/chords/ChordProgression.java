@@ -1,72 +1,93 @@
 package mugres.core.common.chords;
 
+import mugres.core.common.Context;
 import mugres.core.common.Length;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class ChordProgression {
+    private final Context context;
     private final int measures;
-    private final List<ChordEvent> events = new ArrayList<>();
+    private final Length length;
+    private final Map<Length, ChordEvent> events = new TreeMap<>();
 
-    private ChordProgression(final int measures) {
+    private ChordProgression(final Context context, final int measures) {
+        if (context == null)
+            throw new IllegalArgumentException("context");
+        if (measures <= 0)
+            throw new IllegalArgumentException("measures must be > 0!");
+
+        this.context = context;
         this.measures = measures;
+        length = context.timeSignature().measuresLength(measures);
     }
 
-    public static ChordProgression of(final int measures) {
-        return new ChordProgression(measures);
+    public static ChordProgression of(final Context context, final int measures) {
+        return new ChordProgression(context, measures);
     }
 
     public ChordProgression event(final Chord chord, final Length at) {
-        events.add(new ChordEvent(chord, at));
+        if (at.greaterThan(length))
+            throw new IllegalArgumentException("Chord event position exceeds chord progression length!");
+
+        final ChordEvent chordEvent = new ChordEvent(chord, at);
+        events.put(at, chordEvent);
         return this;
     }
 
-    public ChordProgression event(final Chord chord, final Length at, final int octave) {
-        events.add(new ChordEvent(chord, at,octave));
-        return this;
+    public Chord chordAt(final Length position) {
+        if (position.greaterThan(length))
+            throw new IllegalArgumentException("Position outside of chord progression!");
+
+        if (events.isEmpty())
+            return null;
+
+        for(final Map.Entry<Length, ChordEvent> entry : events.entrySet())
+            if (position.greaterThanOrEqual(entry.getKey()))
+                return entry.getValue().chord();
+
+        throw new RuntimeException("Internal error getting chord from chord progression");
     }
 
-    public int getMeasures() {
+    public int measures() {
         return measures;
     }
 
-    public List<ChordEvent> getEvents() {
-        return Collections.unmodifiableList(events);
+    public Length length() {
+        return length;
+    }
+
+    public Map<Length, ChordEvent> events() {
+        return Collections.unmodifiableMap(events);
     }
 
     public static class ChordEvent {
         private final Chord chord;
         private final Length position;
-        private final Integer octave;
 
         private ChordEvent(final Chord chord, final Length position) {
             this.chord = chord;
             this.position = position;
-            this.octave = null;
         }
 
-        private ChordEvent(final Chord chord, final Length position, final int octave) {
-            this.chord = chord;
-            this.position = position;
-            this.octave = octave;
-        }
-
-        public Chord getChord() {
+        public Chord chord() {
             return chord;
         }
 
-        public Length getPosition() {
+        public Length position() {
             return position;
         }
 
-        public Integer getOctave() {
-            return octave;
-        }
-
         public String notation() {
-            return chord.notation() + (octave != null  ? " [" + octave + "]" : "");
+            return chord.notation();
         }
     }
 }

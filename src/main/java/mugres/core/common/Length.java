@@ -52,6 +52,10 @@ public class Length implements Comparable<Length> {
         return this.n > other.n;
     }
 
+    public boolean greaterThanOrEqual(final Length other) {
+        return this.n >= other.n;
+    }
+
     /** Less than */
     public boolean lessThan(final Length other) {
         return this.n < other.n;
@@ -59,6 +63,10 @@ public class Length implements Comparable<Length> {
 
     public boolean lessThanOrEqual(final Length other) {
         return this.equals(other) || this.lessThan(other);
+    }
+
+    public Length mod(final Length other) {
+        return new Length(this.n % other.n);
     }
 
     public static final Length ZERO = Length.of(0);

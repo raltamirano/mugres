@@ -1,6 +1,13 @@
 package mugres.core.function.builtin.song;
 
-import mugres.core.common.*;
+import mugres.core.common.Context;
+import mugres.core.common.Direction;
+import mugres.core.common.Event;
+import mugres.core.common.Instrument;
+import mugres.core.common.Key;
+import mugres.core.common.Length;
+import mugres.core.common.Note;
+import mugres.core.common.Party;
 import mugres.core.common.chords.ChordProgression;
 import mugres.core.function.Call;
 import mugres.core.function.Function;
@@ -74,32 +81,28 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
         final Direction[] directions = directionsSequence();
         int octave = BASE_OCTAVE;
         final StringBuilder progression = new StringBuilder();
-        final List<ChordProgression.ChordEvent> events = section.context().chordProgression().getEvents();
+        final Map<Length, ChordProgression.ChordEvent> events = section.context().chordProgression().events();
         for(int index = 0; index < events.size(); index++) {
             if (index > 0) progression.append("|");
 
-            if (events.get(index).getOctave() != null) {
-                octave = events.get(index).getOctave();
-            } else {
-                final int aux = index % (directions.length + 1);
-                if (aux == 0)
-                    octave = BASE_OCTAVE;
-                else {
-                    final Direction direction = directions[aux - 1];
-                    final Note lastRoot = events.get(index - 1).getChord().getRoot();
-                    final Note currentRoot = events.get(index).getChord().getRoot();
+            final int aux = index % (directions.length + 1);
+            if (aux == 0)
+                octave = BASE_OCTAVE;
+            else {
+                final Direction direction = directions[aux - 1];
+                final Note lastRoot = events.get(index - 1).chord().root();
+                final Note currentRoot = events.get(index).chord().root();
 
-                    if (lastRoot.number() != currentRoot.number()) {
-                        if (direction == ASCENDING) {
-                            octave = (lastRoot.number() < currentRoot.number()) ? octave : octave + 1;
-                        } else {
-                            octave = (lastRoot.number() > currentRoot.number()) ? octave : octave - 1;
-                        }
+                if (lastRoot.number() != currentRoot.number()) {
+                    if (direction == ASCENDING) {
+                        octave = (lastRoot.number() < currentRoot.number()) ? octave : octave + 1;
+                    } else {
+                        octave = (lastRoot.number() > currentRoot.number()) ? octave : octave - 1;
                     }
                 }
             }
 
-            progression.append(events.get(index).getChord().notation());
+            progression.append(events.get(index).chord().notation());
             progression.append(" [").append(octave).append("]");
         }
 
@@ -118,7 +121,7 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
         final StringBuilder progression = new StringBuilder();
 
         boolean first = true;
-        for (ChordProgression.ChordEvent c : section.context().chordProgression().getEvents()) {
+        for (ChordProgression.ChordEvent c : section.context().chordProgression().events().values()) {
             if (!first) progression.append("|");
             progression.append(c.notation());
             progression.append(" [4]");
