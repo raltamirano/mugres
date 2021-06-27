@@ -24,7 +24,9 @@ public class Euclides extends EventsFunction {
         super("euclides", "Plays an Euclidean polyrhythm",
                 Parameter.of(PATTERNS, "Patterns",
                         Parameter.DataType.INTEGER, false, emptyList(), true),
-                Parameter.of(PITCHES, "Pitches to play",
+                Parameter.of(PITCHES, "Pitches for every pattern (same order)",
+                        Parameter.DataType.PITCH, true, null, true),
+                Parameter.of(OFFSETS, "Offsets for every pattern (same order)",
                         Parameter.DataType.PITCH, true, null, true),
                 Parameter.of(STARTING_OCTAVE, "Starting octave",
                         Parameter.DataType.INTEGER, true, BASE_OCTAVE),
@@ -43,22 +45,30 @@ public class Euclides extends EventsFunction {
         final Length length = lengthFromNumberOfMeasures(context, arguments);
         final List<Integer> patterns = (List<Integer>)arguments.get(PATTERNS);
         final List<Pitch> fixedPitches = (List<Pitch>)arguments.get(PITCHES);
+        final List<Integer> offsets = (List<Integer>)arguments.get(OFFSETS);
         final Scale scale = (Scale)arguments.get(SCALE);
         final Note root = (Note)arguments.get(ROOT);
         final int startingOctave = (int)arguments.get(STARTING_OCTAVE);
         final int octavesToGenerate = (int)arguments.get(OCTAVES_TO_GENERATE);
         final List<Pitch> pitches = scale.pitches(root, octavesToGenerate, startingOctave);
 
+        if (fixedPitches != null && fixedPitches.size() != patterns.size())
+            throw new IllegalArgumentException("When provided, number of fixed pitches must match number patterns");
+        if (offsets != null && offsets.size() != patterns.size())
+            throw new IllegalArgumentException("When provided, number of offsets must match number patterns");
+
         int patternIndex = 0;
         for(int p : patterns) {
-            final EuclideanPattern pattern = EuclideanPattern.of(PATTERN_RESOLUTION, p, 0);
+            final int offset = offsets == null ? 0 : offsets.get(patternIndex);
+            final EuclideanPattern pattern = EuclideanPattern.of(PATTERN_RESOLUTION, p, offset);
             final Length stepSize = context.timeSignature().measureLength().divide(pattern.steps());
             Length actualPosition = Length.ZERO;
             int counter = 0;
+            int eventCounter = 0;
             while (actualPosition.length() < length.length()) {
                 if (pattern.eventAt(counter++)) {
                     final Pitch pitch = fixedPitches != null ? fixedPitches.get(patternIndex % fixedPitches.size()) : pitches.get(RND.nextInt(pitches.size()));
-                    events.add(Event.of(actualPosition, pitch, stepSize, 100));
+                    events.add(Event.of(actualPosition, pitch, stepSize, eventCounter++ % pattern.events() == 0 ? HARD : SOFT));
                 }
                 actualPosition = actualPosition.plus(stepSize);
             }
@@ -70,10 +80,13 @@ public class Euclides extends EventsFunction {
 
     public static final String PATTERNS = "patterns";
     public static final String PITCHES = "pitches";
+    public static final String OFFSETS = "offsets";
     public static final String STARTING_OCTAVE = "startingOctave";
     public static final String OCTAVES_TO_GENERATE = "octavesToGenerate";
     public static final String SCALE = "scale";
     public static final String ROOT = "root";
 
     private static final int PATTERN_RESOLUTION = 128;
+    private static final int HARD = 110;
+    private static final int SOFT = 100;
 }
