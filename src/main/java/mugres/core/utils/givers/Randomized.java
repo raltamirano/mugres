@@ -2,6 +2,7 @@ package mugres.core.utils.givers;
 
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static mugres.core.utils.Randoms.RND;
 
 public class Randomized<T> extends AbstractGiver<T> {
@@ -12,6 +13,10 @@ public class Randomized<T> extends AbstractGiver<T> {
             throw new IllegalArgumentException("source");
 
         this.source = source;
+    }
+
+    public static <X> Randomized<X> of(final X... source) {
+        return of(asList(source));
     }
 
     public static <X> Randomized<X> of(final List<X> source) {

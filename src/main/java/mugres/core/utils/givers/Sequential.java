@@ -2,6 +2,8 @@ package mugres.core.utils.givers;
 
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 public class Sequential<T> extends AbstractGiver<T> {
     private int counter;
     private final List<T> source;
@@ -11,6 +13,10 @@ public class Sequential<T> extends AbstractGiver<T> {
             throw new IllegalArgumentException("source");
 
         this.source = source;
+    }
+
+    public static <X> Sequential<X> of(final X... source) {
+        return of(asList(source));
     }
 
     public static <X> Sequential<X> of(final List<X> source) {

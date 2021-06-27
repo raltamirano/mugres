@@ -10,7 +10,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static mugres.core.common.Note.BASE_OCTAVE;
-import static mugres.core.common.chords.Type.*;
+import static mugres.core.common.chords.Type.AUGMENTED_7TH;
+import static mugres.core.common.chords.Type.DIMINISHED_7TH;
+import static mugres.core.common.chords.Type.DOMINANT_7TH;
+import static mugres.core.common.chords.Type.HALF_DIMINISHED;
+import static mugres.core.common.chords.Type.MAJOR_7TH;
+import static mugres.core.common.chords.Type.MINOR_7TH;
+import static mugres.core.common.chords.Type.MIN_MAJ_7TH;
+import static mugres.core.common.chords.Type.POWER_CHORD_SUS3RD;
 
 public enum Scale {
     MAJOR("Major", Tonality.MAJOR,
@@ -123,6 +130,13 @@ public enum Scale {
         return pitches;
     }
 
+    public Note noteAtDegree(final Note root, final int degree) {
+        if (degree <= 0 || degree > intervals.length)
+            throw new IllegalArgumentException("Interval number for scale must be 0 < n <= " + intervals.length + "!");
+
+        return root.up(semitonesAtDegree(degree));
+    }
+
     public Pitch pitchAtDegree(final Note scaleRoot, final int degree) {
         return pitchAtDegree(scaleRoot, degree, BASE_OCTAVE);
     }
@@ -168,21 +182,32 @@ public enum Scale {
         return semitones;
     }
 
-    public List<Pitch> harmonize(final Note scaleRoot, final Note startingAt,
-                                 final Interval.Type intervalType, final int numberOfNotes) {
-        return harmonize(scaleRoot, startingAt, intervalType, numberOfNotes, BASE_OCTAVE);
+    public List<Pitch> harmonize(final Note scaleRoot, final int startingAtDegree,
+                                 final Interval.Type intervalType, final int numberOfPitches) {
+        return harmonize(scaleRoot, noteAtDegree(scaleRoot, startingAtDegree), intervalType, numberOfPitches);
     }
 
-    public List<Pitch> harmonize(final Note scaleRoot, final Note startingAt,
-                                 final Interval.Type intervalType, final int numberOfNotes,
+    public List<Pitch> harmonize(final Note scaleRoot, final Note startingAtNote,
+                                 final Interval.Type intervalType, final int numberOfPitches) {
+        return harmonize(scaleRoot, startingAtNote, intervalType, numberOfPitches, BASE_OCTAVE);
+    }
+
+    public List<Pitch> harmonize(final Note scaleRoot, final int startingAtDegree,
+                                 final Interval.Type intervalType, final int numberOfPitches,
+                                 final int baseOctave) {
+        return harmonize(scaleRoot, noteAtDegree(scaleRoot, startingAtDegree), intervalType, numberOfPitches, baseOctave);
+    }
+
+    public List<Pitch> harmonize(final Note scaleRoot, final Note startingAtNote,
+                                 final Interval.Type intervalType, final int numberOfPitches,
                                  final int baseOctave) {
         final List<Pitch> result = new ArrayList<>();
 
         final List<Pitch> pitches = pitches(scaleRoot, 4, baseOctave - 1);
         for(int i = 0; i < pitches.size(); i++) {
             Pitch pitch = pitches.get(i);
-            if (pitch.note().equals(startingAt) && pitch.octave() == baseOctave) {
-                for(int j = 0; j < numberOfNotes; j ++)
+            if (pitch.note().equals(startingAtNote) && pitch.octave() == baseOctave) {
+                for(int j = 0; j < numberOfPitches; j ++)
                     result.add(pitches.get(i + (j * intervalType.scaleSteps())));
                 break;
             }
