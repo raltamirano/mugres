@@ -28,11 +28,16 @@ public class Randoms {
         return random(new ArrayList<>(items), avoid);
     }
 
+
     public static <X> X random(final List<X> items, final X... avoid) {
+        return random(items, asList(avoid));
+    }
+
+    public static <X> X random(final List<X> items, final List<X> avoid) {
         if (items.isEmpty())
             return null;
 
-        final Set<X> avoidSet = new HashSet<>(asList(avoid));
+        final Set<X> avoidSet = new HashSet<>(avoid);
         for(int i=0; i<10_000; i++) { // safety loop
             final X item = items.get(RND.nextInt(items.size()));
             if (!avoidSet.contains(item))

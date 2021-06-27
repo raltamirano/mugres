@@ -1,6 +1,7 @@
 package mugres.core.utils;
 
 import mugres.core.common.Context;
+import mugres.core.common.DrumKit;
 import mugres.core.common.Instrument;
 import mugres.core.common.Interval;
 import mugres.core.common.Note;
@@ -26,7 +27,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.lang.Math.min;
 import static java.util.Arrays.asList;
+import static mugres.core.common.MIDI.PERCUSSION;
 import static mugres.core.utils.Randoms.RND;
 import static mugres.core.utils.Randoms.random;
 import static mugres.core.utils.Randoms.randomBetween;
@@ -43,6 +46,14 @@ public class RandomSong {
         final int numberOfParties = RND.nextInt(RANDOM_MAX_PARTIES) + 1;
         for(int i = 0; i < numberOfParties; i++)
             parties.add(new Party("Party " + i, random(Instrument.values(), Instrument.DrumKit), i));
+
+        final boolean hasPercussion = RND.nextBoolean();
+        final boolean percussionAlwaysPresent = RND.nextBoolean();
+        final boolean alwaysSamePercussionStyle = RND.nextBoolean();
+        final PercussionStyle percussionStyle = alwaysSamePercussionStyle ?
+                random(asList(PercussionStyle.values())) : null;
+        final Party percussionParty = hasPercussion ?
+                new Party("Percussion", Instrument.DrumKit, PERCUSSION) : null;
 
         final List<Section> sections = new ArrayList<>();
         final int numberOfSections = RND.nextInt(RANDOM_MAX_SECTIONS) + 1;
@@ -112,10 +123,37 @@ public class RandomSong {
                                 Euclides.SCALE, actualScale,
                                 Euclides.STARTING_OCTAVE, startingOctave,
                                 Euclides.OCTAVES_TO_GENERATE, octavesToGenerate,
-                                Euclides.ROOT, actualRoot
+                                Euclides.ROOT, actualRoot,
+                                Euclides.CYCLE, section.context().timeSignature().measuresLength(RND.nextBoolean() ? 1 : 2)
                         );
                         section.addPart(party, Call.of("euclides", section.measures(), euclidesArguments));
                         break;
+                }
+            }
+
+            if (hasPercussion) {
+                if (percussionAlwaysPresent || RND.nextBoolean()) {
+                    final PercussionStyle style = alwaysSamePercussionStyle ?
+                            percussionStyle : random(asList(PercussionStyle.values()));
+
+                    switch (style) {
+                        case EUCLIDEAN:
+                            final List<EuclideanPattern> patterns = new ArrayList<>();
+                            final List<DrumKit> kitPieces = new ArrayList<>();
+                            for(int i = MIN_EUCLIDES_PATTERNS; i <= MAX_EUCLIDES_PATTERNS; i++) {
+                                patterns.add(EuclideanPattern.of(EUCLIDES_STEPS,
+                                        randomBetween(MIN_EUCLIDES_PERCUSSION_PATTERN_EVENTS, MAX_EUCLIDES_PERCUSSION_PATTERN_EVENTS)));
+                                kitPieces.add(random(asList(DrumKit.values()), kitPieces));
+                            }
+
+                            final Map<String, Object> euclidesArguments = toMap(
+                                    Euclides.PATTERNS, patterns,
+                                    Euclides.PITCHES, kitPieces.stream().map(DrumKit::pitch).collect(Collectors.toList()),
+                                    Euclides.CYCLE, section.context().timeSignature().measuresLength(min((RND.nextBoolean() ? 1 : 2), section.measures()))
+                            );
+                            section.addPart(percussionParty, Call.of("euclides", section.measures(), euclidesArguments));
+                            break;
+                    }
                 }
             }
         }
@@ -179,5 +217,11 @@ public class RandomSong {
     private static final int MAX_EUCLIDES_PATTERNS = 5;
     private static final int MIN_EUCLIDES_PATTERN_EVENTS = 1;
     private static final int MAX_EUCLIDES_PATTERN_EVENTS = 16;
+    private static final int MIN_EUCLIDES_PERCUSSION_PATTERN_EVENTS = 1;
+    private static final int MAX_EUCLIDES_PERCUSSION_PATTERN_EVENTS = 8;
     private static final int EUCLIDES_STEPS = 16;
+
+    private enum PercussionStyle {
+        EUCLIDEAN
+    }
 }
