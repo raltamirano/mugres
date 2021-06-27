@@ -8,6 +8,7 @@ import mugres.core.common.Party;
 import mugres.core.common.Scale;
 import mugres.core.common.Tonality;
 import mugres.core.common.Value;
+import mugres.core.common.euclides.EuclideanPattern;
 import mugres.core.function.Call;
 import mugres.core.function.builtin.arp.Arp2;
 import mugres.core.function.builtin.euclides.Euclides;
@@ -101,9 +102,10 @@ public class RandomSong {
                         section.addPart(party, Call.of("arp2", section.measures(), arpArguments));
                         break;
                     case 3: // Euclidean patterns
-                        final List<Integer> patterns = new ArrayList<>();
+                        final List<EuclideanPattern> patterns = new ArrayList<>();
                         for(int i = MIN_EUCLIDES_PATTERNS; i <= MAX_EUCLIDES_PATTERNS; i++)
-                            patterns.add(randomBetween(MIN_EUCLIDES_PATTERN_EVENTS, MAX_EUCLIDES_PATTERN_EVENTS));
+                            patterns.add(EuclideanPattern.of(EUCLIDES_STEPS,
+                                    randomBetween(MIN_EUCLIDES_PATTERN_EVENTS, MAX_EUCLIDES_PATTERN_EVENTS)));
 
                         final Map<String, Object> euclidesArguments = toMap(
                                 Euclides.PATTERNS, patterns,
@@ -176,5 +178,6 @@ public class RandomSong {
     private static final int MIN_EUCLIDES_PATTERNS = 2;
     private static final int MAX_EUCLIDES_PATTERNS = 5;
     private static final int MIN_EUCLIDES_PATTERN_EVENTS = 1;
-    private static final int MAX_EUCLIDES_PATTERN_EVENTS = 12;
+    private static final int MAX_EUCLIDES_PATTERN_EVENTS = 16;
+    private static final int EUCLIDES_STEPS = 16;
 }

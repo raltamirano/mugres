@@ -359,6 +359,8 @@ public abstract class Function<T> {
             VARIANT,
             /** True/False values */
             BOOLEAN,
+            /** Euclidean pattern */
+            EUCLIDEAN_PATTERN,
             /** Unknown */
             UNKNOWN
         }
