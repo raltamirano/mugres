@@ -9,7 +9,7 @@ import mugres.core.function.builtin.drums.BlastBeat;
 import mugres.core.function.builtin.drums.Drums;
 import mugres.core.function.builtin.drums.HalfTime;
 import mugres.core.function.builtin.drums.HipHopBeat;
-import mugres.core.function.builtin.euclides.EuclidesPattern;
+import mugres.core.function.builtin.euclides.Euclides;
 import mugres.core.function.builtin.random.Random;
 import mugres.core.function.builtin.riffer.Riffer;
 import mugres.core.function.builtin.song.LoFiHipHopSongGenerator;
@@ -211,7 +211,7 @@ public abstract class Function<T> {
         new BlackMetal();
         new LoFiHipHopSongGenerator();
         new TextMelody();
-        new EuclidesPattern();
+        new Euclides();
     }
 
     private static synchronized void register(final Function function) {

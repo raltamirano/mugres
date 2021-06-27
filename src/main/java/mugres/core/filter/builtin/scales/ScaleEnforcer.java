@@ -31,7 +31,7 @@ public class ScaleEnforcer extends Filter {
         final CorrectionMode correctionMode = getCorrectionMode(arguments);
 
         for(final Signal in : signals.signals()) {
-            if (scaleNotes.contains(in.getPlayed().getPitch().getNote()))
+            if (scaleNotes.contains(in.getPlayed().pitch().getNote()))
                 result.add(in);
             else
                 try {
@@ -61,21 +61,21 @@ public class ScaleEnforcer extends Filter {
     }
 
     private void correctUp(final Signals result, final List<Note> scaleNotes, final Signal in) {
-        Pitch newPitch = in.getPlayed().getPitch();
+        Pitch newPitch = in.getPlayed().pitch();
         while(!scaleNotes.contains(newPitch.getNote()))
             newPitch = newPitch.up(1);
-        if (newPitch.getMidi() < in.getPlayed().getPitch().getMidi())
+        if (newPitch.getMidi() < in.getPlayed().pitch().getMidi())
             newPitch = newPitch.up(Interval.OCTAVE);
-        result.add(in.modifiedPlayed(Played.of(newPitch, in.getPlayed().getVelocity())));
+        result.add(in.modifiedPlayed(Played.of(newPitch, in.getPlayed().velocity())));
     }
 
     private void correctDown(final Signals result, final List<Note> scaleNotes, final Signal in) {
-        Pitch newPitch = in.getPlayed().getPitch();
+        Pitch newPitch = in.getPlayed().pitch();
         while(!scaleNotes.contains(newPitch.getNote()))
             newPitch = newPitch.down(1);
-        if (newPitch.getMidi() > in.getPlayed().getPitch().getMidi())
+        if (newPitch.getMidi() > in.getPlayed().pitch().getMidi())
             newPitch = newPitch.down(Interval.OCTAVE);
-        result.add(in.modifiedPlayed(Played.of(newPitch, in.getPlayed().getVelocity())));
+        result.add(in.modifiedPlayed(Played.of(newPitch, in.getPlayed().velocity())));
     }
 
     private List<Note> getScaleNotes(final Context context, final Map<String, Object> arguments) {

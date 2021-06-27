@@ -33,10 +33,7 @@ public class Performer {
                                 generatedMatrix.get(arrangementEntry.getSection().getName()).containsKey(party.getName())) {
                             for (Event event : generatedMatrix.get(arrangementEntry.getSection().getName())
                                     .get(party.getName())) {
-                                track.addEvent(Event.of(event.getPosition().plus(offset),
-                                        event.getPlayed().getPitch(),
-                                        event.getValue(),
-                                        event.getPlayed().getVelocity()));
+                                track.addEvent(event.offset(offset));
                             }
                         } else {
                             if (!generatedMatrix.containsKey(arrangementEntry.getSection().getName()))
@@ -50,14 +47,8 @@ public class Performer {
                                 if (functionResult.succeeded()) {
                                     final List<Event> events = sortEventList(functionResult.getData());
                                     for (Event event : events) {
-                                        track.addEvent(Event.of(event.getPosition().plus(offset).plus(previousCallsOffset),
-                                                event.getPlayed().getPitch(),
-                                                event.getValue(),
-                                                event.getPlayed().getVelocity()));
-                                        partyEvents.add(Event.of(event.getPosition().plus(previousCallsOffset),
-                                                event.getPlayed().getPitch(),
-                                                event.getValue(),
-                                                event.getPlayed().getVelocity()));
+                                        track.addEvent(event.offset(offset.plus(previousCallsOffset)));
+                                        partyEvents.add(event.offset(previousCallsOffset));
                                     }
                                     previousCallsOffset = previousCallsOffset.plus(callContext.getTimeSignature()
                                             .measuresLength(call.getLengthInMeasures()));
@@ -106,7 +97,7 @@ public class Performer {
 
     private static List<Event> sortEventList(final List<Event> events) {
         final List<Event> sortedEventList = new ArrayList<>(events);
-        sortedEventList.sort(Comparator.comparing(Event::getPosition));
+        sortedEventList.sort(Comparator.comparing(Event::position));
         return sortedEventList;
     }
 }

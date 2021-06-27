@@ -52,7 +52,7 @@ public class Transpose extends Filter {
         if (semitones == 0)
             return played;
 
-        final int target = played.getPitch().getMidi() + semitones;
+        final int target = played.pitch().getMidi() + semitones;
         if (!isValidMidiNoteNumber(target))
             return played;
 

@@ -21,11 +21,11 @@ public class Played implements Cloneable {
         return new Played(pitch, velocity);
     }
 
-    public Pitch getPitch() {
+    public Pitch pitch() {
         return pitch;
     }
 
-    public int getVelocity() {
+    public int velocity() {
         return velocity;
     }
 

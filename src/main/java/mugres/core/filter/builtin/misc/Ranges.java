@@ -39,7 +39,7 @@ public class Ranges extends Filter {
         for(final Signal in : signals.signals()) {
             boolean matched = false;
             for(final Range range : ranges) {
-                if (!range.isRemaining() && range.contains(in.getPlayed().getPitch())) {
+                if (!range.isRemaining() && range.contains(in.getPlayed().pitch())) {
                     matched = true;
                     in.addTag(range.getTag());
                     break;

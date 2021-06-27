@@ -41,22 +41,22 @@ public class Chorder extends Filter {
             switch (getChordMode(arguments)) {
                 case DIATONIC:
                     final Key key = getKey(context);
-                    if (key.notes().contains(in.getPlayed().getPitch().getNote())) {
+                    if (key.notes().contains(in.getPlayed().pitch().getNote())) {
                         final int numberOfNotes = getNumberOfNotes(arguments);
-                        chordPitches = key.chord(in.getPlayed().getPitch(), numberOfNotes);
+                        chordPitches = key.chord(in.getPlayed().pitch(), numberOfNotes);
                     } else {
                         // Discard notes outside the key
                         chordPitches = emptyList();
                     }
                     break;
                 case FIXED:
-                    chordPitches = Chord.of(in.getPlayed().getPitch().getNote(), getChordType(arguments))
-                            .pitches(in.getPlayed().getPitch().getOctave());
+                    chordPitches = Chord.of(in.getPlayed().pitch().getNote(), getChordType(arguments))
+                            .pitches(in.getPlayed().pitch().getOctave());
                     ;
                     break;
                 case RANDOM:
-                    chordPitches = Chord.of(in.getPlayed().getPitch().getNote(), random(Arrays.asList(Type.values()), CUSTOM))
-                            .pitches(in.getPlayed().getPitch().getOctave());
+                    chordPitches = Chord.of(in.getPlayed().pitch().getNote(), random(Arrays.asList(Type.values()), CUSTOM))
+                            .pitches(in.getPlayed().pitch().getOctave());
                     ;
                     break;
                 default:
@@ -66,7 +66,7 @@ public class Chorder extends Filter {
 
             if (!chordPitches.isEmpty()) {
                 for (final Pitch pitch : chordPitches) {
-                    result.add(in.modifiedPlayed(Played.of(pitch, in.getPlayed().getVelocity())));
+                    result.add(in.modifiedPlayed(Played.of(pitch, in.getPlayed().velocity())));
                 }
             }
         }

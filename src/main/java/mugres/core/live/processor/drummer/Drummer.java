@@ -75,7 +75,7 @@ public class Drummer extends Processor {
         if (!signal.isActive())
             return;
 
-        final Action action = configuration.getAction(signal.getPlayed().getPitch().getMidi());
+        final Action action = configuration.getAction(signal.getPlayed().pitch().getMidi());
         if (action != null)
             action.execute(getContext(),this);
     }
@@ -189,7 +189,7 @@ public class Drummer extends Processor {
         if (velocity > 0)
             getOutput().send(Signal.on(UUID.randomUUID(), currentTimeMillis(),
                     DRUMS.getParty().getChannel(),
-                    Played.of(piece.getPitch(), velocity)));
+                    Played.of(piece.pitch(), velocity)));
     }
 
     public void play(final String grooveName, final SwitchMode switchMode) {

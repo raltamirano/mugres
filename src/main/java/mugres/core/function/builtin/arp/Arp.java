@@ -1,6 +1,10 @@
 package mugres.core.function.builtin.arp;
 
-import mugres.core.common.*;
+import mugres.core.common.Context;
+import mugres.core.common.Event;
+import mugres.core.common.Length;
+import mugres.core.common.Pitch;
+import mugres.core.common.Value;
 import mugres.core.function.Function.EventsFunction;
 import mugres.core.function.Result;
 
@@ -10,7 +14,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
-import static mugres.core.function.Function.Parameter.DataType.*;
+import static mugres.core.function.Function.Parameter.DataType.BOOLEAN;
+import static mugres.core.function.Function.Parameter.DataType.INTEGER;
+import static mugres.core.function.Function.Parameter.DataType.TEXT;
 import static mugres.core.function.builtin.arp.Utils.ARP_PATTERN;
 import static mugres.core.function.builtin.arp.Utils.REST;
 import static mugres.core.function.builtin.arp.Utils.parseNoteValue;
@@ -56,7 +62,7 @@ public class Arp extends EventsFunction {
 
     private static List<Length> extractPositions(final List<Event> data) {
         return data.stream()
-                .map(Event::getPosition)
+                .map(Event::position)
                 .distinct()
                 .sorted()
                 .collect(Collectors.toList());
@@ -64,7 +70,7 @@ public class Arp extends EventsFunction {
 
     private static List<Event> getChordEvents(final List<Event> data, final Length position) {
         return data.stream()
-                .filter(e -> e.getPosition().equals(position))
+                .filter(e -> e.position().equals(position))
                 .collect(Collectors.toList());
     }
 
@@ -72,9 +78,9 @@ public class Arp extends EventsFunction {
                                           final int octavesUp, final int octavesDown,
                                           final boolean restart) {
         final List<Event> arpeggio = new ArrayList<>();
-        final Length totalLength = chord.get(0).getValue().length();
+        final Length totalLength = chord.get(0).length();
 
-        Length position = chord.get(0).getPosition();
+        Length position = chord.get(0).position();
         Length controlLength = Length.ZERO;
 
         if (restart)
@@ -94,7 +100,7 @@ public class Arp extends EventsFunction {
                 if (!isRest) {
                     final int index = Integer.parseInt(element) - 1;
                     final Event event = index >= 0 && index < chord.size() ? chord.get(index) : chord.get(0);
-                    arpeggio.add(Event.of(position, getActualPitch(event.getPlayed().getPitch(), octavesUp, octavesDown), actualValue, event.getPlayed().getVelocity()));
+                    arpeggio.add(Event.of(position, getActualPitch(event.played().pitch(), octavesUp, octavesDown), actualValue, event.played().velocity()));
                 }
 
                 position = position.plus(value.length());

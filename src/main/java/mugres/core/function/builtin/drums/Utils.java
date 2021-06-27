@@ -34,7 +34,7 @@ public class Utils {
                 final DrumKit drumKitElement = DrumKit.valueOf(hit.getElement());
                 final int velocity = hit.getData().getIntensity().getVelocity();
 
-                events.add(Event.of(position, Pitch.of(drumKitElement.getMidi()),
+                events.add(Event.of(position, Pitch.of(drumKitElement.midi()),
                         source.getDivision(), velocity));
             }
         }

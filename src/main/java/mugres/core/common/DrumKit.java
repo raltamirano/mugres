@@ -50,22 +50,22 @@ public enum DrumKit {
     OTR(81, "Open Triangle");
 
     private int midi;
-    private String name;
+    private String label;
 
-    DrumKit(final int midi, final String name) {
+    DrumKit(final int midi, final String label) {
         this.midi = midi;
-        this.name = name;
+        this.label = label;
     }
 
-    public int getMidi() {
+    public int midi() {
         return midi;
     }
 
-    public String getName() {
-        return name;
+    public String label() {
+        return label;
     }
 
-    public Pitch getPitch() {
+    public Pitch pitch() {
         return Pitch.of(midi);
     }
 }

@@ -10,7 +10,7 @@ import mugres.core.common.Tonality;
 import mugres.core.common.Value;
 import mugres.core.function.Call;
 import mugres.core.function.builtin.arp.Arp2;
-import mugres.core.function.builtin.euclides.EuclidesPattern;
+import mugres.core.function.builtin.euclides.Euclides;
 import mugres.core.function.builtin.random.Random;
 import mugres.core.function.builtin.text.TextMelody;
 import mugres.core.notation.Section;
@@ -26,9 +26,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
-import static mugres.core.common.Value.EIGHTH;
-import static mugres.core.common.Value.HALF;
-import static mugres.core.common.Value.QUARTER;
 import static mugres.core.utils.Randoms.RND;
 import static mugres.core.utils.Randoms.random;
 import static mugres.core.utils.Randoms.randomBetween;
@@ -103,21 +100,19 @@ public class RandomSong {
                         );
                         section.addPart(party, Call.of("arp2", section.getMeasures(), arpArguments));
                         break;
-                    case 3: // Euclidean pattern
-                        int steps = randomBetween(4, 32);
+                    case 3: // Euclidean patterns
+                        final List<Integer> patterns = new ArrayList<>();
+                        for(int i = MIN_EUCLIDES_PATTERNS; i <= MAX_EUCLIDES_PATTERNS; i++)
+                            patterns.add(randomBetween(MIN_EUCLIDES_PATTERN_EVENTS, MAX_EUCLIDES_PATTERN_EVENTS));
 
-                        final Map<String, Object> euclideanArguments = toMap(
-                                EuclidesPattern.STEPS, steps,
-                                EuclidesPattern.EVENTS, randomBetween(1, steps),
-                                EuclidesPattern.OFFSET, randomBetween(0, 4),
-                                EuclidesPattern.NOTE_VALUE, random(asList(HALF, QUARTER, EIGHTH)),
-                                EuclidesPattern.SCALE, actualScale,
-                                EuclidesPattern.STARTING_OCTAVE, startingOctave,
-                                EuclidesPattern.OCTAVES_TO_GENERATE, octavesToGenerate,
-                                EuclidesPattern.ROOT, actualRoot
-
+                        final Map<String, Object> euclidesArguments = toMap(
+                                Euclides.PATTERNS, patterns,
+                                Euclides.SCALE, actualScale,
+                                Euclides.STARTING_OCTAVE, startingOctave,
+                                Euclides.OCTAVES_TO_GENERATE, octavesToGenerate,
+                                Euclides.ROOT, actualRoot
                         );
-                        section.addPart(party, Call.of("euclides-pattern", section.getMeasures(), euclideanArguments));
+                        section.addPart(party, Call.of("euclides", section.getMeasures(), euclidesArguments));
                         break;
                 }
             }
@@ -178,4 +173,8 @@ public class RandomSong {
     private static final int RANDOM_MIN_TEMPO = 20;
     private static final int RANDOM_MAX_TEMPO = 200;
     private static final int RANDOM_MAX_ARP_PITCHES = 5;
+    private static final int MIN_EUCLIDES_PATTERNS = 2;
+    private static final int MAX_EUCLIDES_PATTERNS = 5;
+    private static final int MIN_EUCLIDES_PATTERN_EVENTS = 1;
+    private static final int MAX_EUCLIDES_PATTERN_EVENTS = 12;
 }

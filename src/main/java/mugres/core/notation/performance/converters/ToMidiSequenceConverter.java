@@ -6,10 +6,18 @@ import mugres.core.common.Length;
 import mugres.core.notation.performance.Control;
 import mugres.core.notation.performance.Performance;
 
-import javax.sound.midi.*;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MetaMessage;
+import javax.sound.midi.MidiEvent;
+import javax.sound.midi.MidiMessage;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.ShortMessage;
+import javax.sound.midi.Track;
 
 import static javax.sound.midi.Sequence.PPQ;
-import static javax.sound.midi.ShortMessage.*;
+import static javax.sound.midi.ShortMessage.NOTE_OFF;
+import static javax.sound.midi.ShortMessage.NOTE_ON;
+import static javax.sound.midi.ShortMessage.PROGRAM_CHANGE;
 import static mugres.core.common.Length.PPQN;
 
 public class ToMidiSequenceConverter implements Converter<Sequence> {
@@ -109,14 +117,14 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
 
     private void addNoteEvent(final Track midiTrack, final int channel, Event event)
             throws InvalidMidiDataException {
-        long startTicks = event.getPosition().getLength();
+        long startTicks = event.position().getLength();
 
-        final ShortMessage noteOn = new ShortMessage(NOTE_ON, channel, event.getPlayed().getPitch().getMidi(),
-                event.getPlayed().getVelocity());
+        final ShortMessage noteOn = new ShortMessage(NOTE_ON, channel, event.played().pitch().getMidi(),
+                event.played().velocity());
         midiTrack.add(new MidiEvent(noteOn, startTicks));
-        final ShortMessage noteOff = new ShortMessage(NOTE_OFF, channel, event.getPlayed().getPitch().getMidi(),
+        final ShortMessage noteOff = new ShortMessage(NOTE_OFF, channel, event.played().pitch().getMidi(),
                 0);
-        midiTrack.add(new MidiEvent(noteOff, startTicks + event.getValue().length()
+        midiTrack.add(new MidiEvent(noteOff, startTicks + event.length()
                 .getLength()));
     }
 

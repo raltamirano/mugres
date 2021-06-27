@@ -42,6 +42,11 @@ public class Song {
         return of(Context.createBasicContext(), functionCallsParty.getParty(), call);
     }
 
+    public static Song of(final Context functionCallsContext,
+                          final Call<List<Event>> call) {
+        return of(functionCallsContext,Party.WellKnownParties.PIANO.getParty(), call);
+    }
+
     public static Song of(final Party functionCallsParty,
                           final Call<List<Event>> call) {
         return of(Context.createBasicContext(), functionCallsParty, call);

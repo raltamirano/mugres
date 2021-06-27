@@ -6,9 +6,6 @@ import mugres.core.common.Signals;
 import mugres.core.common.io.Input;
 import mugres.core.filter.Filter;
 
-import java.util.Collections;
-import java.util.Map;
-
 import static java.util.Collections.emptyMap;
 
 public final class In extends Filter {
@@ -46,8 +43,8 @@ public final class In extends Filter {
     private void updateSignalsState(final Signals signals) {
         for(final Signal signal : signals.signals())
             if (signal.isActive())
-                Filter.activateSignal(signal.getChannel(), signal.getPlayed().getPitch(), signal.getEventId());
+                Filter.activateSignal(signal.getChannel(), signal.getPlayed().pitch(), signal.getEventId());
             else
-                Filter.deactivateSignal(signal.getChannel(), signal.getPlayed().getPitch());
+                Filter.deactivateSignal(signal.getChannel(), signal.getPlayed().pitch());
     }
 }

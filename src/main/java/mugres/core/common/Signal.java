@@ -54,7 +54,7 @@ public class Signal implements Cloneable {
 
     /** Pitch + Channel identification */
     public int discriminator() {
-        return played.getPitch().getMidi() * 100 + channel;
+        return played.pitch().getMidi() * 100 + channel;
     }
 
     public long getTime() {

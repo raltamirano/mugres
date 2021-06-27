@@ -71,20 +71,20 @@ public abstract class PreRecordedDrums extends EventsFunction {
 
             final int remainingMeasures = lengthInMeasures - (fill == NONE ? 0 : fillPattern.getLengthInMeasures());
             final Length fillOffset =  context.getTimeSignature().measuresLength(remainingMeasures);
-            fillEvents.forEach(event -> event.offset(fillOffset));
+            offsetEvents(fillEvents, fillOffset);
 
             final int wholeRepeats = remainingMeasures / mainPattern.getLengthInMeasures();
             for (int i = 0; i < wholeRepeats; i++) {
                 final List<Event> newEvents = Utils.extractEvents(mainPattern);
                 final Length mainOffset = mainPattern.getLength().multiply(i);
-                newEvents.forEach(event -> event.offset(mainOffset));
+                offsetEvents(newEvents, mainOffset);
                 mainEvents.addAll(newEvents);
             }
 
             final int addMeasures = remainingMeasures % mainPattern.getLengthInMeasures();
             final List<Event> moreEvents = Utils.extractEvents(mainPattern, 1, addMeasures);
             final Length moreOffset = mainPattern.getLength().multiply(wholeRepeats);
-            moreEvents.forEach(event -> event.offset(moreOffset));
+            offsetEvents(moreEvents, moreOffset);
             mainEvents.addAll(moreEvents);
         }
 
@@ -95,10 +95,10 @@ public abstract class PreRecordedDrums extends EventsFunction {
             final AtomicBoolean replaced = new AtomicBoolean();
             final Set<Event> toRemove = new HashSet<>();
             events.forEach(event -> {
-                if (event.getPosition().equals(Length.ZERO) &&
-                        (event.getPlayed().getPitch().getMidi() != BD.getMidi() && event.getPlayed().getPitch().getMidi() != SD.getMidi())) {
-                    if (event.getPlayed().getPitch().getMidi() == startingHit.getMidi()) {
-                        event.getPlayed().setVelocity(HARD.getVelocity());
+                if (event.position().equals(Length.ZERO) &&
+                        (event.played().pitch().getMidi() != BD.midi() && event.played().pitch().getMidi() != SD.midi())) {
+                    if (event.played().pitch().getMidi() == startingHit.midi()) {
+                        event.played().setVelocity(HARD.getVelocity());
                         replaced.set(true);
                     } else {
                         toRemove.add(event);
@@ -108,12 +108,17 @@ public abstract class PreRecordedDrums extends EventsFunction {
 
             toRemove.forEach(event -> events.remove(event));
             if (!replaced.get()) {
-                events.add(0, Event.of(Length.ZERO, Pitch.of(startingHit.getMidi()),
+                events.add(0, Event.of(Length.ZERO, Pitch.of(startingHit.midi()),
                         Value.QUARTER, HARD.getVelocity()));
             }
         }
 
         return events;
+    }
+
+    private void offsetEvents(final List<Event> events, final Length offset) {
+        for(int i=0; i < events.size(); i++)
+            events.set(i, events.get(i).offset(offset));
     }
 
     private GridPattern<DrumKitHitElementPatternParser.DrumKitHit> loadPattern(final Context context,

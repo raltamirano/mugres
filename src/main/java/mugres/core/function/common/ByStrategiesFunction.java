@@ -44,8 +44,7 @@ public abstract class ByStrategiesFunction extends EventsFunction {
         for (int index = 0; index < repetitions; index++) {
             final List<Event> generated = strategy.execute(context);
             for(final Event event : generated)
-                event.offset(offset);
-            events.addAll(generated);
+                events.add(event.offset(offset));
             offset = offset.plus(context.getTimeSignature().measuresLength(strategy.getMeasures()));
         }
 

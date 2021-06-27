@@ -129,9 +129,4 @@ public class BlackMetal extends ByStrategiesFunction {
     private static Riffer riffer() {
         return Function.forName("riffer");
     }
-
-    private static List<Event> offsetEvents(final List<Event> events, final Length offset) {
-        events.forEach(event -> event.offset(offset));
-        return events;
-    }
 }
