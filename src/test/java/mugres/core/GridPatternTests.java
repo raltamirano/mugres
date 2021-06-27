@@ -26,7 +26,7 @@ public class GridPatternTests {
 
         final GridPattern<DrumKitHitElementPatternParser.DrumKitHit> drumPattern =
                 GridPattern.parse(pattern, DrumKitHitElementPatternParser.getInstance(),
-                        Context.createBasicContext());
+                        Context.basicContext());
 
         assertNotNull(drumPattern);
         System.out.println(drumPattern);
@@ -44,7 +44,7 @@ public class GridPatternTests {
 
         final GridPattern<DyadElementPatternParser.Dyad> riff =
                 GridPattern.parse(pattern, DyadElementPatternParser.getInstance(),
-                        Context.createBasicContext());
+                        Context.basicContext());
 
         assertNotNull(riff);
         System.out.println(riff);

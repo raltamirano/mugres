@@ -8,27 +8,27 @@ public class Configuration {
     private Set<String> tags = new HashSet<>();
     private String duration;
 
-    public Frequency getFrequency() {
+    public Frequency frequency() {
         return frequency;
     }
 
-    public void setFrequency(Frequency frequency) {
+    public void frequency(Frequency frequency) {
         this.frequency = frequency;
     }
 
-    public Set<String> getTags() {
+    public Set<String> tags() {
         return tags;
     }
 
-    public void setTags(Set<String> tags) {
+    public void tags(Set<String> tags) {
         this.tags = tags;
     }
 
-    public String getDuration() {
+    public String duration() {
         return duration;
     }
 
-    public void setDuration(String duration) {
+    public void duration(String duration) {
         this.duration = duration;
     }
 
@@ -36,19 +36,19 @@ public class Configuration {
         private Mode mode;
         private Object value;
 
-        public Mode getMode() {
+        public Mode mode() {
             return mode;
         }
 
-        public void setMode(Mode mode) {
+        public void mode(Mode mode) {
             this.mode = mode;
         }
 
-        public <X> X getValue() {
+        public <X> X value() {
             return (X)value;
         }
 
-        public void setValue(Object value) {
+        public void value(Object value) {
             this.value = value;
         }
 

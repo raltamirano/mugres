@@ -3,8 +3,8 @@ package mugres.core.common;
 import java.util.Objects;
 
 public class TimeSignature {
-    private int numerator;
-    private Value denominator;
+    private final int numerator;
+    private final Value denominator;
 
     private TimeSignature(final int numerator, final Value denominator) {
         if (numerator <= 0)
@@ -27,15 +27,19 @@ public class TimeSignature {
         throw new RuntimeException("Not implemented: parsing of time signatures!");
     }
 
-    public int getNumerator() {
+    public int numerator() {
         return numerator;
     }
 
-    public void setNumerator(int numerator) {
-        this.numerator = numerator;
+    public Value denominator() {
+        return denominator;
     }
 
-    public Length measuresLength() {
+    /**
+     * Length of a single measure of this time signature
+     * @return
+     */
+    public Length measureLength() {
         return measuresLength(1);
     }
 
@@ -55,14 +59,6 @@ public class TimeSignature {
     @Override
     public int hashCode() {
         return Objects.hash(numerator, denominator);
-    }
-
-    public Value getDenominator() {
-        return denominator;
-    }
-
-    public void setDenominator(Value denominator) {
-        this.denominator = denominator;
     }
 
     @Override

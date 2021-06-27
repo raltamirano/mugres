@@ -52,31 +52,31 @@ public enum Scale {
                              POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD,
                              POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD, POWER_CHORD_SUS3RD});
 
-    private final String name;
+    private final String label;
     private final Tonality tonality;
     private final int[] intervals;
     private final Type[] chordTypesByDegree;
 
-    Scale(final String name, final Tonality tonality, final int[] intervals, final Type[] chordTypesByDegree) {
+    Scale(final String label, final Tonality tonality, final int[] intervals, final Type[] chordTypesByDegree) {
         if (intervals.length <= 0 || intervals.length > 12)
             throw new IllegalArgumentException("Number of intervals for a scale must be 0 < n <= 12!");
 
-        this.name = name;
+        this.label = label;
         this.tonality = tonality;
         this.intervals = intervals;
         this.chordTypesByDegree = chordTypesByDegree;
     }
 
-    public static Scale of(final String name) {
-        for(Scale note : Scale.values())
-            if (note.name.equals(name))
-                return note;
+    public static Scale of(final String label) {
+        for(Scale scale : Scale.values())
+            if (scale.label.equals(label))
+                return scale;
 
-        throw new IllegalArgumentException("Invalid scale: " + name);
+        throw new IllegalArgumentException("Invalid scale: " + label);
     }
 
-    public String getName() {
-        return name;
+    public String label() {
+        return label;
     }
 
     public Tonality tonality() {
@@ -150,7 +150,7 @@ public enum Scale {
         Pitch current = scaleRoot.pitch();
         for (int interval : intervals) {
             current = current.up(interval);
-            if (current.getNote().equals(target))
+            if (current.note().equals(target))
                 return  true;
         }
 
@@ -181,9 +181,9 @@ public enum Scale {
         final List<Pitch> pitches = pitches(scaleRoot, 4, baseOctave - 1);
         for(int i = 0; i < pitches.size(); i++) {
             Pitch pitch = pitches.get(i);
-            if (pitch.getNote().equals(startingAt) && pitch.getOctave() == baseOctave) {
+            if (pitch.note().equals(startingAt) && pitch.octave() == baseOctave) {
                 for(int j = 0; j < numberOfNotes; j ++)
-                    result.add(pitches.get(i + (j * intervalType.getScaleSteps())));
+                    result.add(pitches.get(i + (j * intervalType.scaleSteps())));
                 break;
             }
         }

@@ -17,15 +17,15 @@ public class Performance {
         this.song = song;
     }
 
-    public String getSong() {
+    public String song() {
         return song;
     }
 
-    public List<Control.ControlEvent> getControlEvents() {
+    public List<Control.ControlEvent> controlEvents() {
         return Collections.unmodifiableList(controlEvents);
     }
 
-    public Set<Track> getTracks() {
+    public Set<Track> tracks() {
         return Collections.unmodifiableSet(tracks);
     }
 
@@ -39,7 +39,7 @@ public class Performance {
     }
 
     public Track createTrack(final Party party) {
-        if (tracks.stream().anyMatch(t -> t.getParty().getName().equalsIgnoreCase(party.getName())))
+        if (tracks.stream().anyMatch(t -> t.party().name().equalsIgnoreCase(party.name())))
             throw new IllegalArgumentException("party");
 
         final Track track = new Track(party);
@@ -47,11 +47,11 @@ public class Performance {
         return track;
     }
 
-    public Length getLength() {
+    public Length length() {
         return length;
     }
 
-    public void setLength(final Length length) {
+    public void length(final Length length) {
         this.length = length;
     }
 
@@ -63,7 +63,7 @@ public class Performance {
 
         tracks.forEach(track -> {
             sb.append(String.format("\tTrack: %s%n", track));
-            track.getEvents().forEach(event -> {
+            track.events().forEach(event -> {
                 sb.append(String.format("\t\t%s%n", event));
             });
         });

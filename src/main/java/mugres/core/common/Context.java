@@ -11,20 +11,20 @@ import static java.util.Arrays.asList;
 
 /** Context data for all things musical. */
 public interface Context {
-    default int getTempo() { return get(TEMPO); }
-    default Context setTempo(final int tempo) { put(TEMPO, tempo); return this;}
-    default Key getKey() { return get(KEY); }
-    default Context setKey(final Key key) { put(KEY, key); return this; }
-    default TimeSignature getTimeSignature() { return get(TIME_SIGNATURE); }
-    default Context setTimeSignature(final TimeSignature timeSignature) { put(TIME_SIGNATURE, timeSignature); return this; }
-    default ChordProgression getChordProgression() { return get(CHORD_PROGRESSION); }
-    default Context setChordProgression(final ChordProgression chordProgression) { put(CHORD_PROGRESSION, chordProgression); return this; }
+    default int tempo() { return get(TEMPO); }
+    default Context tempo(final int tempo) { put(TEMPO, tempo); return this;}
+    default Key key() { return get(KEY); }
+    default Context key(final Key key) { put(KEY, key); return this; }
+    default TimeSignature timeSignature() { return get(TIME_SIGNATURE); }
+    default Context timeSignature(final TimeSignature timeSignature) { put(TIME_SIGNATURE, timeSignature); return this; }
+    default ChordProgression chordProgression() { return get(CHORD_PROGRESSION); }
+    default Context chordProgression(final ChordProgression chordProgression) { put(CHORD_PROGRESSION, chordProgression); return this; }
 
     void put(final String key, Object value);
     <X> X get(final String key);
     boolean has(final String key);
 
-    static Context createBasicContext() {
+    static Context basicContext() {
         final Context context = new Context.ComposableContext();
         context.put(Context.TEMPO, 120);
         context.put(Context.KEY, Key.C);

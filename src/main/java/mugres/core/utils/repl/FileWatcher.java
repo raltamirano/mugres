@@ -18,6 +18,7 @@ public class FileWatcher extends Thread {
     }
 
     public boolean isStopped() { return stop.get(); }
+
     public void stopThread() { stop.set(true); }
 
     private void doOnChange() {

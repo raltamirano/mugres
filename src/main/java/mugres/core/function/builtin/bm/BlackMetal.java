@@ -33,13 +33,13 @@ public class BlackMetal extends ByStrategiesFunction {
 
         @Override
         public List<Event> execute(final Context context) {
-            if (context.getTimeSignature().getDenominator() != QUARTER)
+            if (context.timeSignature().denominator() != QUARTER)
                 throw new IllegalArgumentException("Valid Time Signature denominators: 4");
 
             final List<Event> events = new ArrayList<>();
 
-            final int beatsPerMeasures = context.getTimeSignature().getDenominator().denominator();
-            final Note root = context.getKey().getRoot();
+            final int beatsPerMeasures = context.timeSignature().denominator().denominator();
+            final Note root = context.key().root();
 
             String pattern = random(MEASURE_PATTERNS.get(measures));
             if (pattern != null) {
@@ -55,7 +55,7 @@ public class BlackMetal extends ByStrategiesFunction {
                 for (int index = 0; index < measures; index++) {
                     beats = 0;
                     final int chordsPerMeasure = random(asList(1, 2));
-                    while (beats != context.getTimeSignature().getNumerator()) {
+                    while (beats != context.timeSignature().numerator()) {
                         int beatsPerChord = random(asList(2, 4));
                         while (beatsPerChord + beats > beatsPerMeasures)
                             beatsPerChord = random(asList(2, 4));
@@ -86,7 +86,7 @@ public class BlackMetal extends ByStrategiesFunction {
         }
 
         @Override
-        public int getMeasures() {
+        public int measures() {
             return measures;
         }
 
@@ -120,7 +120,7 @@ public class BlackMetal extends ByStrategiesFunction {
 
     private static List<Event> riffer16ths(final Context context, final String riff, final int measures) {
         final Map<String, Object> arguments = new HashMap<>();
-        arguments.put(LENGTH_PARAMETER.getName(), measures);
+        arguments.put(LENGTH_PARAMETER.name(), measures);
         arguments.put("value", SIXTEENTH);
         arguments.put("riff", riff);
         return riffer().execute(context, arguments);

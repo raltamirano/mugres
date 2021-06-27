@@ -26,7 +26,7 @@ public final class Out extends Filter {
         this.context = context;
         this.output = output;
 
-        queue = new PriorityQueue<>(comparingLong(Signal::getTime));
+        queue = new PriorityQueue<>(comparingLong(Signal::time));
         worker = createWorkerThread();
         worker.setDaemon(true);
         worker.start();
@@ -36,7 +36,7 @@ public final class Out extends Filter {
 
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 
@@ -63,7 +63,7 @@ public final class Out extends Filter {
                         long now = System.currentTimeMillis();
                         boolean run = true;
                         while(run) {
-                            if (queue.peek().getTime() <= now) {
+                            if (queue.peek().time() <= now) {
                                 output.send(queue.remove());
                                 run = !queue.isEmpty();
                             } else {
@@ -88,7 +88,7 @@ public final class Out extends Filter {
 
             @Override
             public void deactivated(final UUID deactivated, final int channel, final Pitch pitch) {
-                queue.removeIf(s -> { if (s!= null) s.getEventId().equals(deactivated); return true; });
+                queue.removeIf(s -> { if (s!= null) s.id().equals(deactivated); return true; });
             }
         };
     }

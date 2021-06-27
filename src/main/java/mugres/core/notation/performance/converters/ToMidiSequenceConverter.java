@@ -38,18 +38,18 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
             // Control track (tempo, key, time signature)
             final Track controlTrack = sequence.createTrack();
             trackName(controlTrack, CONTROL_TRACK);
-            for(Control.ControlEvent controlEvent : performance.getControlEvents())
+            for(Control.ControlEvent controlEvent : performance.controlEvents())
                 setControlParameters(controlTrack, controlEvent);
 
-            for(mugres.core.notation.performance.Track track : performance.getTracks()) {
+            for(mugres.core.notation.performance.Track track : performance.tracks()) {
                 final Track midiTrack = sequence.createTrack();
-                trackName(midiTrack, track.getParty().getName());
-                programChange(midiTrack, track.getChannel(), track.getInstrument());
-                for(Event event : track.getEvents())
-                    addNoteEvent(midiTrack, track.getChannel(), event);
+                trackName(midiTrack, track.party().name());
+                programChange(midiTrack, track.channel(), track.instrument());
+                for(Event event : track.events())
+                    addNoteEvent(midiTrack, track.channel(), event);
             }
 
-            setSequenceLength(sequence, performance.getLength());
+            setSequenceLength(sequence, performance.length());
 
             return sequence;
         } catch (final InvalidMidiDataException e) {
@@ -58,7 +58,7 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
     }
 
     public static void setSequenceLength(final Sequence sequence, final Length length) {
-        setSequenceLength(sequence, length.getLength());
+        setSequenceLength(sequence, length.length());
     }
 
     public static void setSequenceLength(final Sequence sequence, final long lengthInTicks) {
@@ -68,10 +68,10 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
     private void setControlParameters(final Track controlTrack,
                                       final Control.ControlEvent controlEvent)
             throws InvalidMidiDataException {
-        final long ticks = controlEvent.getPosition().getLength();
+        final long ticks = controlEvent.position().length();
 
         // Tempo
-        int mpq = (60_000_000 / controlEvent.getControl().getTempo());
+        int mpq = (60_000_000 / controlEvent.control().tempo());
         final MetaMessage tempoMessage = new MetaMessage();
         tempoMessage.setMessage(0x51, new byte[] {
                 (byte)(mpq>>16 & 0xff),
@@ -82,8 +82,8 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
         controlTrack.add(tempoEvent);
 
         // Time signature
-        final int numerator = controlEvent.getControl().getTimeSignature().getNumerator();
-        int notatedDenominator = controlEvent.getControl().getTimeSignature().getDenominator().denominator();
+        final int numerator = controlEvent.control().timeSignature().numerator();
+        int notatedDenominator = controlEvent.control().timeSignature().denominator().denominator();
         int denominator = 0;
         while (notatedDenominator != 1) {
             notatedDenominator /= 2;
@@ -111,21 +111,21 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
 
     private void programChange(final Track midiTrack, final int channel, final Instrument instrument)
             throws InvalidMidiDataException {
-        final MidiMessage midiMessage = new ShortMessage(PROGRAM_CHANGE, channel, instrument.getMidi(), 0);
+        final MidiMessage midiMessage = new ShortMessage(PROGRAM_CHANGE, channel, instrument.midi(), 0);
         midiTrack.add(new MidiEvent(midiMessage, 0L));
     }
 
     private void addNoteEvent(final Track midiTrack, final int channel, Event event)
             throws InvalidMidiDataException {
-        long startTicks = event.position().getLength();
+        long startTicks = event.position().length();
 
-        final ShortMessage noteOn = new ShortMessage(NOTE_ON, channel, event.played().pitch().getMidi(),
+        final ShortMessage noteOn = new ShortMessage(NOTE_ON, channel, event.played().pitch().midi(),
                 event.played().velocity());
         midiTrack.add(new MidiEvent(noteOn, startTicks));
-        final ShortMessage noteOff = new ShortMessage(NOTE_OFF, channel, event.played().pitch().getMidi(),
+        final ShortMessage noteOff = new ShortMessage(NOTE_OFF, channel, event.played().pitch().midi(),
                 0);
         midiTrack.add(new MidiEvent(noteOff, startTicks + event.length()
-                .getLength()));
+                .length()));
     }
 
     private static final String CONTROL_TRACK = "Control Track";

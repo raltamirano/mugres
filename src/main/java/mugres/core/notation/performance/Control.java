@@ -21,15 +21,15 @@ public class Control {
         return new Control(tempo, key, timeSignature);
     }
 
-    public int getTempo() {
+    public int tempo() {
         return tempo;
     }
 
-    public Key getKey() {
+    public Key key() {
         return key;
     }
 
-    public TimeSignature getTimeSignature() {
+    public TimeSignature timeSignature() {
         return timeSignature;
     }
 
@@ -61,11 +61,11 @@ public class Control {
             return new ControlEvent(position, control);
         }
 
-        public Length getPosition() {
+        public Length position() {
             return position;
         }
 
-        public Control getControl() {
+        public Control control() {
             return control;
         }
     }

@@ -22,7 +22,7 @@ public class Action {
     public void execute(final Context context, final Drummer drummer) {
         for(int index = 0; index < steps.size(); index++) {
             final Step step = steps.get(index);
-            step.getCommand().execute(context, drummer, step.getParameters());
+            step.command().execute(context, drummer, step.parameters());
         }
     }
 
@@ -47,19 +47,19 @@ public class Action {
             this.parameters = parameters;
         }
 
-        public Command getCommand() {
+        public Command command() {
             return this.command;
         }
 
-        public Map<String, Object> getParameters() {
+        public Map<String, Object> parameters() {
             return this.parameters;
         }
 
-        public void setCommand(final Command command) {
+        public void command(final Command command) {
             this.command = command;
         }
 
-        public void setParameters(final Map<String, Object> parameters) {
+        public void parameters(final Map<String, Object> parameters) {
             this.parameters = parameters;
         }
     }

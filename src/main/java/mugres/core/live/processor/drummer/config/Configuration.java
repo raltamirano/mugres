@@ -25,15 +25,15 @@ public class Configuration {
         this.title = title;
     }
 
-    public String getTitle() {
+    public String title() {
         return title;
     }
 
-    public Map<String, Groove> getGrooves() {
+    public Map<String, Groove> grooves() {
         return grooves;
     }
 
-    public Map<Integer, Action> getActions() {
+    public Map<Integer, Action> actions() {
         return actions;
     }
 
@@ -73,13 +73,13 @@ public class Configuration {
                                final int measures,
                                final PreRecordedDrums generator) {
 
-        final Groove groove = createGroove(name, context.getTempo(), groovesMode, fillsMode);
+        final Groove groove = createGroove(name, context.tempo(), groovesMode, fillsMode);
 
         final Map<String, Object> arguments = new HashMap<>();
 
         // Generate mains
         final Variant mainVariant = Variant.V0;
-        arguments.put(LENGTH_PARAMETER.getName(), measures);
+        arguments.put(LENGTH_PARAMETER.name(), measures);
         arguments.put("variant", mainVariant);
         arguments.put("fill", Variant.NONE);
         arguments.put("startingHit", DrumKit.CR1);
@@ -91,7 +91,7 @@ public class Configuration {
         // Generate fills
         final Variant fillVariant = Variant.V0;
         arguments.clear();
-        arguments.put(LENGTH_PARAMETER.getName(), 1);
+        arguments.put(LENGTH_PARAMETER.name(), 1);
         arguments.put("variant", Variant.V0);
         arguments.put("fill", fillVariant);
 
@@ -105,7 +105,7 @@ public class Configuration {
     private Sequence generateSequence(final Context context, final PreRecordedDrums generator,
                                       final Map<String, Object> arguments) {
         final Sequence sequence = ToMidiSequenceConverter.getInstance().convert(Performer
-                .perform(Song.of(context, DRUMS.getParty(), Call.of(generator, arguments))));
+                .perform(Song.of(context, DRUMS.party(), Call.of(generator, arguments))));
 
         // Remove control track
         sequence.deleteTrack(sequence.getTracks()[0]);

@@ -20,7 +20,7 @@ public class Transformer extends Processor {
                        final Input input,
                        final Output output,
                        final Configuration config) {
-        super(context, input, output, config.getSignalers());
+        super(context, input, output, config.signalers());
 
         this.config = config;
 
@@ -41,13 +41,13 @@ public class Transformer extends Processor {
         Signals signals = Signals.of(signal);
 
         // Pass through input filter
-        signals = in.accept(getContext(), signals);
+        signals = in.accept(context(), signals);
 
         // Pass through every user-defined filter
-        for(final Filter filter : config.getFilters())
-            signals = filter.accept(getContext(), signals);
+        for(final Filter filter : config.filters())
+            signals = filter.accept(context(), signals);
 
         // Pass through output filter
-        out.accept(getContext(), signals);
+        out.accept(context(), signals);
     }
 }

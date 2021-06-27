@@ -30,9 +30,9 @@ public class MidiOutput implements Output {
     @Override
     public void send(final Signal signal) {
         try {
-            final ShortMessage message = new ShortMessage(NOTE_ON, signal.getChannel(),
-                    signal.getPlayed().pitch().getMidi(),
-                    signal.isActive() ? signal.getPlayed().velocity() : 0);
+            final ShortMessage message = new ShortMessage(NOTE_ON, signal.channel(),
+                    signal.played().pitch().midi(),
+                    signal.isActive() ? signal.played().velocity() : 0);
             midiOutputPort.send(message, -1);
         } catch (final InvalidMidiDataException e) {
             throw new RuntimeException(e);
@@ -43,7 +43,7 @@ public class MidiOutput implements Output {
     public void send(final InstrumentChange instrumentChange) {
         try {
             final ShortMessage message = new ShortMessage(PROGRAM_CHANGE, instrumentChange.channel(),
-                    instrumentChange.instrument().getMidi(), 0);
+                    instrumentChange.instrument().midi(), 0);
             midiOutputPort.send(message, -1);
         } catch (final InvalidMidiDataException e) {
             throw new RuntimeException(e);

@@ -22,7 +22,7 @@ public class Chorder extends Filter {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 
@@ -41,22 +41,22 @@ public class Chorder extends Filter {
             switch (getChordMode(arguments)) {
                 case DIATONIC:
                     final Key key = getKey(context);
-                    if (key.notes().contains(in.getPlayed().pitch().getNote())) {
+                    if (key.notes().contains(in.played().pitch().note())) {
                         final int numberOfNotes = getNumberOfNotes(arguments);
-                        chordPitches = key.chord(in.getPlayed().pitch(), numberOfNotes);
+                        chordPitches = key.chord(in.played().pitch(), numberOfNotes);
                     } else {
                         // Discard notes outside the key
                         chordPitches = emptyList();
                     }
                     break;
                 case FIXED:
-                    chordPitches = Chord.of(in.getPlayed().pitch().getNote(), getChordType(arguments))
-                            .pitches(in.getPlayed().pitch().getOctave());
+                    chordPitches = Chord.of(in.played().pitch().note(), getChordType(arguments))
+                            .pitches(in.played().pitch().octave());
                     ;
                     break;
                 case RANDOM:
-                    chordPitches = Chord.of(in.getPlayed().pitch().getNote(), random(Arrays.asList(Type.values()), CUSTOM))
-                            .pitches(in.getPlayed().pitch().getOctave());
+                    chordPitches = Chord.of(in.played().pitch().note(), random(Arrays.asList(Type.values()), CUSTOM))
+                            .pitches(in.played().pitch().octave());
                     ;
                     break;
                 default:
@@ -66,7 +66,7 @@ public class Chorder extends Filter {
 
             if (!chordPitches.isEmpty()) {
                 for (final Pitch pitch : chordPitches) {
-                    result.add(in.modifiedPlayed(Played.of(pitch, in.getPlayed().velocity())));
+                    result.add(in.modifiedPlayed(Played.of(pitch, in.played().velocity())));
                 }
             }
         }

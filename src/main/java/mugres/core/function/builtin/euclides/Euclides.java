@@ -52,10 +52,10 @@ public class Euclides extends EventsFunction {
         int patternIndex = 0;
         for(int p : patterns) {
             final EuclideanPattern pattern = EuclideanPattern.of(PATTERN_RESOLUTION, p, 0);
-            final Length stepSize = context.getTimeSignature().measuresLength().divide(pattern.steps());
+            final Length stepSize = context.timeSignature().measureLength().divide(pattern.steps());
             Length actualPosition = Length.ZERO;
             int counter = 0;
-            while (actualPosition.getLength() < length.getLength()) {
+            while (actualPosition.length() < length.length()) {
                 if (pattern.eventAt(counter++)) {
                     final Pitch pitch = fixedPitches != null ? fixedPitches.get(patternIndex % fixedPitches.size()) : pitches.get(RND.nextInt(pitches.size()));
                     events.add(Event.of(actualPosition, pitch, stepSize, 100));

@@ -2,7 +2,6 @@ package mugres.ipc.stream.writers;
 
 import mugres.core.common.Party;
 import mugres.ipc.protocol.messages.PartyListMessage;
-import mugres.ipc.protocol.messages.SetPartyMessage;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,8 +12,8 @@ public class PartyListStreamMessageWriter implements StreamMessageWriter<PartyLi
         writeMessageType(message.type(), dataOutputStream);
         dataOutputStream.writeInt(message.partyList().size());
         for(final Party party : message.partyList()) {
-            dataOutputStream.writeUTF(party.getName());
-            dataOutputStream.writeInt(party.getInstrument().getId());
+            dataOutputStream.writeUTF(party.name());
+            dataOutputStream.writeInt(party.instrument().id());
         }
     }
 }

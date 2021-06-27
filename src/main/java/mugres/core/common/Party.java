@@ -13,27 +13,27 @@ public class Party {
         this.channel = channel;
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public void setName(String name) {
+    public void name(String name) {
         this.name = name;
     }
 
-    public Instrument getInstrument() {
+    public Instrument instrument() {
         return instrument;
     }
 
-    public void setInstrument(Instrument instrument) {
+    public void instrument(Instrument instrument) {
         this.instrument = instrument;
     }
 
-    public int getChannel() {
+    public int channel() {
         return channel;
     }
 
-    public void setChannel(int channel) {
+    public void channel(int channel) {
         this.channel = channel;
     }
 
@@ -84,7 +84,7 @@ public class Party {
             this.party = party;
         }
 
-        public Party getParty() {
+        public Party party() {
             return party;
         }
     }

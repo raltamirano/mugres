@@ -47,7 +47,7 @@ public class Random extends EventsFunction {
         final List<Pitch> pitches = scale.pitches(root, octavesToGenerate, startingOctave);
 
         Length actualPosition = Length.ZERO;
-        while(actualPosition.getLength() < length.getLength()) {
+        while(actualPosition.length() < length.length()) {
             events.add(Event.of(actualPosition, pitches.get(RND.nextInt(pitches.size())), noteValue, 100));
             actualPosition = actualPosition.plus(noteValue);
         }

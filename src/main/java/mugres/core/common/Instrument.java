@@ -132,32 +132,32 @@ public enum Instrument {
     DrumKit(-1, "DrumKit", true);
 
     private int id;
-    private final String name;
+    private final String label;
     private final boolean drumKit;
 
-    Instrument(int id, String name) {
-        this(id, name, false);
+    Instrument(int id, String label) {
+        this(id, label, false);
     }
 
-    Instrument(int id, String name, boolean drumKit) {
+    Instrument(int id, String label, boolean drumKit) {
         this.id = id;
-        this.name = name;
+        this.label = label;
         this.drumKit = drumKit;
     }
 
-    public int getId() {
+    public int id() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String label() {
+        return label;
     }
 
     public boolean isDrumKit() {
         return drumKit;
     }
 
-    public int getMidi() {
+    public int midi() {
         return drumKit ?
                 Math.abs(id) - 1 :
                 id;
@@ -173,7 +173,7 @@ public enum Instrument {
 
     public static Instrument of(final String name) {
         for(Instrument instrument : values())
-            if (instrument.name.equals(name))
+            if (instrument.label.equals(name))
                 return instrument;
 
         throw new IllegalArgumentException("Unknown instrument with name=" + name);

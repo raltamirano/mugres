@@ -15,7 +15,7 @@ public class Splitter extends Filter {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 

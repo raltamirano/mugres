@@ -22,7 +22,7 @@ public class Arpeggiate extends Filter {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 
@@ -37,13 +37,13 @@ public class Arpeggiate extends Filter {
         final List<ArpEntry> pattern = getPattern(context);
         final Signals actives = signals.actives();
 
-        long startTime = actives.first().getTime();
+        long startTime = actives.first().time();
         long delta = 0;
         for(final ArpEntry e : pattern) {
             // Do nothing with rests
-            if (e.getType() != ArpEntry.Type.REST) {
+            if (e.type() != ArpEntry.Type.REST) {
                 final Signal signal;
-                switch(e.getType()) {
+                switch(e.type()) {
                     case NOTE:
                         signal = actives.signals().size() >= e.noteIndex ?
                             actives.signals().get(e.noteIndex - 1) : null;
@@ -69,7 +69,7 @@ public class Arpeggiate extends Filter {
 
     private List<ArpEntry> getPattern(final Context context) {
         final List<ArpEntry> pattern = new ArrayList<>();
-        final Value defaultValue = getTimeSignature(context).getDenominator();
+        final Value defaultValue = getTimeSignature(context).denominator();
 
         final Matcher matcher = ARP_PATTERN.matcher(arguments.get("pattern").toString());
 
@@ -104,7 +104,7 @@ public class Arpeggiate extends Filter {
     }
 
     private static Value parseNoteValue(final String input, final Value defaultValue) {
-        return input == null || input.trim().isEmpty() ? defaultValue : Value.forId(input);
+        return input == null || input.trim().isEmpty() ? defaultValue : Value.of(input);
     }
 
 
@@ -128,15 +128,15 @@ public class Arpeggiate extends Filter {
             return new ArpEntry(type, noteIndex, millis);
         }
 
-        public Type getType() {
+        public Type type() {
             return type;
         }
 
-        public Integer getNoteIndex() {
+        public Integer noteIndex() {
             return noteIndex;
         }
 
-        public long getMillis() {
+        public long millis() {
             return millis;
         }
 

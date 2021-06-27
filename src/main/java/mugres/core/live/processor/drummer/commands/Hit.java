@@ -13,7 +13,7 @@ public class Hit implements Command {
     private Hit() {}
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 

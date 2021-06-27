@@ -18,7 +18,7 @@ public class Transpose extends Filter {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 
@@ -33,7 +33,7 @@ public class Transpose extends Filter {
         final int semitones = getSemitonesToTranspose(arguments);
 
         for(final Signal in : signals.signals())
-            result.add(in.modifiedPlayed(transpose(in.getPlayed(), semitones)));
+            result.add(in.modifiedPlayed(transpose(in.played(), semitones)));
 
         return result;
     }
@@ -52,7 +52,7 @@ public class Transpose extends Filter {
         if (semitones == 0)
             return played;
 
-        final int target = played.pitch().getMidi() + semitones;
+        final int target = played.pitch().midi() + semitones;
         if (!isValidMidiNoteNumber(target))
             return played;
 

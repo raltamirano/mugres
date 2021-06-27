@@ -9,7 +9,7 @@ public class Finish implements Command {
     private Finish() {}
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 

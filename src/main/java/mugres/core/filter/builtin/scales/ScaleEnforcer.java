@@ -1,11 +1,19 @@
 package mugres.core.filter.builtin.scales;
 
-import mugres.core.common.*;
+import mugres.core.common.Context;
+import mugres.core.common.Interval;
+import mugres.core.common.Note;
+import mugres.core.common.Pitch;
+import mugres.core.common.Played;
+import mugres.core.common.Scale;
+import mugres.core.common.Signal;
+import mugres.core.common.Signals;
 import mugres.core.filter.Filter;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+
+import static mugres.core.utils.Randoms.RND;
 
 public class ScaleEnforcer extends Filter {
     public static final String NAME = "ScaleEnforcer";
@@ -15,7 +23,7 @@ public class ScaleEnforcer extends Filter {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 
@@ -31,7 +39,7 @@ public class ScaleEnforcer extends Filter {
         final CorrectionMode correctionMode = getCorrectionMode(arguments);
 
         for(final Signal in : signals.signals()) {
-            if (scaleNotes.contains(in.getPlayed().pitch().getNote()))
+            if (scaleNotes.contains(in.played().pitch().note()))
                 result.add(in);
             else
                 try {
@@ -61,21 +69,21 @@ public class ScaleEnforcer extends Filter {
     }
 
     private void correctUp(final Signals result, final List<Note> scaleNotes, final Signal in) {
-        Pitch newPitch = in.getPlayed().pitch();
-        while(!scaleNotes.contains(newPitch.getNote()))
+        Pitch newPitch = in.played().pitch();
+        while(!scaleNotes.contains(newPitch.note()))
             newPitch = newPitch.up(1);
-        if (newPitch.getMidi() < in.getPlayed().pitch().getMidi())
+        if (newPitch.midi() < in.played().pitch().midi())
             newPitch = newPitch.up(Interval.OCTAVE);
-        result.add(in.modifiedPlayed(Played.of(newPitch, in.getPlayed().velocity())));
+        result.add(in.modifiedPlayed(Played.of(newPitch, in.played().velocity())));
     }
 
     private void correctDown(final Signals result, final List<Note> scaleNotes, final Signal in) {
-        Pitch newPitch = in.getPlayed().pitch();
-        while(!scaleNotes.contains(newPitch.getNote()))
+        Pitch newPitch = in.played().pitch();
+        while(!scaleNotes.contains(newPitch.note()))
             newPitch = newPitch.down(1);
-        if (newPitch.getMidi() > in.getPlayed().pitch().getMidi())
+        if (newPitch.midi() > in.played().pitch().midi())
             newPitch = newPitch.down(Interval.OCTAVE);
-        result.add(in.modifiedPlayed(Played.of(newPitch, in.getPlayed().velocity())));
+        result.add(in.modifiedPlayed(Played.of(newPitch, in.played().velocity())));
     }
 
     private List<Note> getScaleNotes(final Context context, final Map<String, Object> arguments) {
@@ -85,10 +93,10 @@ public class ScaleEnforcer extends Filter {
                 final Note root = Note.of(arguments.get("root").toString());
                 return scale.notes(root);
             } else {
-                return context.getKey().notes();
+                return context.key().notes();
             }
         } catch (final Throwable ignore) {
-            return context.getKey().notes();
+            return context.key().notes();
         }
     }
 
@@ -102,6 +110,4 @@ public class ScaleEnforcer extends Filter {
         RANDOM,
         DISCARD
     }
-
-    private static final Random RND = new Random();
 }

@@ -18,7 +18,7 @@ public class Randomizer extends Filter {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 
@@ -44,18 +44,18 @@ public class Randomizer extends Filter {
         for(final Signal in : signals.signals()) {
             if (in.isActive()) {
                 final Pitch newPitch = random(availablePitches);
-                result.add(in.modifiedPlayed(in.getPlayed().repitch(newPitch)));
+                result.add(in.modifiedPlayed(in.played().repitch(newPitch)));
                 if (deactivationFollows)
                     RANDOMIZER_MAP.put(in.discriminator(), newPitch);
             } else {
                 if (deactivationFollows) {
                     final Pitch randomizedPitch = RANDOMIZER_MAP.remove(in.discriminator());
                     if (randomizedPitch != null)
-                        result.add(in.modifiedPlayed(in.getPlayed().repitch(randomizedPitch)));
+                        result.add(in.modifiedPlayed(in.played().repitch(randomizedPitch)));
                     else
-                        result.add(in.modifiedPlayed(in.getPlayed().repitch(random(availablePitches))));
+                        result.add(in.modifiedPlayed(in.played().repitch(random(availablePitches))));
                 } else {
-                    result.add(in.modifiedPlayed(in.getPlayed().repitch(random(availablePitches))));
+                    result.add(in.modifiedPlayed(in.played().repitch(random(availablePitches))));
                 }
             }
         }
@@ -77,9 +77,9 @@ public class Randomizer extends Filter {
         try {
             return arguments.containsKey("scale") ?
                     Scale.of(arguments.get("scale").toString()) :
-                    context.getKey().defaultScale();
+                    context.key().defaultScale();
         }  catch (final Throwable ignore) {
-            return context.getKey().defaultScale();
+            return context.key().defaultScale();
         }
     }
 
@@ -87,9 +87,9 @@ public class Randomizer extends Filter {
         try {
             return arguments.containsKey("root") ?
                 Note.of(arguments.get("root").toString()) :
-                context.getKey().getRoot();
+                context.key().root();
         } catch (final Throwable ignore) {
-            return context.getKey().getRoot();
+            return context.key().root();
         }
     }
 

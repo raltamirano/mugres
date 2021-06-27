@@ -23,7 +23,7 @@ public class Ranges extends Filter {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 
@@ -39,9 +39,9 @@ public class Ranges extends Filter {
         for(final Signal in : signals.signals()) {
             boolean matched = false;
             for(final Range range : ranges) {
-                if (!range.isRemaining() && range.contains(in.getPlayed().pitch())) {
+                if (!range.isRemaining() && range.contains(in.played().pitch())) {
                     matched = true;
-                    in.addTag(range.getTag());
+                    in.addTag(range.tag());
                     break;
                 }
             }
@@ -49,7 +49,7 @@ public class Ranges extends Filter {
             if (!matched) {
                 for(final Range range : ranges)
                     if (range.isRemaining())
-                        in.addTag(range.getTag());
+                        in.addTag(range.tag());
             }
         }
 
@@ -132,15 +132,15 @@ public class Ranges extends Filter {
             return new Range(tag, null, null);
         }
 
-        public String getTag() {
+        public String tag() {
             return tag;
         }
 
-        public Pitch getStart() {
+        public Pitch start() {
             return start;
         }
 
-        public Pitch getEnd() {
+        public Pitch end() {
             return end;
         }
 
@@ -160,7 +160,7 @@ public class Ranges extends Filter {
         public int compareTo(final Range o) {
             if (isRemaining()) return 1;
             else if (o.isRemaining()) return -1;
-            return Integer.compare(this.start.getMidi(), o.start.getMidi());
+            return Integer.compare(this.start.midi(), o.start.midi());
         }
     }
 }

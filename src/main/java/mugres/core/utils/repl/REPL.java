@@ -1,6 +1,6 @@
 package mugres.core.utils.repl;
 
-import mugres.core.MUGRES;
+import mugres.MUGRES;
 import mugres.core.common.Context;
 import mugres.core.common.Key;
 import mugres.core.common.Party;
@@ -36,8 +36,8 @@ public class REPL {
     private static Song song;
     private static Map<Integer, String> sectionsMap = new HashMap<>();
     private static Sequencer sequencer;
-    private static Context functionCallsContext = Context.createBasicContext();
-    private static Party functionCallsParty = Party.WellKnownParties.PIANO.getParty();
+    private static Context functionCallsContext = Context.basicContext();
+    private static Party functionCallsParty = Party.WellKnownParties.PIANO.party();
     private static String loopingSection = null;
     private static Sequence loopingSectionMidiSequence = null;
     private static final Map<String, java.util.function.Function<String[], Boolean>> HANDLERS = new HashMap<>();
@@ -135,7 +135,7 @@ public class REPL {
 
             System.out.println(String.format("Song loaded = %s", isSongLoaded() ? "Yes" : "No"));
             if (isSongLoaded()) {
-                System.out.println("Song: " + song.getTitle());
+                System.out.println("Song: " + song.title());
                 System.out.println("Source file: " + songFile.getAbsolutePath());
                 System.out.println("Looping section: " + ((loopingSection == null) ? "No" : loopingSection));
             }
@@ -185,13 +185,13 @@ public class REPL {
 
                 int sectionId = 1;
                 final List<Section> sections = new ArrayList<>(song.sections());
-                sections.sort(Comparator.comparing(Section::getName));
+                sections.sort(Comparator.comparing(Section::name));
                 for (final Section section : sections)
-                    sectionsMap.put(sectionId++, section.getName());
+                    sectionsMap.put(sectionId++, section.name());
 
                 if (!reload)
                     System.out.println(String.format("Successfully loaded song '%s' from '%s'",
-                            song.getTitle(), songFile.getAbsolutePath()));
+                            song.title(), songFile.getAbsolutePath()));
             }
         } catch(final Throwable t) {
             t.printStackTrace();
@@ -203,7 +203,7 @@ public class REPL {
             final String loopedSection = loopingSection;
 
             doLoadSong(changed.getAbsolutePath(), true);
-            if (loopedSection != null && song.getSection(loopingSection) != null) {
+            if (loopedSection != null && song.section(loopingSection) != null) {
                 loopingSectionMidiSequence = createSectionSongMidiSequence(loopedSection);
                 try {
                     sequencer.setSequence(loopingSectionMidiSequence);
@@ -310,10 +310,10 @@ public class REPL {
         if (args.length != 1) {
             System.out.println(args[0] + ": no arguments expected");
         } else {
-            System.out.println(String.format("Tempo = %d", functionCallsContext.getTempo()));
-            System.out.println(String.format("Key = %s", functionCallsContext.getKey()));
-            System.out.println(String.format("Time Signature = %s", functionCallsContext.getTimeSignature()));
-            System.out.println(String.format("Party = %s", functionCallsParty.getName()));
+            System.out.println(String.format("Tempo = %d", functionCallsContext.tempo()));
+            System.out.println(String.format("Key = %s", functionCallsContext.key()));
+            System.out.println(String.format("Time Signature = %s", functionCallsContext.timeSignature()));
+            System.out.println(String.format("Party = %s", functionCallsParty.name()));
         }
 
         return true;
@@ -327,7 +327,7 @@ public class REPL {
             if (tempo <= 0) {
                 System.out.println("Invalid tempo: " + tempo);
             } else {
-                functionCallsContext.setTempo(tempo);
+                functionCallsContext.tempo(tempo);
             }
         }
 
@@ -339,7 +339,7 @@ public class REPL {
             System.out.println(args[0] + ": single argument expected: Key");
         } else {
             final Key key = Key.fromLabel(args[1]);
-            functionCallsContext.setKey(key);
+            functionCallsContext.key(key);
         }
 
         return true;
@@ -350,7 +350,7 @@ public class REPL {
             System.out.println(args[0] + ": single argument expected: Time Signature. Format: nn/dd");
         } else {
             final TimeSignature timeSignature = TimeSignature.of(args[1]);
-            functionCallsContext.setTimeSignature(timeSignature);
+            functionCallsContext.timeSignature(timeSignature);
         }
 
         return true;
@@ -360,7 +360,7 @@ public class REPL {
         if (args.length != 2) {
             System.out.println(args[0] + ": single argument expected: Party ID");
         } else {
-            functionCallsParty = Party.WellKnownParties.valueOf(args[1]).getParty();
+            functionCallsParty = Party.WellKnownParties.valueOf(args[1]).party();
         }
 
         return true;
@@ -371,7 +371,7 @@ public class REPL {
             System.out.println(args[0] + ": no arguments expected");
         } else {
             for(Party.WellKnownParties w : Party.WellKnownParties.values())
-                System.out.println(String.format("%-30s\t%s", w.name(), w.getParty().getName()));
+                System.out.println(String.format("%-30s\t%s", w.name(), w.party().name()));
         }
 
         return true;
@@ -381,15 +381,15 @@ public class REPL {
         final Call call = Call.parse(String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
 
         Song functionCallSong = null;
-        switch(call.getFunction().getArtifact()) {
+        switch(call.getFunction().artifact()) {
             case SONG:
-                functionCallSong = (Song)call.execute(functionCallsContext).getData();
+                functionCallSong = (Song)call.execute(functionCallsContext).data();
                 break;
             case EVENTS:
                 functionCallSong = Song.of(functionCallsContext, functionCallsParty, call);
                 break;
             default:
-                System.out.println("Unhandled function artifact: " + call.getFunction().getArtifact());
+                System.out.println("Unhandled function artifact: " + call.getFunction().artifact());
         }
 
         if (functionCallSong != null) {
@@ -406,8 +406,8 @@ public class REPL {
             System.out.println(args[0] + ": no arguments expected");
         } else {
             for(Function<?> g : Function.allFunctions())
-                System.out.println(String.format("%-20s\t%-50s\t%s", g.getName(), g.getDescription(),
-                        g.getArtifact().getName()));
+                System.out.println(String.format("%-20s\t%-50s\t%s", g.name(), g.description(),
+                        g.artifact().label()));
         }
 
         return true;

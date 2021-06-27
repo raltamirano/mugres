@@ -164,8 +164,8 @@ public class GridPattern<E> {
         if (timeSignature == null)
             throw new RuntimeException("Could not calculate length in measures when no Time Signature was set!");
 
-        return division.length().multiply(slots).getLength() /
-                (timeSignature.getNumerator() * timeSignature.getDenominator().length().getLength());
+        return division.length().multiply(slots).length() /
+                (timeSignature.numerator() * timeSignature.denominator().length().length());
     }
 
     @Override

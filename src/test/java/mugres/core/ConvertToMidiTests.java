@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.sound.midi.Sequence;
 
-import static mugres.core.common.Context.createBasicContext;
+import static mugres.core.common.Context.basicContext;
 import static mugres.core.common.Party.WellKnownParties.GUITAR1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -21,22 +21,22 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class ConvertToMidiTests {
     @Test
     public void convertSimpleSong() {
-        final Song song = Song.of("We will unit test you", createBasicContext());
+        final Song song = Song.of("We will unit test you", basicContext());
         final Section section = song.createSection("A", 2);
         song.arrangement().append(section, 1);
 
-        section.addPart(GUITAR1.getParty(), Call.of(random(), section.getMeasures()));
+        section.addPart(GUITAR1.party(), Call.of(random(), section.measures()));
 
         final Performance performance = Performer.perform(song);
         System.out.println(String.format("Performance =>%n%s", performance));
 
         assertNotNull(performance);
-        assertEquals(song.getTitle(), performance.getSong());
-        assertEquals(1, performance.getTracks().size());
-        final Track track = performance.getTracks().iterator().next();
-        assertEquals(GUITAR1.getParty().getName(), track.getParty());
+        assertEquals(song.title(), performance.song());
+        assertEquals(1, performance.tracks().size());
+        final Track track = performance.tracks().iterator().next();
+        assertEquals(GUITAR1.party().name(), track.party());
         // 2 measures of random quarter notes (section A repeats once)
-        assertEquals(8, track.getEvents().size());
+        assertEquals(8, track.events().size());
 
         // Conversion
         final Sequence sequence = ToMidiSequenceConverter.getInstance().convert(performance);

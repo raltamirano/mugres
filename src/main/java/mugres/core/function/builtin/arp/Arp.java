@@ -51,9 +51,9 @@ public class Arp extends EventsFunction {
         // Big assumptions here:
         // all chord notes start at the same position and last for the same amount of time (value)
 
-        extractPositions(composed.getData())
+        extractPositions(composed.data())
                 .stream()
-                .map(p -> getChordEvents(composed.getData(), p))
+                .map(p -> getChordEvents(composed.data(), p))
                 .map(c -> arpeggiate(c, matcher, octavesUp, octavesDown, restart))
                 .forEach(events::addAll);
 
@@ -116,7 +116,7 @@ public class Arp extends EventsFunction {
             if (octavesUp == 0 && octavesDown == 0) return pitch;
             if (octavesUp < 0 || octavesDown < 0) return pitch;
 
-            final int originalOctave = pitch.getOctave();
+            final int originalOctave = pitch.octave();
             final List<Integer> octaves = rangeClosed(originalOctave - octavesDown, originalOctave + octavesUp);
             final int newOctave = random(octaves);
             final int octaveDiff = originalOctave - newOctave;

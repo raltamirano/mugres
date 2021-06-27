@@ -25,7 +25,7 @@ public class Signaler {
 
         this.config = config;
 
-        queue = new PriorityQueue<>(comparingLong(Signal::getTime));
+        queue = new PriorityQueue<>(comparingLong(Signal::time));
         worker = createWorkerThread();
         worker.setDaemon(true);
         worker.start();
@@ -54,21 +54,21 @@ public class Signaler {
 
     private Fixed createFrequency(final Context context) {
         try {
-            final long millis = Long.parseLong(config.getFrequency().getValue());
+            final long millis = Long.parseLong(config.frequency().value());
             return Frequency.fixed(millis);
         } catch(final NumberFormatException e) {
-            final Value value = Value.forId(config.getFrequency().getValue().toString());
-            return Frequency.fixed(value, context.getTempo());
+            final Value value = Value.of(config.frequency().value().toString());
+            return Frequency.fixed(value, context.tempo());
         }
     }
 
     private long getDuration(final Context context) {
         try {
-            return Long.parseLong(config.getDuration());
+            return Long.parseLong(config.duration());
         } catch(final NumberFormatException e) {
             try {
-                final Value value = Value.forId(config.getDuration());
-                return value.length().toMillis(context.getTempo());
+                final Value value = Value.of(config.duration());
+                return value.length().toMillis(context.tempo());
             } catch (final Throwable ignore) {
                 return 500;
             }
@@ -87,7 +87,7 @@ public class Signaler {
                         long now = System.currentTimeMillis();
                         boolean run = true;
                         while(run) {
-                            if (queue.peek().getTime() <= now) {
+                            if (queue.peek().time() <= now) {
                                 target.send(queue.remove());
                                 run = !queue.isEmpty();
                             } else {
@@ -107,12 +107,12 @@ public class Signaler {
         return now -> {
             final Signal on = Signal.on(UUID.randomUUID(), now, DEFAULT_CHANNEL,
                     Played.of(Pitch.MIDDLE_C, 100));
-            config.getTags().forEach(on::addTag);
+            config.tags().forEach(on::addTag);
             queue.add(on);
 
             final Signal off = Signal.off(UUID.randomUUID(), now + duration, DEFAULT_CHANNEL,
                     Played.of(Pitch.MIDDLE_C, 100));
-            config.getTags().forEach(off::addTag);
+            config.tags().forEach(off::addTag);
             queue.add(off);
         };
     }

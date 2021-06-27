@@ -44,18 +44,18 @@ public enum Key {
         this.root = root;
         this.tonality = tonality;
         this.notes = Collections.unmodifiableList(defaultScale().pitches(root, 1)
-                .stream().map(Pitch::getNote).collect(Collectors.toList()));
+                .stream().map(Pitch::note).collect(Collectors.toList()));
     }
 
     public String label() {
         return label;
     }
 
-    public Note getRoot() {
+    public Note root() {
         return root;
     }
 
-    public Tonality getTonality() {
+    public Tonality tonality() {
         return tonality;
     }
 
@@ -72,7 +72,7 @@ public enum Key {
     }
 
     public List<Pitch> chord(final Pitch rootPitch, final int numberOfNotes) {
-        return chord(rootPitch.getNote(), numberOfNotes, rootPitch.getOctave());
+        return chord(rootPitch.note(), numberOfNotes, rootPitch.octave());
     }
 
     public List<Pitch> chord(final Note chordRoot, final int numberOfNotes, final int baseOctave) {

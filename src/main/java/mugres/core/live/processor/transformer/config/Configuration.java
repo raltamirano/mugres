@@ -14,11 +14,11 @@ public class Configuration {
     private final List<Signaler> signalers = new ArrayList<>();
     private final List<Filter> filters = new ArrayList<>();
 
-    public List<Signaler> getSignalers() {
+    public List<Signaler> signalers() {
         return unmodifiableList(signalers);
     }
 
-    public List<Filter> getFilters() {
+    public List<Filter> filters() {
         return unmodifiableList(filters);
     }
 

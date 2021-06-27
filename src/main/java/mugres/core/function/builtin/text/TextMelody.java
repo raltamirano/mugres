@@ -54,7 +54,7 @@ public class TextMelody extends EventsFunction {
 
         Length actualPosition = Length.ZERO;
         int index = 0;
-        while(actualPosition.getLength() < length.getLength()) {
+        while(actualPosition.length() < length.length()) {
             final char next = sourceText.charAt(index++ % sourceText.length());
 
             final Value noteValue;

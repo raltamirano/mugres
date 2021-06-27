@@ -23,18 +23,18 @@ public enum Value {
         this.denominator = denominator;
     }
 
-    public static Value forId(final String id) {
+    public static Value of(final String id) {
         for(Value v : values())
             if (v.id.equals(id))
                 return v;
         throw new IllegalArgumentException("Invalid value ID: " + id);
     }
 
-    public static Value forLength(final Length l) {
+    public static Value forLength(final Length length) {
         for(Value v : values())
-            if (v.length.equals(l))
+            if (v.length.equals(length))
                 return v;
-        throw new IllegalArgumentException("Invalid value for length: " + l);
+        throw new IllegalArgumentException("Invalid value for length: " + length);
     }
 
     public String label() {

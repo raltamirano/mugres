@@ -19,7 +19,7 @@ public abstract class ByStrategiesFunction extends EventsFunction {
     protected List<Event> doExecute(final Context context, final Map<String, Object> arguments) {
         final List<Event> events = new ArrayList<>();
         final int totalMeasures = (int) ((arguments.get("totalMeasures") == null) ?
-                arguments.get(LENGTH_PARAMETER.getName()) : arguments.get("totalMeasures"));
+                arguments.get(LENGTH_PARAMETER.name()) : arguments.get("totalMeasures"));
 
         int repetitions = 1;
         Strategy strategy = null;
@@ -45,7 +45,7 @@ public abstract class ByStrategiesFunction extends EventsFunction {
             final List<Event> generated = strategy.execute(context);
             for(final Event event : generated)
                 events.add(event.offset(offset));
-            offset = offset.plus(context.getTimeSignature().measuresLength(strategy.getMeasures()));
+            offset = offset.plus(context.timeSignature().measuresLength(strategy.measures()));
         }
 
         return events;
@@ -53,16 +53,16 @@ public abstract class ByStrategiesFunction extends EventsFunction {
 
     protected void addStrategy(final Strategy strategy) {
         synchronized (STRATEGIES) {
-            if (!STRATEGIES.containsKey(strategy.getMeasures()))
-                STRATEGIES.put(strategy.getMeasures(), new ArrayList<>());
-            STRATEGIES.get(strategy.getMeasures()).add(strategy);
+            if (!STRATEGIES.containsKey(strategy.measures()))
+                STRATEGIES.put(strategy.measures(), new ArrayList<>());
+            STRATEGIES.get(strategy.measures()).add(strategy);
         }
     }
 
     private final Map<Integer, List<Strategy>> STRATEGIES = new HashMap<>();
 
     public interface Strategy {
-        int getMeasures();
+        int measures();
         List<Event> execute(final Context context);
     }
 }

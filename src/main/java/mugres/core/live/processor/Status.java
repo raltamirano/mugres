@@ -17,11 +17,11 @@ public class Status<T> {
         return new Status(text, data);
     }
 
-    public String getText() {
+    public String text() {
         return text;
     }
 
-    public T getData() {
+    public T data() {
         return data;
     }
 }

@@ -13,8 +13,11 @@ import mugres.core.live.processor.drummer.config.Configuration;
 import mugres.core.live.processor.drummer.config.Groove;
 import mugres.core.live.processor.drummer.config.Part;
 
-import javax.sound.midi.*;
-
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Receiver;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.Sequencer;
 import java.util.UUID;
 
 import static java.lang.System.currentTimeMillis;
@@ -75,9 +78,9 @@ public class Drummer extends Processor {
         if (!signal.isActive())
             return;
 
-        final Action action = configuration.getAction(signal.getPlayed().pitch().getMidi());
+        final Action action = configuration.getAction(signal.played().pitch().midi());
         if (action != null)
-            action.execute(getContext(),this);
+            action.execute(context(),this);
     }
 
     private Sequencer createSequencer() {
@@ -108,15 +111,15 @@ public class Drummer extends Processor {
 
             if (switchGroove)
                 switchToNextGroove();
-            sequenceToPlay = mainSectionA.getSequence();
+            sequenceToPlay = mainSectionA.sequence();
             playingFill = false;
         } else {
             if (switchGroove || finishing) {
                 playingFill = true;
-                sequenceToPlay = fill.getSequence();
+                sequenceToPlay = fill.sequence();
             } else {
                 playingFill = false;
-                sequenceToPlay = mainSectionB.getSequence();
+                sequenceToPlay = mainSectionB.sequence();
             }
         }
 
@@ -128,9 +131,9 @@ public class Drummer extends Processor {
 
         try {
             sequencer.setSequence(sequenceToPlay);
-            sequencer.setTempoInBPM(playingGroove.getTempo() != 0 ?
-                    playingGroove.getTempo() :
-                    getContext().getTempo());
+            sequencer.setTempoInBPM(playingGroove.tempo() != 0 ?
+                    playingGroove.tempo() :
+                    context().tempo());
             sequencer.setTickPosition(0);
             sequencer.start();
         } catch (final InvalidMidiDataException e) {
@@ -159,7 +162,7 @@ public class Drummer extends Processor {
             mainSectionB = mainSections[1];
 
             // Make main's section B and the fill the same length for a more accurate loop
-            Part.setSequenceLength(fill.getSequence(), mainSectionB.getSequence().getTickLength());
+            Part.setSequenceLength(fill.sequence(), mainSectionB.sequence().getTickLength());
         } else {
             main.fixLength();
             mainSectionA = main;
@@ -168,27 +171,27 @@ public class Drummer extends Processor {
     }
 
     private Part chooseMain() {
-        if (playingGroove.getMains().isEmpty())
-            throw new RuntimeException("No mains defined for groove: " + playingGroove.getName());
+        if (playingGroove.mains().isEmpty())
+            throw new RuntimeException("No mains defined for groove: " + playingGroove.name());
 
         // TODO: Honor playingGroove.getMainsMode()!
-        final Part part = playingGroove.getMains().get(0);
+        final Part part = playingGroove.mains().get(0);
         return part; //.asClone();
     }
 
     private Part chooseFill() {
-        if (playingGroove.getFills().isEmpty())
+        if (playingGroove.fills().isEmpty())
             return null;
 
         // TODO: Honor playingGroove.getFillsMode()!
-        final Part part = playingGroove.getFills().get(0);
+        final Part part = playingGroove.fills().get(0);
         return part; //.asClone();
     }
 
     public void hit(final DrumKit piece, final int velocity) {
         if (velocity > 0)
-            getOutput().send(Signal.on(UUID.randomUUID(), currentTimeMillis(),
-                    DRUMS.getParty().getChannel(),
+            output().send(Signal.on(UUID.randomUUID(), currentTimeMillis(),
+                    DRUMS.party().channel(),
                     Played.of(piece.pitch(), velocity)));
     }
 
@@ -196,7 +199,7 @@ public class Drummer extends Processor {
         // Cancel request to finish playing
         finishing = false;
 
-        if (playingGroove != null && grooveName.equals(playingGroove.getName())) {
+        if (playingGroove != null && grooveName.equals(playingGroove.name())) {
             this.nextGroove = null;
             updateStatus();
             return;
@@ -242,9 +245,9 @@ public class Drummer extends Processor {
     private void updateStatus() {
         final Status status = Status.of(
                 sequencer.isRunning(),
-                playingGroove == null ? "" : playingGroove.getName(),
+                playingGroove == null ? "" : playingGroove.name(),
                 fill != null,
-                nextGroove == null ? "" : nextGroove.getName(),
+                nextGroove == null ? "" : nextGroove.name(),
                 playingFill,
                 finishing);
 
@@ -297,15 +300,15 @@ public class Drummer extends Processor {
             return playing;
         }
 
-        public String getPlayingGroove() {
+        public String playingGroove() {
             return playingGroove;
         }
 
-        public boolean getPlayingGrooveHasFill() {
+        public boolean playingGrooveHasFill() {
             return playingGrooveHasFill;
         }
 
-        public String getNextGroove() {
+        public String nextGroove() {
             return nextGroove;
         }
 

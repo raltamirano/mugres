@@ -10,7 +10,7 @@ public class Play implements Command {
     private Play() {}
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 

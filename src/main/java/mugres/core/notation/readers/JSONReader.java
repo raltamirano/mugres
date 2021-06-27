@@ -37,11 +37,11 @@ public class JSONReader implements Reader {
             final String name = sectionData.getString("name");
             final int measures = sectionData.getInt("measures");
             final Section section = song.createSection(name, measures);
-            loadContext(sectionData, section.getContext());
+            loadContext(sectionData, section.context());
 
             // Party/function calls matrix
             for(String partyName : sectionData.getJSONObject("matrix").keySet()) {
-                final Party party = Party.WellKnownParties.valueOf(partyName).getParty();
+                final Party party = Party.WellKnownParties.valueOf(partyName).party();
                 final Object partyCallsObject = sectionData.getJSONObject("matrix").get(partyName);
                 final List<Object> partyCalls = new ArrayList<>();
                 if (partyCallsObject instanceof JSONArray) {
@@ -91,7 +91,7 @@ public class JSONReader implements Reader {
             final String sectionName = arrangementData.getString("section");
             final int repetitions = arrangementData.getInt("repetitions");
 
-            final Section section = song.getSection(sectionName);
+            final Section section = song.section(sectionName);
             if (section == null)
                 throw new RuntimeException("Invalid arrangement section: " + sectionName);
 
@@ -102,17 +102,17 @@ public class JSONReader implements Reader {
     }
 
     private Context createSongContext(final JSONObject data) {
-        final Context context = Context.createBasicContext();
+        final Context context = Context.basicContext();
         loadContext(data, context);
         return context;
     }
 
     private void loadContext(final JSONObject data, final Context context) {
         if (data.has("tempo"))
-            context.setTempo(data.getInt("tempo"));
+            context.tempo(data.getInt("tempo"));
         if (data.has("key"))
-            context.setKey(Key.fromLabel(data.getString("key")));
+            context.key(Key.fromLabel(data.getString("key")));
         if (data.has("timeSignature"))
-            context.setTimeSignature(TimeSignature.of(data.getString("timeSignature")));
+            context.timeSignature(TimeSignature.of(data.getString("timeSignature")));
     }
 }

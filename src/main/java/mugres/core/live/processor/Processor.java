@@ -30,19 +30,19 @@ public abstract class Processor<S> {
         this.signalers = signalers;
     }
 
-    public Context getContext() {
+    public Context context() {
         return context;
     }
 
-    protected Input getInput() {
+    protected Input input() {
         return input;
     }
 
-    protected Output getOutput() {
+    protected Output output() {
         return output;
     }
 
-    protected List<Signaler> getSignalers() {
+    protected List<Signaler> signalers() {
         return Collections.unmodifiableList(signalers);
     }
 

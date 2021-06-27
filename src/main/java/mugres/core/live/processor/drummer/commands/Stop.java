@@ -9,7 +9,7 @@ public class Stop implements Command {
     private Stop() {}
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 

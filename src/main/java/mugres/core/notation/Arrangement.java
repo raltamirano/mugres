@@ -24,19 +24,19 @@ public class Arrangement {
             this.repetitions = repetitions;
         }
 
-        public Section getSection() {
+        public Section section() {
             return section;
         }
 
-        public void setSection(Section section) {
+        public void section(Section section) {
             this.section = section;
         }
 
-        public int getRepetitions() {
+        public int repetitions() {
             return repetitions;
         }
 
-        public void setRepetitions(int repetitions) {
+        public void repetitions(int repetitions) {
             this.repetitions = repetitions;
         }
 
@@ -45,5 +45,4 @@ public class Arrangement {
             return String.format("%s * %d", section, repetitions);
         }
     }
-
 }

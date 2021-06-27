@@ -30,7 +30,7 @@ public class Call<T> {
 
     private Call(final Function<T> function, final int lengthInMeasures) {
         this.function = function;
-        this.arguments.put(LENGTH_PARAMETER.getName(), lengthInMeasures);
+        this.arguments.put(LENGTH_PARAMETER.name(), lengthInMeasures);
     }
 
     public static <X> Call<X> of(final String functionName, final Map<String, Object> arguments) {
@@ -60,14 +60,14 @@ public class Call<T> {
     public static <X> Call of(final String functionName, final int lengthInMeasures,
             final Map<String, Object> arguments) {
         final Map<String, Object> theArgs = arguments != null ? arguments : Collections.emptyMap();
-        theArgs.put(LENGTH_PARAMETER.getName(), lengthInMeasures);
+        theArgs.put(LENGTH_PARAMETER.name(), lengthInMeasures);
         return of(functionName, theArgs);
     }
 
     public static <X> Call of(final Function<X> function, final int lengthInMeasures,
                               final Map<String, Object> arguments) {
         final Map<String, Object> theArgs = arguments != null ? arguments : Collections.emptyMap();
-        theArgs.put(LENGTH_PARAMETER.getName(), lengthInMeasures);
+        theArgs.put(LENGTH_PARAMETER.name(), lengthInMeasures);
         return of(function, theArgs);
     }
 
@@ -107,7 +107,7 @@ public class Call<T> {
             final String parameterName = entry.getKey();
             final String argumentString = entry.getValue().trim();
 
-            final Function.Parameter parameter = function.getParameter(parameterName);
+            final Function.Parameter parameter = function.parameter(parameterName);
             if (parameter == null)
                 throw new RuntimeException(String.format("Unexpected parameter '%s' for function '%s'",
                         parameterName, functionName));
@@ -118,7 +118,7 @@ public class Call<T> {
 
             Object argument = null;
             if (argumentString != null && !argumentString.isEmpty()) {
-                switch(parameter.getDataType()) {
+                switch(parameter.dataType()) {
                     case LENGTH:
                         argument = Length.of(Integer.parseInt(argumentString));
                         break;
@@ -211,7 +211,7 @@ public class Call<T> {
     }
 
     public int getLengthInMeasures() {
-        return (int)arguments.get(LENGTH_PARAMETER.getName());
+        return (int)arguments.get(LENGTH_PARAMETER.name());
     }
 
     private static final Pattern FUNCTION_CALL = Pattern.compile("([a-z][0-9a-zA-Z_-]+[0-9a-zA-Z])\\((.*)\\)");
@@ -232,7 +232,7 @@ public class Call<T> {
         public Result<X> execute(Context context) {
             try {
                 final Result<X> wrappedResult = wrapped.execute(context);
-                arguments.put(COMPOSED_CALL_RESULT_PARAMETER.getName(), wrappedResult);
+                arguments.put(COMPOSED_CALL_RESULT_PARAMETER.name(), wrappedResult);
                 return new Result(function.execute(context, arguments));
             } catch (final Throwable t) {
                 return new Result(t);

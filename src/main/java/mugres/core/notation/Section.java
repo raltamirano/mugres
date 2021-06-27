@@ -24,27 +24,27 @@ public class Section {
         this.song = song;
         this.name = name;
         this.measures = measures;
-        this.context = ComposableContext.of(song.getContext());
+        this.context = ComposableContext.of(song.context());
         this.context.put(SECTION_LENGTH, measures);
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public void setName(String name) {
+    public void name(String name) {
         this.name = name;
     }
 
-    public Song getSong() {
+    public Song song() {
         return song;
     }
 
-    public int getMeasures() {
+    public int measures() {
         return measures;
     }
 
-    public Context getContext() {
+    public Context context() {
         return context;
     }
 
@@ -56,7 +56,7 @@ public class Section {
         this.regenerate = regenerate;
     }
 
-    public Map<Party, List<Call<List<Event>>>> getMatrix() {
+    public Map<Party, List<Call<List<Event>>>> matrix() {
         return Collections.unmodifiableMap(matrix);
     }
 
@@ -64,7 +64,7 @@ public class Section {
         if (party == null)
             throw new IllegalArgumentException("party");
 
-        addPart(party.getParty(), call);
+        addPart(party.party(), call);
     }
 
     public void addPart(final Party party, final Call<List<Event>> call) {
@@ -83,8 +83,8 @@ public class Section {
         return matrix.containsKey(party);
     }
 
-    public Length getLength() {
-        return context.getTimeSignature().measuresLength(measures);
+    public Length length() {
+        return context.timeSignature().measuresLength(measures);
     }
 
     @Override

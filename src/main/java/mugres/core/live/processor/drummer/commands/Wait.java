@@ -9,7 +9,7 @@ public class Wait implements Command {
     private Wait() {}
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 

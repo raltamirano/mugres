@@ -10,7 +10,7 @@ public class Utils {
     private Utils() {}
 
     public static Value parseNoteValue(final String input) {
-        return input == null || input.trim().isEmpty() ? QUARTER : Value.forId(input);
+        return input == null || input.trim().isEmpty() ? QUARTER : Value.of(input);
     }
 
     public static final String REST = "R";

@@ -17,19 +17,19 @@ public class Track {
         this.party = party;
     }
 
-    public Party getParty() {
+    public Party party() {
         return party;
     }
 
-    public int getChannel() {
-        return party.getChannel();
+    public int channel() {
+        return party.channel();
     }
 
-    public Instrument getInstrument() {
-        return party.getInstrument();
+    public Instrument instrument() {
+        return party.instrument();
     }
 
-    public List<Event> getEvents() {
+    public List<Event> events() {
         return Collections.unmodifiableList(events);
     }
 

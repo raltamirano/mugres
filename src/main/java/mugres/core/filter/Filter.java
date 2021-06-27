@@ -19,7 +19,7 @@ public abstract class Filter {
         this.arguments = arguments == null ? emptyMap() : arguments;
     }
 
-    public abstract String getName();
+    public abstract String name();
 
     protected abstract boolean internalCanHandle(final Context context, final Signals signals);
 
@@ -29,13 +29,13 @@ public abstract class Filter {
         try {
             final Integer tempo = arguments.containsKey("tempo") ?
                     Integer.valueOf(arguments.get("tempo").toString()) :
-                    context.getTempo();
+                    context.tempo();
 
             return tempo > 0 ?
                     tempo :
-                    context.getTempo();
+                    context.tempo();
         } catch (final Throwable ignore) {
-            return context.getTempo();
+            return context.tempo();
         }
     }
 
@@ -43,9 +43,9 @@ public abstract class Filter {
         try {
             return arguments.containsKey("key") ?
                     Key.fromLabel(arguments.get("key").toString()) :
-                    context.getKey();
+                    context.key();
         } catch (final Throwable ignore) {
-            return context.getKey();
+            return context.key();
         }
     }
 
@@ -53,9 +53,9 @@ public abstract class Filter {
         try {
             return arguments.containsKey("timeSignature") ?
                     TimeSignature.of(arguments.get("timeSignature").toString()) :
-                    context.getTimeSignature();
+                    context.timeSignature();
         } catch (final Throwable ignore) {
-            return context.getTimeSignature();
+            return context.timeSignature();
         }
     }
 
@@ -66,8 +66,8 @@ public abstract class Filter {
 
     public Signals handle(final Context context, final Signals signals) {
         final SplitByTagsResult splitByTagsResult = splitByTags(signals);
-        final Signals handledSignals = internalHandle(context, splitByTagsResult.getInside());
-        handledSignals.addAll(splitByTagsResult.getOutside());
+        final Signals handledSignals = internalHandle(context, splitByTagsResult.inside());
+        handledSignals.addAll(splitByTagsResult.outside());
         return handledSignals;
     }
 
@@ -157,13 +157,13 @@ public abstract class Filter {
     }
 
     public static void activateSignal(final int channel, final Pitch pitch, final UUID eventId) {
-        SIGNALS[channel][pitch.getMidi()] = eventId;
+        SIGNALS[channel][pitch.midi()] = eventId;
         fireActivatedSignalNotification(eventId, channel, pitch);
     }
 
     public static void deactivateSignal(final int channel, final Pitch pitch) {
-        final UUID originalEventId = SIGNALS[channel][pitch.getMidi()];
-        SIGNALS[channel][pitch.getMidi()] = null;
+        final UUID originalEventId = SIGNALS[channel][pitch.midi()];
+        SIGNALS[channel][pitch.midi()] = null;
         if (originalEventId != null)
             fireDeactivatedSignalNotification(originalEventId, channel, pitch);
     }
@@ -177,7 +177,7 @@ public abstract class Filter {
     }
 
     public static boolean isSignalActive(final int channel, final Pitch pitch) {
-        return SIGNALS[channel][pitch.getMidi()] != null;
+        return SIGNALS[channel][pitch.midi()] != null;
     }
 
     private static void fireActivatedSignalNotification(final UUID eventId, final int channel, final Pitch pitch) {
@@ -212,11 +212,11 @@ public abstract class Filter {
             return new SplitByTagsResult(inside, outside);
         }
 
-        public Signals getInside() {
+        public Signals inside() {
             return inside;
         }
 
-        public Signals getOutside() {
+        public Signals outside() {
             return outside;
         }
 

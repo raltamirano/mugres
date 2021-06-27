@@ -44,15 +44,15 @@ public class Pitch implements Comparable<Pitch> {
         return up(-semitones);
     }
 
-    public int getMidi() {
+    public int midi() {
         return midi;
     }
 
-    public Note getNote() {
+    public Note note() {
         return note;
     }
 
-    public int getOctave() {
+    public int octave() {
         return octave;
     }
 

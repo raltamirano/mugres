@@ -20,11 +20,11 @@ public class Result<T> {
         this.error = error;
     }
 
-    public T getData() {
+    public T data() {
         return data;
     }
 
-    public Throwable getError() {
+    public Throwable error() {
         return error;
     }
 

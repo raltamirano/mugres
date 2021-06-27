@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface Command {
     /** Returns this command's name. */
-    String getName();
+    String name();
 
     /** Executes this command. */
     void execute(final Context context,

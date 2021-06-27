@@ -17,7 +17,7 @@ public class Latch extends Filter {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 
@@ -66,10 +66,10 @@ public class Latch extends Filter {
     }
 
     private static String latchKey(final Signal signal) {
-        return String.format("%d-%d", signal.getChannel(), signal.getPlayed().pitch().getMidi());
+        return String.format("%d-%d", signal.channel(), signal.played().pitch().midi());
     }
 
 
     private static final Comparator<Signal> LATCH_COMPARATOR =
-            Comparator.comparingInt(a -> (a.getChannel() * 1000) + a.getPlayed().pitch().getMidi());
+            Comparator.comparingInt(a -> (a.channel() * 1000) + a.played().pitch().midi());
 }

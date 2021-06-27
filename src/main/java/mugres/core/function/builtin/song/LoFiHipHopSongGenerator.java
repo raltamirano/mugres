@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
-import static mugres.core.common.Context.createBasicContext;
+import static mugres.core.common.Context.basicContext;
 import static mugres.core.common.Direction.ASCENDING;
 import static mugres.core.common.Direction.DESCENDING;
 import static mugres.core.common.chords.Chords.improviseChordProgression;
@@ -27,10 +27,10 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
 
     @Override
     protected Song doExecute(final Context context, final Map<String, Object> arguments) {
-        final Song song = Song.of(getDescription() + " song",
-                createBasicContext()
-                        .setTempo(tempo())
-                        .setKey(key())
+        final Song song = Song.of(description() + " song",
+                basicContext()
+                        .tempo(tempo())
+                        .key(key())
         );
 
         final Section prototypeSection = createSongSection("A", song);
@@ -50,9 +50,9 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
 
     private Section createSongSection(final String name, final Song song) {
         final Section section = song.createSection(name, RND.nextBoolean() ? 4 : 8);
-        final ChordProgression chordProgression = improviseChordProgression(section.getContext(),
-                section.getMeasures());
-        section.getContext().setChordProgression(chordProgression);
+        final ChordProgression chordProgression = improviseChordProgression(section.context(),
+                section.measures());
+        section.context().chordProgression(chordProgression);
 
         createBeat(section);
         createEPianoChords(section);
@@ -74,7 +74,7 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
         final Direction[] directions = directionsSequence();
         int octave = BASE_OCTAVE;
         final StringBuilder progression = new StringBuilder();
-        final List<ChordProgression.ChordEvent> events = section.getContext().getChordProgression().getEvents();
+        final List<ChordProgression.ChordEvent> events = section.context().chordProgression().getEvents();
         for(int index = 0; index < events.size(); index++) {
             if (index > 0) progression.append("|");
 
@@ -118,7 +118,7 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
         final StringBuilder progression = new StringBuilder();
 
         boolean first = true;
-        for (ChordProgression.ChordEvent c : section.getContext().getChordProgression().getEvents()) {
+        for (ChordProgression.ChordEvent c : section.context().chordProgression().getEvents()) {
             if (!first) progression.append("|");
             progression.append(c.notation());
             progression.append(" [4]");
@@ -185,9 +185,9 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
         return  directions;
     }
 
-    private static final Party DRUMS = Party.WellKnownParties.DRUMS.getParty();
-    private static final Party BASS = Party.WellKnownParties.BASS.getParty();
-    private static final Party PAD = Party.WellKnownParties.PAD1.getParty();
+    private static final Party DRUMS = Party.WellKnownParties.DRUMS.party();
+    private static final Party BASS = Party.WellKnownParties.BASS.party();
+    private static final Party PAD = Party.WellKnownParties.PAD1.party();
     private static final Party E_PIANO = new Party("E-Piano", Instrument.Rhodes_Piano, 3);
     private static final Party MELODY = new Party("Melody", Instrument.Synth_Voice, 4);
 

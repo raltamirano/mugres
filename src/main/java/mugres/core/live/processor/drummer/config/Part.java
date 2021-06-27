@@ -48,9 +48,9 @@ public class Part {
     }
 
     public Part[] split(final Part anotherPart) {
-        if (anotherPart.getSequence().getTickLength() > sequence.getTickLength())
+        if (anotherPart.sequence().getTickLength() > sequence.getTickLength())
             throw new IllegalArgumentException("Split point is longer than this part!");
-        final long fixedAnotherPartLength = nearestMultiple(sequence.getResolution(), anotherPart.getSequence().getTickLength());
+        final long fixedAnotherPartLength = nearestMultiple(sequence.getResolution(), anotherPart.sequence().getTickLength());
         final long fixedTotalLength = nearestMultiple(sequence.getResolution(), sequence.getTickLength());
         final long fixedSplitLength = nearestMultiple(sequence.getResolution(), fixedTotalLength - fixedAnotherPartLength);
 
@@ -98,11 +98,11 @@ public class Part {
         throw new RuntimeException(String.format("Couldn't find nearest multiple of %d for %d", multiplier, value));
     }
 
-    public String getName() {
+    public String name() {
         return this.name;
     }
 
-    public Sequence getSequence() {
+    public Sequence sequence() {
         return this.sequence;
     }
 }

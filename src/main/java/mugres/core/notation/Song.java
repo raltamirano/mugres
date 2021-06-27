@@ -1,6 +1,6 @@
 package mugres.core.notation;
 
-import mugres.core.MUGRES;
+import mugres.MUGRES;
 import mugres.core.common.Context;
 import mugres.core.common.Event;
 import mugres.core.common.Party;
@@ -34,28 +34,28 @@ public class Song {
     }
 
     public static Song of(final Call<List<Event>> call) {
-        return of(Context.createBasicContext(), Party.WellKnownParties.PIANO, call);
+        return of(Context.basicContext(), Party.WellKnownParties.PIANO, call);
     }
 
     public static Song of(final Party.WellKnownParties functionCallsParty,
                           final Call<List<Event>> call) {
-        return of(Context.createBasicContext(), functionCallsParty.getParty(), call);
+        return of(Context.basicContext(), functionCallsParty.party(), call);
     }
 
     public static Song of(final Context functionCallsContext,
                           final Call<List<Event>> call) {
-        return of(functionCallsContext,Party.WellKnownParties.PIANO.getParty(), call);
+        return of(functionCallsContext,Party.WellKnownParties.PIANO.party(), call);
     }
 
     public static Song of(final Party functionCallsParty,
                           final Call<List<Event>> call) {
-        return of(Context.createBasicContext(), functionCallsParty, call);
+        return of(Context.basicContext(), functionCallsParty, call);
     }
 
     public static Song of(final Context functionCallsContext,
                           final Party.WellKnownParties functionCallsParty,
                           final Call<List<Event>> call) {
-            return of(functionCallsContext, functionCallsParty.getParty(), call);
+            return of(functionCallsContext, functionCallsParty.party(), call);
     }
 
     public static Song of(final Context functionCallsContext,
@@ -68,20 +68,20 @@ public class Song {
         return functionCallSong;
     }
 
-    public String getTitle() {
+    public String title() {
         return title;
     }
 
-    public void setTitle(final String title) {
+    public void title(final String title) {
         this.title = title;
     }
 
-    public Context getContext() {
+    public Context context() {
         return context;
     }
 
     public Section createSection(final String sectionName, final int measures) {
-        if (sections.stream().anyMatch(s -> s.getName().equals(sectionName)))
+        if (sections.stream().anyMatch(s -> s.name().equals(sectionName)))
             throw new IllegalArgumentException(String.format("Section '%s' already exists!", sectionName));
 
         final Section section = new Section(this, sectionName, measures);
@@ -92,7 +92,7 @@ public class Song {
     /** Creates a song that contains a single section from this songs. That section will be arranged
      * to be repeated once. */
     public Song createSectionSong(final String sectionName) {
-        final Section section = getSection(sectionName);
+        final Section section = section(sectionName);
         if (section == null)
             throw new IllegalArgumentException("Unknown section: " + sectionName);
 
@@ -115,9 +115,9 @@ public class Song {
         return Collections.unmodifiableSet(sections);
     }
 
-    public Section getSection(final String name) {
+    public Section section(final String name) {
         for(Section section : sections)
-            if (section.getName().equals(name))
+            if (section.name().equals(name))
                 return section;
 
         return null;

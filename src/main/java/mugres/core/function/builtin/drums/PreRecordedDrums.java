@@ -32,14 +32,14 @@ public abstract class PreRecordedDrums extends EventsFunction {
 
     @Override
     protected List<Event> doExecute(final Context context, final Map<String, Object> arguments) {
-        final int lengthInMeasures = (Integer) arguments.get(LENGTH_PARAMETER.getName());
+        final int lengthInMeasures = (Integer) arguments.get(LENGTH_PARAMETER.name());
         final Length length = lengthFromNumberOfMeasures(context, arguments);
         final Variant variant = (Variant) arguments.get("variant");
         final Variant fill = (Variant) arguments.get("fill");
         final DrumKit startingHit = (DrumKit) arguments.get("startingHit");
         final String timeSignatureId = String.format("ts%d%d",
-                context.getTimeSignature().getNumerator(),
-                context.getTimeSignature().getDenominator().denominator());
+                context.timeSignature().numerator(),
+                context.timeSignature().denominator().denominator());
 
         final List<Event> mainEvents = new ArrayList<>();
         final List<Event> fillEvents = new ArrayList<>();
@@ -48,10 +48,10 @@ public abstract class PreRecordedDrums extends EventsFunction {
         final GridPattern<DrumKitHitElementPatternParser.DrumKitHit> fillPattern;
         if (fill != NONE) {
             final String fillVariant = String.format("%s/%s-%s-%s",
-                    getName(), timeSignatureId, FILL, fill.name().toLowerCase());
+                    name(), timeSignatureId, FILL, fill.name().toLowerCase());
 
             fillPattern = loadPattern(context, fillVariant);
-            if (fillPattern.getLength().getLength() > length.getLength())
+            if (fillPattern.getLength().length() > length.length())
                 throw new RuntimeException("Requested fill is larger than the requested length!");
 
             fillEvents.addAll(Utils.extractEvents(fillPattern));
@@ -59,10 +59,10 @@ public abstract class PreRecordedDrums extends EventsFunction {
             fillPattern = null;
 
         // If there's room for the main part of the pattern...
-        if (fill == NONE || fillPattern.getLength().getLength() < length.getLength()) {
+        if (fill == NONE || fillPattern.getLength().length() < length.length()) {
             final String mainVariant = variant == RANDOM ?
                     pickRandomPatternName() :
-                    String.format("%s/%s-%s-%s", getName(), timeSignatureId, MAIN, variant.name().toLowerCase());
+                    String.format("%s/%s-%s-%s", name(), timeSignatureId, MAIN, variant.name().toLowerCase());
             final GridPattern<DrumKitHitElementPatternParser.DrumKitHit> mainPattern =
                     loadPattern(context, mainVariant);
 
@@ -70,7 +70,7 @@ public abstract class PreRecordedDrums extends EventsFunction {
                 throw new RuntimeException("Main and fill pattern must have the same 'Division' value!");
 
             final int remainingMeasures = lengthInMeasures - (fill == NONE ? 0 : fillPattern.getLengthInMeasures());
-            final Length fillOffset =  context.getTimeSignature().measuresLength(remainingMeasures);
+            final Length fillOffset =  context.timeSignature().measuresLength(remainingMeasures);
             offsetEvents(fillEvents, fillOffset);
 
             final int wholeRepeats = remainingMeasures / mainPattern.getLengthInMeasures();
@@ -96,9 +96,9 @@ public abstract class PreRecordedDrums extends EventsFunction {
             final Set<Event> toRemove = new HashSet<>();
             events.forEach(event -> {
                 if (event.position().equals(Length.ZERO) &&
-                        (event.played().pitch().getMidi() != BD.midi() && event.played().pitch().getMidi() != SD.midi())) {
-                    if (event.played().pitch().getMidi() == startingHit.midi()) {
-                        event.played().setVelocity(HARD.getVelocity());
+                        (event.played().pitch().midi() != BD.midi() && event.played().pitch().midi() != SD.midi())) {
+                    if (event.played().pitch().midi() == startingHit.midi()) {
+                        event.played().velocity(HARD.getVelocity());
                         replaced.set(true);
                     } else {
                         toRemove.add(event);
@@ -133,8 +133,8 @@ public abstract class PreRecordedDrums extends EventsFunction {
 
     private String pickRandomPatternName()  {
         try {
-            final List<String> files = IOUtils.readLines(new StringReader(IOUtils.resourceToString("/drum-patterns/" + getName(), Charset.defaultCharset())));
-            return getName() + "/" + random(files);
+            final List<String> files = IOUtils.readLines(new StringReader(IOUtils.resourceToString("/drum-patterns/" + name(), Charset.defaultCharset())));
+            return name() + "/" + random(files);
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }

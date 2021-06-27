@@ -64,7 +64,7 @@ public enum Interval {
             this.scaleSteps = scaleSteps;
         }
 
-        public int getScaleSteps() {
+        public int scaleSteps() {
             return scaleSteps;
         }
     }

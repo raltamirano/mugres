@@ -1,6 +1,13 @@
 package mugres.core.function;
 
-import mugres.core.common.*;
+import mugres.core.common.Context;
+import mugres.core.common.Event;
+import mugres.core.common.Length;
+import mugres.core.common.Note;
+import mugres.core.common.Pitch;
+import mugres.core.common.Scale;
+import mugres.core.common.TimeSignature;
+import mugres.core.common.Value;
 import mugres.core.function.builtin.arp.Arp;
 import mugres.core.function.builtin.arp.Arp2;
 import mugres.core.function.builtin.bm.BlackMetal;
@@ -16,7 +23,14 @@ import mugres.core.function.builtin.song.LoFiHipHopSongGenerator;
 import mugres.core.function.builtin.text.TextMelody;
 import mugres.core.notation.Song;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static mugres.core.common.Context.SECTION_LENGTH;
@@ -38,26 +52,26 @@ public abstract class Function<T> {
         register(this);
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public String getDescription() {
+    public String description() {
         return description;
     }
 
-    public Set<Parameter> getParameters() {
+    public Set<Parameter> parameters() {
         return Collections.unmodifiableSet(parameters);
     }
 
-    public Parameter getParameter(final String name) {
+    public Parameter parameter(final String name) {
         for(Parameter parameter : parameters)
             if (parameter.name.equals(name))
                 return parameter;
         return null;
     }
 
-    public abstract Artifact getArtifact();
+    public abstract Artifact artifact();
 
     protected void addParameter(final Parameter parameter) {
         if (parameters.contains(parameter.name))
@@ -67,9 +81,9 @@ public abstract class Function<T> {
     }
 
     public T execute(final Context context, final Map<String, Object> arguments) {
-        if (!arguments.containsKey(LENGTH_PARAMETER.getName()))
+        if (!arguments.containsKey(LENGTH_PARAMETER.name()))
             if (context.has(SECTION_LENGTH))
-                arguments.put(LENGTH_PARAMETER.getName(), context.get(SECTION_LENGTH));
+                arguments.put(LENGTH_PARAMETER.name(), context.get(SECTION_LENGTH));
 
         final T result = doExecute(context, prepareArguments(arguments));
         // TODO: Validate length/complete to length with rests / etc.
@@ -84,13 +98,13 @@ public abstract class Function<T> {
      * a single mandatory parameter (besides {@link #LENGTH_PARAMETER}) among all of its parameters. */
     public T executeSingleArg(final Context context, final Object argument) {
         final List<Parameter> parameterList = new ArrayList<>(this.parameters);
-        final long mandatoryParameters = parameterList.stream().filter(p -> !p.getName().equals(LENGTH_PARAMETER.getName())
+        final long mandatoryParameters = parameterList.stream().filter(p -> !p.name().equals(LENGTH_PARAMETER.name())
                 && !p.optional).count();
         String parameterName = null;
         if (parameterList.size() == 1) {
             parameterName = parameterList.get(0).name;
         } else if (mandatoryParameters == 1) {
-            parameterName = parameterList.stream().filter(p -> !p.getName().equals(LENGTH_PARAMETER.getName())
+            parameterName = parameterList.stream().filter(p -> !p.name().equals(LENGTH_PARAMETER.name())
                     && !p.optional).findFirst().get().name;
         }
 
@@ -105,20 +119,20 @@ public abstract class Function<T> {
     protected abstract T doExecute(final Context context, final Map<String, Object> arguments);
 
     protected Length lengthFromNumberOfMeasures(final Context context, final Map<String, Object> arguments) {
-        final int measures = (Integer) arguments.get(LENGTH_PARAMETER.getName());
-        final TimeSignature timeSignature = context.getTimeSignature();
+        final int measures = (Integer) arguments.get(LENGTH_PARAMETER.name());
+        final TimeSignature timeSignature = context.timeSignature();
         return timeSignature.measuresLength(measures);
     }
 
     protected Result<T> getComposedCallResult(final Map<String, Object> arguments) {
-        return (Result<T>) arguments.get(COMPOSED_CALL_RESULT_PARAMETER.getName());
+        return (Result<T>) arguments.get(COMPOSED_CALL_RESULT_PARAMETER.name());
     }
 
     private Map<String, Object> prepareArguments(final Map<String, Object> arguments) {
         final Map<String, Object> preparedArguments = new HashMap<>();
 
-        if (arguments.containsKey(COMPOSED_CALL_RESULT_PARAMETER.getName()))
-            preparedArguments.put(COMPOSED_CALL_RESULT_PARAMETER.getName(), arguments.get(COMPOSED_CALL_RESULT_PARAMETER.getName()));
+        if (arguments.containsKey(COMPOSED_CALL_RESULT_PARAMETER.name()))
+            preparedArguments.put(COMPOSED_CALL_RESULT_PARAMETER.name(), arguments.get(COMPOSED_CALL_RESULT_PARAMETER.name()));
 
         if (parameters.isEmpty()) {
             if (arguments.isEmpty())
@@ -128,7 +142,7 @@ public abstract class Function<T> {
                         "Provided: '%s'", name, arguments));
         } else {
             for(Parameter parameter : parameters) {
-                Object argument = arguments.get(parameter.getName());
+                Object argument = arguments.get(parameter.name());
                 if (argument == null) {
                     if (parameter.optional)
                         argument = parameter.defaultValue;
@@ -157,7 +171,7 @@ public abstract class Function<T> {
     }
 
     private boolean allowedInternalParameter(String argumentName) {
-        if (COMPOSED_CALL_RESULT_PARAMETER.getName().equals(argumentName)) return true;
+        if (COMPOSED_CALL_RESULT_PARAMETER.name().equals(argumentName)) return true;
         return false;
     }
 
@@ -172,7 +186,7 @@ public abstract class Function<T> {
         }
 
         @Override
-        public Artifact getArtifact() {
+        public Artifact artifact() {
             return Artifact.EVENTS;
         }
     }
@@ -185,7 +199,7 @@ public abstract class Function<T> {
         }
 
         @Override
-        public Artifact getArtifact() {
+        public Artifact artifact() {
             return Artifact.SONG;
         }
     }
@@ -215,7 +229,7 @@ public abstract class Function<T> {
     }
 
     private static synchronized void register(final Function function) {
-        final String name = function.getName();
+        final String name = function.name();
         if (REGISTRY.containsKey(name))
             throw new IllegalArgumentException("Already registered function: " + name);
         REGISTRY.put(name, function);
@@ -227,7 +241,7 @@ public abstract class Function<T> {
 
     public static Set<Function> forArtifact(final Artifact artifact) {
         return Collections.unmodifiableSet(REGISTRY.values().stream()
-                .filter(f -> f.getArtifact().equals(artifact))
+                .filter(f -> f.artifact().equals(artifact))
                 .collect(Collectors.toSet()));
     }
 
@@ -240,14 +254,14 @@ public abstract class Function<T> {
         EVENTS("Events"),
         SONG("Song");
 
-        private final String name;
+        private final String label;
 
-        Artifact(String name) {
-            this.name = name;
+        Artifact(String label) {
+            this.label = label;
         }
 
-        public String getName() {
-            return name;
+        public String label() {
+            return label;
         }
     }
 
@@ -287,15 +301,15 @@ public abstract class Function<T> {
             return new Parameter(name, documentation, dataType, optional, defaultValue, multiple);
         }
 
-        public String getName() {
+        public String name() {
             return name;
         }
 
-        public String getDocumentation() {
+        public String documentation() {
             return documentation;
         }
 
-        public DataType getDataType() {
+        public DataType dataType() {
             return dataType;
         }
 
@@ -303,7 +317,7 @@ public abstract class Function<T> {
             return optional;
         }
 
-        public Object getDefaultValue() {
+        public Object defaultValue() {
             return defaultValue;
         }
 

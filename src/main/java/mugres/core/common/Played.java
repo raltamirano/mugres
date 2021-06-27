@@ -29,7 +29,7 @@ public class Played implements Cloneable {
         return velocity;
     }
 
-    public void setVelocity(int velocity) {
+    public void velocity(int velocity) {
         this.velocity = velocity;
     }
 
@@ -54,7 +54,7 @@ public class Played implements Cloneable {
     }
 
     public int pack() {
-        return pitch.getMidi() * 1000 + velocity;
+        return pitch.midi() * 1000 + velocity;
     }
 
     @Override

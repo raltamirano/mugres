@@ -1,4 +1,4 @@
-package mugres.core;
+package mugres;
 
 import mugres.core.common.io.Input;
 import mugres.core.common.io.MidiInput;

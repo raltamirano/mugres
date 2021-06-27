@@ -16,7 +16,7 @@ public class Performer {
 
     public static Performance perform(final Song song) {
         final Map<String, Map<String, List<Event>>> generatedMatrix = new HashMap<>();
-        final Performance performance = new Performance(song.getTitle());
+        final Performance performance = new Performance(song.title());
 
         addControlEvents(song, performance);
 
@@ -25,49 +25,49 @@ public class Performer {
             final Track track = performance.createTrack(party);
             offset = Length.ZERO;
             for(Arrangement.Entry arrangementEntry : song.arrangement().entries()) {
-                for(int arrangementEntryIndex = 1; arrangementEntryIndex <= arrangementEntry.getRepetitions();
+                for(int arrangementEntryIndex = 1; arrangementEntryIndex <= arrangementEntry.repetitions();
                     arrangementEntryIndex++) {
-                    if (arrangementEntry.getSection().hasPartsFor(party)) {
-                        if (!arrangementEntry.getSection().isRegenerate() &&
-                                generatedMatrix.containsKey(arrangementEntry.getSection().getName()) &&
-                                generatedMatrix.get(arrangementEntry.getSection().getName()).containsKey(party.getName())) {
-                            for (Event event : generatedMatrix.get(arrangementEntry.getSection().getName())
-                                    .get(party.getName())) {
+                    if (arrangementEntry.section().hasPartsFor(party)) {
+                        if (!arrangementEntry.section().isRegenerate() &&
+                                generatedMatrix.containsKey(arrangementEntry.section().name()) &&
+                                generatedMatrix.get(arrangementEntry.section().name()).containsKey(party.name())) {
+                            for (Event event : generatedMatrix.get(arrangementEntry.section().name())
+                                    .get(party.name())) {
                                 track.addEvent(event.offset(offset));
                             }
                         } else {
-                            if (!generatedMatrix.containsKey(arrangementEntry.getSection().getName()))
-                                generatedMatrix.put(arrangementEntry.getSection().getName(), new HashMap<>());
+                            if (!generatedMatrix.containsKey(arrangementEntry.section().name()))
+                                generatedMatrix.put(arrangementEntry.section().name(), new HashMap<>());
 
                             final List<Event> partyEvents = new ArrayList<>();
                             Length previousCallsOffset = Length.ZERO;
-                            for (Call<List<Event>> call : arrangementEntry.getSection().getMatrix().get(party)) {
-                                final Context callContext = arrangementEntry.getSection().getContext();
+                            for (Call<List<Event>> call : arrangementEntry.section().matrix().get(party)) {
+                                final Context callContext = arrangementEntry.section().context();
                                 final Result<List<Event>> functionResult = call.execute(callContext);
                                 if (functionResult.succeeded()) {
-                                    final List<Event> events = sortEventList(functionResult.getData());
+                                    final List<Event> events = sortEventList(functionResult.data());
                                     for (Event event : events) {
                                         track.addEvent(event.offset(offset.plus(previousCallsOffset)));
                                         partyEvents.add(event.offset(previousCallsOffset));
                                     }
-                                    previousCallsOffset = previousCallsOffset.plus(callContext.getTimeSignature()
+                                    previousCallsOffset = previousCallsOffset.plus(callContext.timeSignature()
                                             .measuresLength(call.getLengthInMeasures()));
                                 } else {
                                     // TODO: better error handling
-                                    throw new RuntimeException(functionResult.getError());
+                                    throw new RuntimeException(functionResult.error());
                                 }
                             }
 
-                            generatedMatrix.get(arrangementEntry.getSection().getName())
-                                    .put(party.getName(), partyEvents);
+                            generatedMatrix.get(arrangementEntry.section().name())
+                                    .put(party.name(), partyEvents);
                         }
                     }
-                    offset = offset.plus(arrangementEntry.getSection().getLength());
+                    offset = offset.plus(arrangementEntry.section().length());
                 }
             }
         }
 
-        performance.setLength(offset);
+        performance.length(offset);
 
         return performance;
     }
@@ -75,22 +75,22 @@ public class Performer {
     private static void addControlEvents(final Song song, final Performance performance) {
         Length offset = Length.ZERO;
         for(Arrangement.Entry arrangementEntry : song.arrangement().entries()) {
-            for (int arrangementEntryIndex = 1; arrangementEntryIndex <= arrangementEntry.getRepetitions();
+            for (int arrangementEntryIndex = 1; arrangementEntryIndex <= arrangementEntry.repetitions();
                  arrangementEntryIndex++) {
 
-                final Context context = arrangementEntry.getSection().getContext();
-                final Control currentControl = Control.of(context.getTempo(), context.getKey(),
-                        context.getTimeSignature());
+                final Context context = arrangementEntry.section().context();
+                final Control currentControl = Control.of(context.tempo(), context.key(),
+                        context.timeSignature());
 
                 final Control lastControl =
-                        performance.getControlEvents().isEmpty() ? null :
-                                performance.getControlEvents()
-                                        .get(performance.getControlEvents().size() - 1).getControl();
+                        performance.controlEvents().isEmpty() ? null :
+                                performance.controlEvents()
+                                        .get(performance.controlEvents().size() - 1).control();
 
                 if (lastControl == null || !lastControl.equals(currentControl))
                     performance.addControlEvent(offset, currentControl);
 
-                offset = offset.plus(arrangementEntry.getSection().getLength());
+                offset = offset.plus(arrangementEntry.section().length());
             }
         }
     }

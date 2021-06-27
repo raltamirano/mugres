@@ -21,7 +21,7 @@ public final class In extends Filter {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 
@@ -43,8 +43,8 @@ public final class In extends Filter {
     private void updateSignalsState(final Signals signals) {
         for(final Signal signal : signals.signals())
             if (signal.isActive())
-                Filter.activateSignal(signal.getChannel(), signal.getPlayed().pitch(), signal.getEventId());
+                Filter.activateSignal(signal.channel(), signal.played().pitch(), signal.id());
             else
-                Filter.deactivateSignal(signal.getChannel(), signal.getPlayed().pitch());
+                Filter.deactivateSignal(signal.channel(), signal.played().pitch());
     }
 }

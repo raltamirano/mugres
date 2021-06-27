@@ -19,7 +19,7 @@ public class Length implements Comparable<Length> {
         return new Length(n);
     }
 
-    public int getLength() {
+    public int length() {
         return n;
     }
 

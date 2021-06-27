@@ -9,7 +9,7 @@ public class NoOp implements Command {
     private NoOp() {}
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 

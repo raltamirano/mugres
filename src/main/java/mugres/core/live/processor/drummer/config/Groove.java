@@ -37,51 +37,51 @@ public class Groove {
         return this;
     }
 
-    public String getName() {
+    public String name() {
         return this.name;
     }
 
-    public int getTempo() {
+    public int tempo() {
         return this.tempo;
     }
 
-    public Groove.Mode getMainsMode() {
+    public Groove.Mode mainsMode() {
         return this.mainsMode;
     }
 
-    public Groove.Mode getFillsMode() {
+    public Groove.Mode fillsMode() {
         return this.fillsMode;
     }
 
-    public List<Part> getMains() {
+    public List<Part> mains() {
         return this.mains;
     }
 
-    public List<Part> getFills() {
+    public List<Part> fills() {
         return this.fills;
     }
 
-    public void setName(String name) {
+    public void name(String name) {
         this.name = name;
     }
 
-    public void setTempo(int tempo) {
+    public void tempo(int tempo) {
         this.tempo = tempo;
     }
 
-    public void setMainsMode(Groove.Mode mainsMode) {
+    public void mainsMode(Groove.Mode mainsMode) {
         this.mainsMode = mainsMode;
     }
 
-    public void setFillsMode(Groove.Mode fillsMode) {
+    public void fillsMode(Groove.Mode fillsMode) {
         this.fillsMode = fillsMode;
     }
 
-    public void setMains(List<Part> mains) {
+    public void mains(List<Part> mains) {
         this.mains = mains;
     }
 
-    public void setFills(List<Part> fills) {
+    public void fills(List<Part> fills) {
         this.fills = fills;
     }
 

@@ -48,24 +48,24 @@ public class Signal implements Cloneable {
         return signal;
     }
 
-    public UUID getEventId() {
+    public UUID id() {
         return eventId;
     }
 
     /** Pitch + Channel identification */
     public int discriminator() {
-        return played.pitch().getMidi() * 100 + channel;
+        return played.pitch().midi() * 100 + channel;
     }
 
-    public long getTime() {
+    public long time() {
         return time;
     }
 
-    public int getChannel() {
+    public int channel() {
         return channel;
     }
 
-    public Played getPlayed() {
+    public Played played() {
         return played;
     }
 
@@ -120,7 +120,7 @@ public class Signal implements Cloneable {
         return clone;
     }
 
-    public Map<String, Object> getAttributes() {
+    public Map<String, Object> attributes() {
         synchronized (attributesSyncObject) {
             return  attributes == null ? Collections.emptyMap() : Collections.unmodifiableMap(attributes);
         }
