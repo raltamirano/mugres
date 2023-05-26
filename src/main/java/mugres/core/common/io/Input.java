@@ -1,5 +1,6 @@
 package mugres.core.common.io;
 
+import mugres.core.common.ControlChange;
 import mugres.core.common.InstrumentChange;
 import mugres.core.common.Signal;
 
@@ -27,8 +28,13 @@ public abstract class Input {
         listeners.forEach(listener -> listener.receive(instrumentChange));
     }
 
+    public void send(final ControlChange controlChange) {
+        listeners.forEach(listener -> listener.receive(controlChange));
+    }
+
     public interface Listener {
         void receive(final Signal signal);
         void receive(final InstrumentChange instrumentChange);
+        void receive(final ControlChange controlChange);
     }
 }

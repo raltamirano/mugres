@@ -1,5 +1,6 @@
 package mugres.core.common.io;
 
+import mugres.core.common.ControlChange;
 import mugres.core.common.Instrument;
 import mugres.core.common.InstrumentChange;
 import mugres.core.common.Pitch;
@@ -13,6 +14,7 @@ import javax.sound.midi.Transmitter;
 import java.util.UUID;
 
 import static java.lang.System.currentTimeMillis;
+import static javax.sound.midi.ShortMessage.CONTROL_CHANGE;
 import static javax.sound.midi.ShortMessage.NOTE_OFF;
 import static javax.sound.midi.ShortMessage.NOTE_ON;
 import static javax.sound.midi.ShortMessage.PROGRAM_CHANGE;
@@ -46,6 +48,8 @@ public class MidiInput extends Input {
                         Played.of(Pitch.of(shortMessage.getData1()), 0)));
             else if (shortMessage.getCommand() == PROGRAM_CHANGE)
                 MidiInput.this.send(InstrumentChange.of(shortMessage.getChannel(), Instrument.of(shortMessage.getData1())));
+            else if (shortMessage.getCommand() == CONTROL_CHANGE)
+                MidiInput.this.send(ControlChange.of(shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2()));
         }
 
         @Override

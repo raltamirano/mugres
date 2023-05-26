@@ -41,11 +41,6 @@ public class Spirographone extends Processor {
         stopPlayingThread();
     }
 
-    @Override
-    protected void doProcess(final Signal signal) {
-
-    }
-
     private void startPlayingThread() {
         if (playingThread != null)
             return;

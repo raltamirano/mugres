@@ -1,6 +1,7 @@
 package mugres.core.live.processor;
 
 import mugres.core.common.Context;
+import mugres.core.common.ControlChange;
 import mugres.core.common.InstrumentChange;
 import mugres.core.common.Signal;
 import mugres.core.common.io.Output;
@@ -67,7 +68,11 @@ public abstract class Processor<S> {
 
     protected abstract void onStop();
 
-    protected abstract void doProcess(final Signal signal);
+    protected void doProcess(final Signal signal) {}
+
+    protected void doProcess(final InstrumentChange instrumentChange) {}
+
+    protected void doProcess(final ControlChange controlChange) {}
 
     public void addStatusListener(final StatusListener listener) {
         statusListeners.add(listener);
@@ -86,17 +91,14 @@ public abstract class Processor<S> {
 
             @Override
             public void receive(final InstrumentChange instrumentChange) {
-                throw new RuntimeException("Not implemented!");
+                doProcess(instrumentChange);
+            }
+
+            @Override
+            public void receive(final ControlChange controlChange) {
+                doProcess(controlChange);
             }
         };
-    }
-
-    private void process(final Signal signal) {
-        try {
-            doProcess(signal);
-        } catch (final Throwable t) {
-            t.printStackTrace();
-        }
     }
 
     public interface StatusListener {
