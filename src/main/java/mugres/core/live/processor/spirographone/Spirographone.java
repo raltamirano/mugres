@@ -56,10 +56,10 @@ public class Spirographone extends Processor {
     public void setParameterValue(final String name, final Object value) {
         switch(name) {
             case "spaceMillis":
-                config.setSpaceMillis(Integer.valueOf(value.toString()) * 25);
+                config.setSpaceMillis((Integer.valueOf(value.toString()) * 5) + 1);
                 break;
             case "root":
-                config.setRoot(Note.of((Integer.valueOf(value.toString()) % 12)));
+                config.setRoot(Note.of(Maths.map(Integer.valueOf(value.toString()), 0, 127, 0, 11)));
                 updateNotes();
                 break;
         }
