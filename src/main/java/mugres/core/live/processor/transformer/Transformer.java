@@ -20,7 +20,7 @@ public class Transformer extends Processor {
                        final Input input,
                        final Output output,
                        final Configuration config) {
-        super(context, input, output, config.signalers());
+        super(context, input, output, config.signalers(), null);
 
         this.config = config;
 

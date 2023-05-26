@@ -1,6 +1,7 @@
 package mugres.core.live.processor.spirographone;
 
 import mugres.core.common.Context;
+import mugres.core.common.DataType;
 import mugres.core.common.Note;
 import mugres.core.common.Pitch;
 import mugres.core.common.Played;
@@ -9,10 +10,15 @@ import mugres.core.common.io.Input;
 import mugres.core.common.io.Output;
 import mugres.core.live.processor.Processor;
 import mugres.core.live.processor.spirographone.config.Configuration;
+import mugres.core.parametrizable.Parameter;
 import mugres.core.utils.Maths;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+
+import static java.util.Arrays.asList;
 
 public class Spirographone extends Processor {
     private boolean running;
@@ -26,9 +32,14 @@ public class Spirographone extends Processor {
                             final Input input,
                             final Output output,
                             final Configuration configuration) {
-        super(context, input, output, null);
+        super(context, input, output, null, new HashSet<>(asList(
+                Parameter.of("spaceMillis", "Space between notes, in millis", DataType.INTEGER,
+                        true, 200),
+                Parameter.of("root", "Root note name", DataType.NOTE,
+                        true, Note.E)
+        )));
         this.config = configuration;
-        this.notes = config.getScale().notes(config.getRoot());
+        updateNotes();
     }
 
     @Override
@@ -39,6 +50,33 @@ public class Spirographone extends Processor {
     @Override
     protected void onStop() {
         stopPlayingThread();
+    }
+
+    @Override
+    public void setParameterValue(final String name, final Object value) {
+        switch(name) {
+            case "spaceMillis":
+                config.setSpaceMillis(Integer.valueOf(value.toString()) * 25);
+                break;
+            case "root":
+                config.setRoot(Note.of((Integer.valueOf(value.toString()) % 12)));
+                updateNotes();
+                break;
+        }
+    }
+
+    private void updateNotes() {
+        notes = config.getScale().notes(config.getRoot());
+    }
+
+    @Override
+    public Object getParameterValue(String name) {
+        return super.getParameterValue(name);
+    }
+
+    @Override
+    public Map<String, Object> getParameterValues() {
+        return super.getParameterValues();
     }
 
     private void startPlayingThread() {

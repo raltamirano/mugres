@@ -3,7 +3,7 @@ package mugres.core.live.processor.drummer.config;
 import mugres.core.common.Context;
 import mugres.core.common.DrumKit;
 import mugres.core.function.Call;
-import mugres.core.function.Function.Parameter.Variant;
+import mugres.core.common.Variant;
 import mugres.core.function.builtin.drums.PreRecordedDrums;
 import mugres.core.notation.Song;
 import mugres.core.notation.performance.Performer;

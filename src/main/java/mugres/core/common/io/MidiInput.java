@@ -1,6 +1,6 @@
 package mugres.core.common.io;
 
-import mugres.core.common.ControlChange;
+import mugres.core.common.ControlChange.MidiControlChange;
 import mugres.core.common.Instrument;
 import mugres.core.common.InstrumentChange;
 import mugres.core.common.Pitch;
@@ -49,7 +49,7 @@ public class MidiInput extends Input {
             else if (shortMessage.getCommand() == PROGRAM_CHANGE)
                 MidiInput.this.send(InstrumentChange.of(shortMessage.getChannel() + 1, Instrument.of(shortMessage.getData1())));
             else if (shortMessage.getCommand() == CONTROL_CHANGE)
-                MidiInput.this.send(ControlChange.of(shortMessage.getChannel() + 1, shortMessage.getData1(), shortMessage.getData2()));
+                MidiInput.this.send(MidiControlChange.of(shortMessage.getChannel() + 1, shortMessage.getData1(), shortMessage.getData2()));
         }
 
         @Override

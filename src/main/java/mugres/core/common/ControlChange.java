@@ -5,19 +5,15 @@ import java.util.Objects;
 /**
  * Control change signal
  */
-public class ControlChange {
+public abstract class ControlChange<V> {
     private final int channel;
     private final int controller;
-    private final int value;
+    private final V value;
 
-    private ControlChange(final int channel, final int controller, final int value) {
+    protected ControlChange(final int channel, final int controller, final V value) {
         this.channel = channel;
         this.controller = controller;
         this.value = value;
-    }
-
-    public static ControlChange of(final int channel, final int controller, final int value) {
-       return new ControlChange(channel, controller, value);
     }
 
     public int channel() {
@@ -28,7 +24,7 @@ public class ControlChange {
         return controller;
     }
 
-    public int value() {
+    public V value() {
         return value;
     }
 
@@ -54,5 +50,15 @@ public class ControlChange {
                 ", controller=" + controller +
                 ", value=" + value +
                 '}';
+    }
+
+    public static class MidiControlChange extends ControlChange<Integer> {
+        private MidiControlChange(int channel, int controller, int value) {
+            super(channel, controller, value);
+        }
+
+        public static MidiControlChange of(final int channel, final int controller, final int value) {
+            return new MidiControlChange(channel, controller, value);
+        }
     }
 }

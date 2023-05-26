@@ -1,9 +1,11 @@
 package mugres.core.function.common;
 
 import mugres.core.common.Context;
+import mugres.core.common.DataType;
 import mugres.core.common.Event;
 import mugres.core.common.Length;
 import mugres.core.function.Function.EventsFunction;
+import mugres.core.parametrizable.Parameter;
 
 import java.util.*;
 
@@ -12,7 +14,7 @@ import static mugres.core.utils.Randoms.random;
 public abstract class ByStrategiesFunction extends EventsFunction {
     protected ByStrategiesFunction(final String name, final String description) {
         super(name, description,
-            Parameter.of("totalMeasures", "Total measures to generate", Parameter.DataType.INTEGER,
+            Parameter.of("totalMeasures", "Total measures to generate", DataType.INTEGER,
                     true, null));
     }
     @Override

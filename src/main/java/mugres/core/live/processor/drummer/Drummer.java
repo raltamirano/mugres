@@ -43,7 +43,7 @@ public class Drummer extends Processor {
                    final Input input,
                    final Output output,
                    final Configuration configuration) {
-        super(context, input, output, null);
+        super(context, input, output, null, null);
 
         checkSuitableOutput(output);
 

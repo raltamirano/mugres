@@ -7,6 +7,7 @@ import mugres.core.common.Pitch;
 import mugres.core.common.Value;
 import mugres.core.function.Function.EventsFunction;
 import mugres.core.function.Result;
+import mugres.core.parametrizable.Parameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +15,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
-import static mugres.core.function.Function.Parameter.DataType.BOOLEAN;
-import static mugres.core.function.Function.Parameter.DataType.INTEGER;
-import static mugres.core.function.Function.Parameter.DataType.TEXT;
+import static mugres.core.common.DataType.BOOLEAN;
+import static mugres.core.common.DataType.INTEGER;
+import static mugres.core.common.DataType.TEXT;
 import static mugres.core.function.builtin.arp.Utils.ARP_PATTERN;
 import static mugres.core.function.builtin.arp.Utils.REST;
 import static mugres.core.function.builtin.arp.Utils.parseNoteValue;

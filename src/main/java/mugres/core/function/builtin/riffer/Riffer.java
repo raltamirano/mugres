@@ -5,6 +5,7 @@ import mugres.core.common.gridpattern.GridEvent;
 import mugres.core.common.gridpattern.GridPattern;
 import mugres.core.common.gridpattern.converters.DyadElementPatternParser;
 import mugres.core.function.Function.EventsFunction;
+import mugres.core.parametrizable.Parameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +17,10 @@ import static mugres.core.common.Value.QUARTER;
 public class Riffer extends EventsFunction {
     public Riffer() {
         super("riffer", "Reproduces a predefined riff",
-                Parameter.of("riff", "The riff to play", Parameter.DataType.TEXT),
-                Parameter.of("octave", "Base octave", Parameter.DataType.INTEGER,
+                Parameter.of("riff", "The riff to play", DataType.TEXT),
+                Parameter.of("octave", "Base octave", DataType.INTEGER,
                         true, 3),
-                Parameter.of("value", "Note value for events", Parameter.DataType.VALUE,
+                Parameter.of("value", "Note value for events", DataType.VALUE,
                         true, QUARTER));
     }
 

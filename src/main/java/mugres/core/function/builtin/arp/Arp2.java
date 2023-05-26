@@ -6,6 +6,7 @@ import mugres.core.common.Length;
 import mugres.core.common.Pitch;
 import mugres.core.common.Value;
 import mugres.core.function.Function.EventsFunction;
+import mugres.core.parametrizable.Parameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +15,8 @@ import java.util.regex.Matcher;
 
 import static java.util.Collections.emptyList;
 import static mugres.core.common.Pitch.DEFAULT_VELOCITY;
-import static mugres.core.function.Function.Parameter.DataType.PITCH;
-import static mugres.core.function.Function.Parameter.DataType.TEXT;
+import static mugres.core.common.DataType.PITCH;
+import static mugres.core.common.DataType.TEXT;
 import static mugres.core.function.builtin.arp.Utils.ARP_PATTERN;
 import static mugres.core.function.builtin.arp.Utils.REST;
 import static mugres.core.function.builtin.arp.Utils.parseNoteValue;

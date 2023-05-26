@@ -1,6 +1,7 @@
 package mugres.core.function.builtin.euclides;
 
 import mugres.core.common.Context;
+import mugres.core.common.DataType;
 import mugres.core.common.Event;
 import mugres.core.common.Length;
 import mugres.core.common.Note;
@@ -8,6 +9,7 @@ import mugres.core.common.Pitch;
 import mugres.core.common.Scale;
 import mugres.core.common.euclides.EuclideanPattern;
 import mugres.core.function.Function.EventsFunction;
+import mugres.core.parametrizable.Parameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,19 +25,19 @@ public class Euclides extends EventsFunction {
     public Euclides() {
         super("euclides", "Plays an Euclidean polyrhythm",
                 Parameter.of(PATTERNS, "Patterns",
-                        Parameter.DataType.EUCLIDEAN_PATTERN, false, emptyList(), true),
+                        DataType.EUCLIDEAN_PATTERN, false, emptyList(), true),
                 Parameter.of(PITCHES, "Pitches for every pattern (same order)",
-                        Parameter.DataType.PITCH, true, null, true),
+                        DataType.PITCH, true, null, true),
                 Parameter.of(CYCLE, "Cycle length (defaults to one measure)",
-                        Parameter.DataType.LENGTH, true, null),
+                        DataType.LENGTH, true, null),
                 Parameter.of(STARTING_OCTAVE, "Starting octave",
-                        Parameter.DataType.INTEGER, true, BASE_OCTAVE),
+                        DataType.INTEGER, true, BASE_OCTAVE),
                 Parameter.of(OCTAVES_TO_GENERATE, "Octaves to generate",
-                        Parameter.DataType.INTEGER, true, 2),
+                        DataType.INTEGER, true, 2),
                 Parameter.of(SCALE, "Scale to pick notes from",
-                        Parameter.DataType.SCALE, true, MINOR_PENTATONIC),
+                        DataType.SCALE, true, MINOR_PENTATONIC),
                 Parameter.of(ROOT, "Scale root",
-                        Parameter.DataType.NOTE, true, C)
+                        DataType.NOTE, true, C)
         );
     }
 

@@ -54,9 +54,12 @@ public class MidiOutput implements Output {
 
     @Override
     public void send(final ControlChange controlChange) {
+        if (!(controlChange instanceof ControlChange.MidiControlChange))
+            throw new RuntimeException(getClass().getSimpleName() + "only supports " +
+                    ControlChange.MidiControlChange.class.getSimpleName() + " Control Changes!");
         try {
             final ShortMessage message = new ShortMessage(CONTROL_CHANGE, controlChange.channel() - 1,
-                    controlChange.controller(), controlChange.value());
+                    controlChange.controller(), (int)controlChange.value());
             midiOutputPort.send(message, -1);
         } catch (final InvalidMidiDataException e) {
             throw new RuntimeException(e);

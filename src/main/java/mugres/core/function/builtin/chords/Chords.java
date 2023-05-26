@@ -1,6 +1,7 @@
 package mugres.core.function.builtin.chords;
 
 import mugres.core.common.Context;
+import mugres.core.common.DataType;
 import mugres.core.common.Event;
 import mugres.core.common.Length;
 import mugres.core.common.Value;
@@ -9,6 +10,7 @@ import mugres.core.common.gridpattern.GridEvent;
 import mugres.core.common.gridpattern.GridPattern;
 import mugres.core.common.gridpattern.converters.ChordElementPatternParser;
 import mugres.core.function.Function.EventsFunction;
+import mugres.core.parametrizable.Parameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +21,10 @@ import static mugres.core.common.Value.WHOLE;
 public class Chords extends EventsFunction {
     public Chords() {
         super("chords", "Reproduces a predefined chord progression",
-                Parameter.of("progression", "The chord progression to play", Parameter.DataType.TEXT),
-                Parameter.of("octave", "Base octave", Parameter.DataType.INTEGER,
+                Parameter.of("progression", "The chord progression to play", DataType.TEXT),
+                Parameter.of("octave", "Base octave", DataType.INTEGER,
                         true, 2),
-                Parameter.of("value", "Note value for events", Parameter.DataType.VALUE,
+                Parameter.of("value", "Note value for events", DataType.VALUE,
                         true, WHOLE));
     }
 

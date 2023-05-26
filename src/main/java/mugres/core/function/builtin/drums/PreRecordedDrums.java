@@ -4,7 +4,8 @@ import mugres.core.common.*;
 import mugres.core.common.gridpattern.GridPattern;
 import mugres.core.common.gridpattern.converters.DrumKitHitElementPatternParser;
 import mugres.core.function.Function.EventsFunction;
-import mugres.core.function.Function.Parameter.Variant;
+import mugres.core.parametrizable.Parameter;
+import mugres.core.common.Variant;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -16,18 +17,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static mugres.core.common.DrumKit.BD;
 import static mugres.core.common.DrumKit.SD;
 import static mugres.core.common.gridpattern.converters.DrumKitHitElementPatternParser.DrumKitHit.Intensity.HARD;
-import static mugres.core.function.Function.Parameter.Variant.*;
+import static mugres.core.common.Variant.*;
 import static mugres.core.utils.Randoms.random;
 
 public abstract class PreRecordedDrums extends EventsFunction {
     protected PreRecordedDrums(final String name, final String description) {
         super(name, description,
                 Parameter.of("variant", "The pattern variant to play",
-                        Parameter.DataType.VARIANT, true, V0),
+                        DataType.VARIANT, true, V0),
                 Parameter.of("startingHit", "Starting Hit (usually a crash cymbal)",
-                        Parameter.DataType.DRUM_KIT, true, null),
+                        DataType.DRUM_KIT, true, null),
                 Parameter.of("fill", "Ending fill",
-                        Parameter.DataType.VARIANT, true, NONE));
+                        DataType.VARIANT, true, NONE));
     }
 
     @Override

@@ -1,11 +1,13 @@
 package mugres.core.function.builtin.drums;
 
 import mugres.core.common.Context;
+import mugres.core.common.DataType;
 import mugres.core.common.Event;
 import mugres.core.common.Length;
 import mugres.core.common.gridpattern.GridPattern;
 import mugres.core.common.gridpattern.converters.DrumKitHitElementPatternParser;
 import mugres.core.function.Function.EventsFunction;
+import mugres.core.parametrizable.Parameter;
 
 import java.util.List;
 import java.util.Map;
@@ -13,7 +15,7 @@ import java.util.Map;
 public class Drums extends EventsFunction {
     public Drums() {
         super("drums", "Reproduces a predefined drum pattern",
-                Parameter.of("pattern", "The pattern to play", Parameter.DataType.TEXT));
+                Parameter.of("pattern", "The pattern to play", DataType.TEXT));
     }
 
     @Override

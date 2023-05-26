@@ -7,7 +7,8 @@ import mugres.core.common.Note;
 import mugres.core.common.Pitch;
 import mugres.core.common.Scale;
 import mugres.core.common.Value;
-import mugres.core.function.Function.Parameter.Variant;
+import mugres.core.parametrizable.Parameter;
+import mugres.core.common.Variant;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -107,7 +108,7 @@ public class Call<T> {
             final String parameterName = entry.getKey();
             final String argumentString = entry.getValue().trim();
 
-            final Function.Parameter parameter = function.parameter(parameterName);
+            final Parameter parameter = function.parameter(parameterName);
             if (parameter == null)
                 throw new RuntimeException(String.format("Unexpected parameter '%s' for function '%s'",
                         parameterName, functionName));

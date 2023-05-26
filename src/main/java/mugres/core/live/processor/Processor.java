@@ -6,29 +6,42 @@ import mugres.core.common.InstrumentChange;
 import mugres.core.common.Signal;
 import mugres.core.common.io.Output;
 import mugres.core.common.io.Input;
+import mugres.core.controllable.Controllable;
 import mugres.core.live.signaler.Signaler;
+import mugres.core.parametrizable.Parameter;
+import mugres.core.parametrizable.Parametrizable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** Live events/signals processor */
-public abstract class Processor<S> {
+public abstract class Processor implements Parametrizable, Controllable {
     private final Input input;
     private final Output output;
     private final List<StatusListener> statusListeners = new ArrayList<>();
     private final Context context;
     private final List<Signaler> signalers;
     private Input.Listener inputListener;
+    private final Set<Parameter> parameters = new HashSet<>();
+    private final Map<String, Object> parameterValues = new ConcurrentHashMap<>();
+    private final Map<Integer, Set<String>> controlChangeMappings = new ConcurrentHashMap<>();
 
     protected Processor(final Context context,
                         final Input input,
                         final Output output,
-                        final List<Signaler> signalers) {
+                        final List<Signaler> signalers,
+                        final Set<Parameter> parameters) {
         this.context = context;
         this.input = input;
         this.output = output;
         this.signalers = signalers;
+        if (parameters != null)
+            parameters.forEach(this::addParameter);
     }
 
     public Context context() {
@@ -72,13 +85,15 @@ public abstract class Processor<S> {
 
     protected void doProcess(final InstrumentChange instrumentChange) {}
 
-    protected void doProcess(final ControlChange controlChange) {}
+    protected void doProcess(final ControlChange controlChange) {
+        this.onControlChange(controlChange);
+    }
 
     public void addStatusListener(final StatusListener listener) {
         statusListeners.add(listener);
     }
 
-    protected void reportStatus(final String text, final S data) {
+    protected void reportStatus(final String text, final Object data) {
         statusListeners.forEach(l -> l.report(Status.of(text, data)));
     }
 
@@ -99,6 +114,65 @@ public abstract class Processor<S> {
                 doProcess(controlChange);
             }
         };
+    }
+
+
+    @Override
+    public void mapParameterToControlChange(final String parameterName, final int controlChange) {
+        controlChangeMappings.computeIfAbsent(controlChange, key -> new HashSet()).add(parameterName);
+    }
+
+    @Override
+    public void unmapParameterFromControlChange(final String parameterName, final int controlChange) {
+        controlChangeMappings.computeIfAbsent(controlChange, key -> new HashSet()).remove(parameterName);
+    }
+
+    @Override
+    public void clearAllControlChangeMappings() {
+        controlChangeMappings.clear();
+    }
+
+    @Override
+    public Map<Integer, Set<String>> controlChangeMappings() {
+        return Collections.unmodifiableMap(controlChangeMappings);
+    }
+
+    @Override
+    public void onControlChange(final ControlChange controlChange) {
+        final Set<String> mappedParameterNames = controlChangeMappings.get(controlChange.controller());
+        if (mappedParameterNames != null && !mappedParameterNames.isEmpty()) {
+            mappedParameterNames.forEach(parameterName -> {
+                reportStatus(String.format("Parameter %s => %s", parameterName, controlChange.value()), null);
+                setParameterValue(parameterName, controlChange.value());
+            });
+        }
+    }
+
+    @Override
+    public Set<Parameter> parameters() {
+        return Collections.unmodifiableSet(parameters);
+    }
+
+    @Override
+    public void setParameterValue(final String name, final Object value) {
+        parameterValues.put(name, value);
+    }
+
+    @Override
+    public Object getParameterValue(final String name) {
+        return parameterValues.get(name);
+    }
+
+    @Override
+    public Map<String, Object> getParameterValues() {
+        return Collections.unmodifiableMap(parameterValues);
+    }
+
+    protected void addParameter(final Parameter parameter) {
+        if (parameters.contains(parameter.name()))
+            throw new IllegalArgumentException(String.format("Parameter '%s' already exists!", parameter.name()));
+
+        parameters.add(parameter);
     }
 
     public interface StatusListener {

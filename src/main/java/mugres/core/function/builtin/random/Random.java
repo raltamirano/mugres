@@ -1,6 +1,7 @@
 package mugres.core.function.builtin.random;
 
 import mugres.core.common.Context;
+import mugres.core.common.DataType;
 import mugres.core.common.Event;
 import mugres.core.common.Length;
 import mugres.core.common.Note;
@@ -8,6 +9,7 @@ import mugres.core.common.Pitch;
 import mugres.core.common.Scale;
 import mugres.core.common.Value;
 import mugres.core.function.Function.EventsFunction;
+import mugres.core.parametrizable.Parameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,15 +25,15 @@ public class Random extends EventsFunction {
     public Random() {
         super("random", "Generates random pitches",
                 Parameter.of(STARTING_OCTAVE, "Starting octave",
-                        Parameter.DataType.INTEGER, true, BASE_OCTAVE),
+                        DataType.INTEGER, true, BASE_OCTAVE),
                 Parameter.of(OCTAVES_TO_GENERATE, "Octaves to generate",
-                        Parameter.DataType.INTEGER, true, 2),
+                        DataType.INTEGER, true, 2),
                 Parameter.of(NOTE_VALUE, "Note value",
-                        Parameter.DataType.VALUE, true, QUARTER),
+                        DataType.VALUE, true, QUARTER),
                 Parameter.of(SCALE, "Scale to pick notes from",
-                        Parameter.DataType.SCALE, true, MINOR_PENTATONIC),
+                        DataType.SCALE, true, MINOR_PENTATONIC),
                 Parameter.of(ROOT, "Scale root",
-                        Parameter.DataType.NOTE, true, C)
+                        DataType.NOTE, true, C)
         );
     }
 

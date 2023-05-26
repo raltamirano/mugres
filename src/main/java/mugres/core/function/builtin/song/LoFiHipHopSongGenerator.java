@@ -23,7 +23,7 @@ import static mugres.core.common.Context.basicContext;
 import static mugres.core.common.Direction.ASCENDING;
 import static mugres.core.common.Direction.DESCENDING;
 import static mugres.core.common.chords.Chords.improviseChordProgression;
-import static mugres.core.function.Function.Parameter.Variant.RANDOM;
+import static mugres.core.common.Variant.RANDOM;
 import static mugres.core.utils.Randoms.RND;
 import static mugres.core.utils.Randoms.random;
 
