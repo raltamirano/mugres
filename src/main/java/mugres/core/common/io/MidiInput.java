@@ -40,16 +40,16 @@ public class MidiInput extends Input {
 
             if (shortMessage.getCommand() == NOTE_ON)
                 MidiInput.this.send(Signal.on(UUID.randomUUID(), currentTimeMillis(),
-                        shortMessage.getChannel(),
+                        shortMessage.getChannel() + 1,
                         Played.of(Pitch.of(shortMessage.getData1()), shortMessage.getData2())));
             else if (shortMessage.getCommand() == NOTE_OFF)
                 MidiInput.this.send(Signal.off(UUID.randomUUID(), currentTimeMillis(),
-                        shortMessage.getChannel(),
+                        shortMessage.getChannel() + 1,
                         Played.of(Pitch.of(shortMessage.getData1()), 0)));
             else if (shortMessage.getCommand() == PROGRAM_CHANGE)
-                MidiInput.this.send(InstrumentChange.of(shortMessage.getChannel(), Instrument.of(shortMessage.getData1())));
+                MidiInput.this.send(InstrumentChange.of(shortMessage.getChannel() + 1, Instrument.of(shortMessage.getData1())));
             else if (shortMessage.getCommand() == CONTROL_CHANGE)
-                MidiInput.this.send(ControlChange.of(shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2()));
+                MidiInput.this.send(ControlChange.of(shortMessage.getChannel() + 1, shortMessage.getData1(), shortMessage.getData2()));
         }
 
         @Override

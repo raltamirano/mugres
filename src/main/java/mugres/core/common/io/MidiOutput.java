@@ -44,7 +44,7 @@ public class MidiOutput implements Output {
     @Override
     public void send(final InstrumentChange instrumentChange) {
         try {
-            final ShortMessage message = new ShortMessage(PROGRAM_CHANGE, instrumentChange.channel(),
+            final ShortMessage message = new ShortMessage(PROGRAM_CHANGE, instrumentChange.channel() - 1,
                     instrumentChange.instrument().midi(), 0);
             midiOutputPort.send(message, -1);
         } catch (final InvalidMidiDataException e) {
@@ -55,7 +55,7 @@ public class MidiOutput implements Output {
     @Override
     public void send(final ControlChange controlChange) {
         try {
-            final ShortMessage message = new ShortMessage(CONTROL_CHANGE, controlChange.channel(),
+            final ShortMessage message = new ShortMessage(CONTROL_CHANGE, controlChange.channel() - 1,
                     controlChange.controller(), controlChange.value());
             midiOutputPort.send(message, -1);
         } catch (final InvalidMidiDataException e) {
