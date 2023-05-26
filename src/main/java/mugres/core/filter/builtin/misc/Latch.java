@@ -28,25 +28,25 @@ public class Latch extends Filter {
 
     @Override
     protected Signals internalHandle(final Context context, final Signals signals) {
+        final Signals noteOns = signals.noteOns();
+        if (noteOns.size() == 0)
+            return Signals.create();
+
         final Signals result = Signals.create();
         final String latchKey = latchKey(signals);
 
-        if (latchKey.isEmpty())
-            return result;
-
-        for(Signal s : latchedSignals)
-            result.add(s.toOff());
+        for(Signal l : latchedSignals) {
+            result.add(l.toOff());
+        }
         latchedSignals.clear();
 
         if (latchKey.equals(lastLatched)) {
             lastLatched = null;
         } else {
             lastLatched = latchKey;
-            for(Signal s : signals.signals()) {
-                if (s.isActive()) {
-                    result.add(s);
-                    latchedSignals.add(s);
-                }
+            for (Signal s : noteOns.signals()) {
+                result.add(s);
+                latchedSignals.add(s);
             }
         }
 
@@ -59,7 +59,7 @@ public class Latch extends Filter {
         Collections.sort(sorted, LATCH_COMPARATOR);
 
         for(final Signal in : sorted)
-            if (in.isActive())
+            if (in.isNoteOn())
                 keys.add(latchKey(in));
 
         return String.join("*", keys);

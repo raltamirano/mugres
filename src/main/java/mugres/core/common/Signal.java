@@ -69,8 +69,17 @@ public class Signal implements Cloneable {
         return played;
     }
 
+    @Deprecated
     public boolean isActive() {
         return active;
+    }
+
+    public boolean isNoteOn() {
+        return active && played.velocity() > 0;
+    }
+
+    public boolean isNoteOff() {
+        return !active || played.velocity() == 0;
     }
 
     public Signal modifiedPlayed(final Played newPlayed) {

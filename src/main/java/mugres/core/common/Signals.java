@@ -49,6 +49,14 @@ public class Signals {
         return of(signals.stream().filter(Signal::isActive).toArray(Signal[]::new));
     }
 
+    public Signals noteOns() {
+        return of(signals.stream().filter(Signal::isNoteOn).toArray(Signal[]::new));
+    }
+
+    public Signals noteOffs() {
+        return of(signals.stream().filter(Signal::isNoteOff).toArray(Signal[]::new));
+    }
+
     public Signals inactives() {
         return of(signals.stream().filter(s -> !s.isActive()).toArray(Signal[]::new));
     }
