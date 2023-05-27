@@ -1,9 +1,9 @@
 package mugres;
 
-import mugres.core.common.io.Input;
-import mugres.core.common.io.MidiInput;
-import mugres.core.common.io.MidiOutput;
-import mugres.core.common.io.Output;
+import mugres.common.io.Input;
+import mugres.common.io.MidiInput;
+import mugres.common.io.MidiOutput;
+import mugres.common.io.Output;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;

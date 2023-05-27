@@ -1,0 +1,75 @@
+package mugres.filter.builtin.misc;
+
+import mugres.common.Context;
+import mugres.common.Signal;
+import mugres.common.Signals;
+import mugres.filter.Filter;
+
+import java.util.*;
+
+public class Latch extends Filter {
+    public static final String NAME = "Latch";
+    private String lastLatched = null;
+    private final List<Signal> latchedSignals = new ArrayList<>();
+
+    public Latch(final Map<String, Object> arguments) {
+        super(arguments);
+    }
+
+    @Override
+    public String name() {
+        return NAME;
+    }
+
+    @Override
+    protected boolean internalCanHandle(final Context context, final Signals signals) {
+        return true;
+    }
+
+    @Override
+    protected Signals internalHandle(final Context context, final Signals signals) {
+        final Signals noteOns = signals.noteOns();
+        if (noteOns.size() == 0)
+            return Signals.create();
+
+        final Signals result = Signals.create();
+        final String latchKey = latchKey(signals);
+
+        for(Signal l : latchedSignals) {
+            result.add(l.toOff());
+        }
+        latchedSignals.clear();
+
+        if (latchKey.equals(lastLatched)) {
+            lastLatched = null;
+        } else {
+            lastLatched = latchKey;
+            for (Signal s : noteOns.signals()) {
+                result.add(s);
+                latchedSignals.add(s);
+            }
+        }
+
+        return result;
+    }
+
+    private static String latchKey(final Signals signals) {
+        final List<String> keys = new ArrayList<>();
+        final List<Signal> sorted = new ArrayList<>(signals.signals());
+        Collections.sort(sorted, LATCH_COMPARATOR);
+
+        for(final Signal in : sorted)
+            if (in.isNoteOn())
+                keys.add(latchKey(in));
+
+        return String.join("*", keys);
+    }
+
+    private static String latchKey(final Signal signal) {
+        return String.format("%d-%d", signal.channel(), signal.played().pitch().midi());
+    }
+
+
+    private static final Comparator<Signal> LATCH_COMPARATOR =
+            Comparator.comparingInt(a -> (a.channel() * 1000) + a.played().pitch().midi());
+}

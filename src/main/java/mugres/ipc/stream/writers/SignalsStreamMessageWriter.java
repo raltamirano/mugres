@@ -1,6 +1,6 @@
 package mugres.ipc.stream.writers;
 
-import mugres.core.common.Signal;
+import mugres.common.Signal;
 import mugres.ipc.protocol.messages.SignalsMessage;
 
 import java.io.DataOutputStream;

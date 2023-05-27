@@ -1,6 +1,6 @@
 package mugres.ipc.protocol.messages;
 
-import mugres.core.common.Signals;
+import mugres.common.Signals;
 import mugres.ipc.protocol.Message;
 import mugres.ipc.protocol.MessageType;
 

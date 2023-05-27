@@ -1,7 +1,7 @@
 package mugres.ipc.stream.readers;
 
-import mugres.core.common.Instrument;
-import mugres.core.common.Party;
+import mugres.common.Instrument;
+import mugres.common.Party;
 import mugres.ipc.protocol.MessageType;
 import mugres.ipc.protocol.messages.PartyListMessage;
 

@@ -1,6 +1,6 @@
 package mugres.ipc.stream.writers;
 
-import mugres.core.common.Party;
+import mugres.common.Party;
 import mugres.ipc.protocol.messages.PartyListMessage;
 
 import java.io.DataOutputStream;

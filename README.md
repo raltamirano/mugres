@@ -13,7 +13,7 @@ MUGRES comes with a basic REPL so you can play with it, test features and more.
 To start the REPL:
 
     mvn clean compile assembly:single
-    java -cp ./target/mugres-*.jar mugres.core.utils.repl.REPL
+    java -cp ./target/mugres-*.jar mugres.utils.repl.REPL
 
 That should leave you with the `mugres>` prompt. You can execute commands following the syntax:
 

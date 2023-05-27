@@ -1,7 +1,7 @@
 package mugres.ipc.stream.readers;
 
-import mugres.core.common.Signal;
-import mugres.core.common.Signals;
+import mugres.common.Signal;
+import mugres.common.Signals;
 import mugres.ipc.protocol.MessageType;
 import mugres.ipc.protocol.messages.SignalsMessage;
 
