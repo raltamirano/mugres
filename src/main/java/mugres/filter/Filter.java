@@ -1,7 +1,6 @@
 package mugres.filter;
 
 import mugres.common.*;
-import mugres.filter.builtin.arp.Arpeggiate;
 import mugres.filter.builtin.chords.Chorder;
 import mugres.filter.builtin.misc.*;
 import mugres.filter.builtin.scales.ScaleEnforcer;
@@ -130,7 +129,6 @@ public abstract class Filter {
         register(ScaleEnforcer.NAME, ScaleEnforcer.class);
         register(Chorder.NAME, Chorder.class);
         register(Latch.NAME, Latch.class);
-        register(Arpeggiate.NAME, Arpeggiate.class);
         register(Transpose.NAME, Transpose.class);
         register(Ranges.NAME, Ranges.class);
         register(Clear.NAME, Clear.class);
@@ -149,54 +147,14 @@ public abstract class Filter {
     }
 
     public static Filter of(final String name, final Map<String, Object> arguments) {
+        if (!REGISTRY.containsKey(name))
+            throw new IllegalArgumentException("Invalid filter: " + name);
+
         try {
             return REGISTRY.get(name).getDeclaredConstructor(Map.class).newInstance(arguments);
         } catch (final Throwable t) {
             throw new RuntimeException(t);
         }
-    }
-
-    public static void activateSignal(final int channel, final Pitch pitch, final UUID eventId) {
-        SIGNALS[channel][pitch.midi()] = eventId;
-        fireActivatedSignalNotification(eventId, channel, pitch);
-    }
-
-    public static void deactivateSignal(final int channel, final Pitch pitch) {
-        final UUID originalEventId = SIGNALS[channel][pitch.midi()];
-        SIGNALS[channel][pitch.midi()] = null;
-        if (originalEventId != null)
-            fireDeactivatedSignalNotification(originalEventId, channel, pitch);
-    }
-
-    public static void addSignalEventListener(final SignalEventListener listener) {
-        SIGNAL_EVENT_LISTENERS.add(listener);
-    }
-
-    public static boolean isEventActive(final UUID eventId) {
-        return ACTIVE_EVENTS.contains(eventId);
-    }
-
-    public static boolean isSignalActive(final int channel, final Pitch pitch) {
-        return SIGNALS[channel][pitch.midi()] != null;
-    }
-
-    private static void fireActivatedSignalNotification(final UUID eventId, final int channel, final Pitch pitch) {
-        ACTIVE_EVENTS.add(eventId);
-        SIGNAL_EVENT_LISTENERS.forEach(l -> l.activated(eventId, channel, pitch));
-    }
-
-    private static void fireDeactivatedSignalNotification(final UUID eventId, final int channel, final Pitch pitch) {
-        ACTIVE_EVENTS.remove(eventId);
-        SIGNAL_EVENT_LISTENERS.forEach(l -> l.deactivated(eventId, channel, pitch));
-    }
-
-    private static final Set<SignalEventListener> SIGNAL_EVENT_LISTENERS = new HashSet<>();
-    private static final UUID[][] SIGNALS = new UUID[16][128];
-    private static final Set<UUID> ACTIVE_EVENTS = new HashSet<>();
-
-    public interface SignalEventListener {
-        void activated(final UUID activated, final int channel, final Pitch pitch);
-        void deactivated(final UUID deactivated, final int channel, final Pitch pitch);
     }
 
     public static class SplitByTagsResult {

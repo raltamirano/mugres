@@ -18,9 +18,7 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
-import java.util.UUID;
 
-import static java.lang.System.currentTimeMillis;
 import static mugres.common.MIDI.END_OF_TRACK;
 import static mugres.common.Party.WellKnownParties.DRUMS;
 
@@ -190,9 +188,7 @@ public class Drummer extends Processor {
 
     public void hit(final DrumKit piece, final int velocity) {
         if (velocity > 0)
-            output().send(Signal.on(UUID.randomUUID(), currentTimeMillis(),
-                    DRUMS.party().channel(),
-                    Played.of(piece.pitch(), velocity)));
+            output().send(Signal.on(DRUMS.party().channel(), Played.of(piece.pitch(), velocity)));
     }
 
     public void play(final String grooveName, final SwitchMode switchMode) {

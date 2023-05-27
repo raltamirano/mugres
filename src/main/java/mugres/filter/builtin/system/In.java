@@ -1,7 +1,6 @@
 package mugres.filter.builtin.system;
 
 import mugres.common.Context;
-import mugres.common.Signal;
 import mugres.common.Signals;
 import mugres.common.io.Input;
 import mugres.filter.Filter;
@@ -36,15 +35,6 @@ public final class In extends Filter {
 
     @Override
     protected Signals internalHandle(final Context context, final Signals signals) {
-        updateSignalsState(signals);
         return signals;
-    }
-
-    private void updateSignalsState(final Signals signals) {
-        for(final Signal signal : signals.signals())
-            if (signal.isActive())
-                Filter.activateSignal(signal.channel(), signal.played().pitch(), signal.id());
-            else
-                Filter.deactivateSignal(signal.channel(), signal.played().pitch());
     }
 }

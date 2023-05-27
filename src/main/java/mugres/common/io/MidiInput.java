@@ -11,9 +11,7 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
-import java.util.UUID;
 
-import static java.lang.System.currentTimeMillis;
 import static javax.sound.midi.ShortMessage.CONTROL_CHANGE;
 import static javax.sound.midi.ShortMessage.NOTE_OFF;
 import static javax.sound.midi.ShortMessage.NOTE_ON;
@@ -39,12 +37,10 @@ public class MidiInput extends Input {
             final ShortMessage shortMessage = (ShortMessage) message;
 
             if (shortMessage.getCommand() == NOTE_ON)
-                MidiInput.this.send(Signal.on(UUID.randomUUID(), currentTimeMillis(),
-                        shortMessage.getChannel() + 1,
+                MidiInput.this.send(Signal.on(shortMessage.getChannel() + 1,
                         Played.of(Pitch.of(shortMessage.getData1()), shortMessage.getData2())));
             else if (shortMessage.getCommand() == NOTE_OFF)
-                MidiInput.this.send(Signal.off(UUID.randomUUID(), currentTimeMillis(),
-                        shortMessage.getChannel() + 1,
+                MidiInput.this.send(Signal.off(shortMessage.getChannel() + 1,
                         Played.of(Pitch.of(shortMessage.getData1()), 0)));
             else if (shortMessage.getCommand() == PROGRAM_CHANGE)
                 MidiInput.this.send(InstrumentChange.of(shortMessage.getChannel() + 1, Instrument.of(shortMessage.getData1())));

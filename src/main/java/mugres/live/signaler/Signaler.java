@@ -7,7 +7,6 @@ import mugres.common.io.Input;
 import mugres.live.signaler.config.Configuration;
 
 import java.util.PriorityQueue;
-import java.util.UUID;
 
 import static java.util.Comparator.comparingLong;
 
@@ -17,7 +16,7 @@ public class Signaler {
     private Frequency frequency;
     private long duration;
     private final Thread worker;
-    private final PriorityQueue<Signal> queue;
+    private final PriorityQueue<Entry> queue;
 
     private Signaler(final Configuration config) {
         if (config == null)
@@ -25,7 +24,7 @@ public class Signaler {
 
         this.config = config;
 
-        queue = new PriorityQueue<>(comparingLong(Signal::time));
+        queue = new PriorityQueue<>(comparingLong(Entry::time));
         worker = createWorkerThread();
         worker.setDaemon(true);
         worker.start();
@@ -88,7 +87,7 @@ public class Signaler {
                         boolean run = true;
                         while(run) {
                             if (queue.peek().time() <= now) {
-                                target.send(queue.remove());
+                                target.send(queue.remove().signal());
                                 run = !queue.isEmpty();
                             } else {
                                 run = false;
@@ -105,17 +104,33 @@ public class Signaler {
 
     private Frequency.Listener createFrequencyListener() {
         return now -> {
-            final Signal on = Signal.on(UUID.randomUUID(), now, DEFAULT_CHANNEL,
-                    Played.of(Pitch.MIDDLE_C, 100));
+            final Signal on = Signal.on(DEFAULT_CHANNEL, Played.of(Pitch.MIDDLE_C, 100));
             config.tags().forEach(on::addTag);
-            queue.add(on);
+            queue.add(new Entry(now, on));
 
-            final Signal off = Signal.off(UUID.randomUUID(), now + duration, DEFAULT_CHANNEL,
-                    Played.of(Pitch.MIDDLE_C, 100));
+            final Signal off = Signal.off(DEFAULT_CHANNEL, Played.of(Pitch.MIDDLE_C, 100));
             config.tags().forEach(off::addTag);
-            queue.add(off);
+            queue.add(new Entry(now + duration, off));
         };
     }
 
     private static final int DEFAULT_CHANNEL = 1;
+
+    private class Entry {
+        private final long time;
+        private final Signal signal;
+
+        Entry(long time, Signal signal) {
+            this.time = time;
+            this.signal = signal;
+        }
+
+        public long time() {
+            return time;
+        }
+
+        public Signal signal() {
+            return signal;
+        }
+    }
 }

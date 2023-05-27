@@ -16,7 +16,6 @@ import mugres.utils.Maths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static java.util.Arrays.asList;
 
@@ -102,12 +101,12 @@ public class Spirographone extends Processor {
                     final int velocity = Math.abs((int) Maths.map(y, MIN, MAX,  0, 100));
                     final Played played = Played.of(Pitch.of(pitch), velocity > 20 ? velocity : 0);
                     if (threadLastPlayed == null) {
-                        output().send(Signal.on(UUID.randomUUID(), System.currentTimeMillis(), config.getOutputChannel(), played));
+                        output().send(Signal.on(config.getOutputChannel(), played));
                         threadLastPlayed = played;
                     } else {
                         if (threadLastPlayed.pitch().midi() != pitch) {
-                            output().send(Signal.off(UUID.randomUUID(), System.currentTimeMillis(), config.getOutputChannel(), threadLastPlayed));
-                            output().send(Signal.on(UUID.randomUUID(), System.currentTimeMillis(), config.getOutputChannel(), played));
+                            output().send(Signal.off(config.getOutputChannel(), threadLastPlayed));
+                            output().send(Signal.on(config.getOutputChannel(), played));
                             threadLastPlayed = played;
                         }
                     }
