@@ -22,15 +22,15 @@ public interface Parametrizable {
     /**
      * Sets the parameter value
      */
-    void setParameterValue(final String name, final Object value);
+    void parameterValue(final String name, final Object value);
 
     /**
      * Gets the parameter value
      */
-    Object getParameterValue(final String name);
+    Object parameterValue(final String name);
 
     /**
      * Gets all parameter values
      */
-    Map<String, Object> getParameterValues();
+    Map<String, Object> parameterValues();
 }

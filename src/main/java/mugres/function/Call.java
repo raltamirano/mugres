@@ -9,10 +9,12 @@ import mugres.common.Scale;
 import mugres.common.Value;
 import mugres.parametrizable.Parameter;
 import mugres.common.Variant;
+import mugres.parametrizable.Parametrizable;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,7 +22,7 @@ import static mugres.function.Function.COMPOSED_CALL_RESULT_PARAMETER;
 import static mugres.function.Function.LENGTH_PARAMETER;
 
 /** Function call. */
-public class Call<T> {
+public class Call<T> implements Parametrizable {
     protected final Function<T> function;
     protected final Map<String, Object> arguments = new HashMap<>();
 
@@ -207,12 +209,28 @@ public class Call<T> {
         }
     }
 
-    public Map<String, Object> getArguments() {
-        return Collections.unmodifiableMap(arguments);
-    }
-
     public int getLengthInMeasures() {
         return (int)arguments.get(LENGTH_PARAMETER.name());
+    }
+
+    @Override
+    public Set<Parameter> parameters() {
+        return Collections.unmodifiableSet(function.parameters());
+    }
+
+    @Override
+    public void parameterValue(final String name, final Object value) {
+        arguments.put(name, value);
+    }
+
+    @Override
+    public Object parameterValue(final String name) {
+        return arguments.get(name);
+    }
+
+    @Override
+    public Map<String, Object> parameterValues() {
+        return Collections.unmodifiableMap(arguments);
     }
 
     private static final Pattern FUNCTION_CALL = Pattern.compile("([a-z][0-9a-zA-Z_-]+[0-9a-zA-Z])\\((.*)\\)");

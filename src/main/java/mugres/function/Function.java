@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 import static mugres.common.Context.SECTION_LENGTH;
 
 /** Function that generates musical artifacts. */
-public abstract class Function<T> implements Parametrizable {
+public abstract class Function<T> {
     private final String name;
     private final String description;
     private final Set<Parameter> parameters = new HashSet<>();
@@ -171,21 +171,6 @@ public abstract class Function<T> implements Parametrizable {
     private boolean allowedInternalParameter(String argumentName) {
         if (COMPOSED_CALL_RESULT_PARAMETER.name().equals(argumentName)) return true;
         return false;
-    }
-
-    @Override
-    public void setParameterValue(String name, Object value) {
-        throw new RuntimeException("Not implemented!");
-    }
-
-    @Override
-    public Object getParameterValue(String name) {
-        throw new RuntimeException("Not implemented!");
-    }
-
-    @Override
-    public Map<String, Object> getParameterValues() {
-        throw new RuntimeException("Not implemented!");
     }
 
     public static abstract class EventsFunction extends Function<List<Event>> {

@@ -51,7 +51,7 @@ public class Spirographone extends Processor {
     }
 
     @Override
-    public void setParameterValue(final String name, final Object value) {
+    public void parameterValue(final String name, final Object value) {
         switch(name) {
             case "spaceMillis":
                 config.setSpaceMillis((Integer.valueOf(value.toString()) * 5) + 1);
@@ -63,18 +63,18 @@ public class Spirographone extends Processor {
         }
     }
 
+    @Override
+    public Object parameterValue(final String name) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public Map<String, Object> parameterValues() {
+        throw new RuntimeException("Not implemented");
+    }
+
     private void updateNotes() {
         notes = config.getScale().notes(config.getRoot());
-    }
-
-    @Override
-    public Object getParameterValue(String name) {
-        return super.getParameterValue(name);
-    }
-
-    @Override
-    public Map<String, Object> getParameterValues() {
-        return super.getParameterValues();
     }
 
     private void startPlayingThread() {

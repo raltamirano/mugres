@@ -143,7 +143,7 @@ public abstract class Processor implements Parametrizable, Controllable {
         if (mappedParameterNames != null && !mappedParameterNames.isEmpty()) {
             mappedParameterNames.forEach(parameterName -> {
                 reportStatus(String.format("Parameter %s => %s", parameterName, controlChange.value()), null);
-                setParameterValue(parameterName, controlChange.value());
+                parameterValue(parameterName, controlChange.value());
             });
         }
     }
@@ -154,17 +154,17 @@ public abstract class Processor implements Parametrizable, Controllable {
     }
 
     @Override
-    public void setParameterValue(final String name, final Object value) {
+    public void parameterValue(final String name, final Object value) {
         parameterValues.put(name, value);
     }
 
     @Override
-    public Object getParameterValue(final String name) {
+    public Object parameterValue(final String name) {
         return parameterValues.get(name);
     }
 
     @Override
-    public Map<String, Object> getParameterValues() {
+    public Map<String, Object> parameterValues() {
         return Collections.unmodifiableMap(parameterValues);
     }
 
