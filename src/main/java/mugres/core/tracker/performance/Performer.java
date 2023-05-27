@@ -1,4 +1,4 @@
-package mugres.core.notation.performance;
+package mugres.core.tracker.performance;
 
 import mugres.core.common.Context;
 import mugres.core.common.Event;
@@ -6,8 +6,8 @@ import mugres.core.common.Length;
 import mugres.core.common.Party;
 import mugres.core.function.Call;
 import mugres.core.function.Result;
-import mugres.core.notation.Arrangement;
-import mugres.core.notation.Song;
+import mugres.core.tracker.Arrangement;
+import mugres.core.tracker.Song;
 
 import java.util.*;
 

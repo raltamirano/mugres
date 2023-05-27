@@ -1,4 +1,4 @@
-package mugres.core.notation.performance;
+package mugres.core.tracker.performance;
 
 import mugres.core.common.Key;
 import mugres.core.common.Length;

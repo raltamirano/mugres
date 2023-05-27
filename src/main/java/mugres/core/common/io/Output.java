@@ -3,7 +3,7 @@ package mugres.core.common.io;
 import mugres.core.common.ControlChange;
 import mugres.core.common.InstrumentChange;
 import mugres.core.common.Signal;
-import mugres.core.notation.Song;
+import mugres.core.tracker.Song;
 
 public interface Output {
     void send(final Signal signal);

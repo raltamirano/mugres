@@ -1,7 +1,7 @@
-package mugres.core.notation.performance.exporters;
+package mugres.core.tracker.performance.exporters;
 
-import mugres.core.notation.performance.Performance;
-import mugres.core.notation.performance.converters.ToMidiSequenceConverter;
+import mugres.core.tracker.performance.Performance;
+import mugres.core.tracker.performance.converters.ToMidiSequenceConverter;
 
 import javax.sound.midi.MidiSystem;
 import java.io.File;

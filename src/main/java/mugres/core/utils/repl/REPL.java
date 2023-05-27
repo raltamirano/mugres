@@ -7,12 +7,12 @@ import mugres.core.common.Party;
 import mugres.core.common.TimeSignature;
 import mugres.core.function.Call;
 import mugres.core.function.Function;
-import mugres.core.notation.Section;
-import mugres.core.notation.Song;
-import mugres.core.notation.performance.Performance;
-import mugres.core.notation.performance.Performer;
-import mugres.core.notation.performance.converters.ToMidiSequenceConverter;
-import mugres.core.notation.readers.JSONReader;
+import mugres.core.tracker.Section;
+import mugres.core.tracker.Song;
+import mugres.core.tracker.performance.Performance;
+import mugres.core.tracker.performance.Performer;
+import mugres.core.tracker.performance.converters.ToMidiSequenceConverter;
+import mugres.core.tracker.readers.JSONReader;
 import mugres.core.utils.RandomSong;
 
 import javax.sound.midi.InvalidMidiDataException;

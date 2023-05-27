@@ -1,10 +1,10 @@
-package mugres.core.notation.performance.converters;
+package mugres.core.tracker.performance.converters;
 
 import mugres.core.common.Event;
 import mugres.core.common.Instrument;
 import mugres.core.common.Length;
-import mugres.core.notation.performance.Control;
-import mugres.core.notation.performance.Performance;
+import mugres.core.tracker.performance.Control;
+import mugres.core.tracker.performance.Performance;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
@@ -41,7 +41,7 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
             for(Control.ControlEvent controlEvent : performance.controlEvents())
                 setControlParameters(controlTrack, controlEvent);
 
-            for(mugres.core.notation.performance.Track track : performance.tracks()) {
+            for(mugres.core.tracker.performance.Track track : performance.tracks()) {
                 final Track midiTrack = sequence.createTrack();
                 trackName(midiTrack, track.party().name());
                 programChange(midiTrack, track.channel(), track.instrument());

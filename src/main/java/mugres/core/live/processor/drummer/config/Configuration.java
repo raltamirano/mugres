@@ -5,9 +5,9 @@ import mugres.core.common.DrumKit;
 import mugres.core.function.Call;
 import mugres.core.common.Variant;
 import mugres.core.function.builtin.drums.PreRecordedDrums;
-import mugres.core.notation.Song;
-import mugres.core.notation.performance.Performer;
-import mugres.core.notation.performance.converters.ToMidiSequenceConverter;
+import mugres.core.tracker.Song;
+import mugres.core.tracker.performance.Performer;
+import mugres.core.tracker.performance.converters.ToMidiSequenceConverter;
 
 import javax.sound.midi.Sequence;
 import java.util.HashMap;

@@ -18,7 +18,7 @@ import mugres.core.function.builtin.random.Random;
 import mugres.core.function.builtin.riffer.Riffer;
 import mugres.core.function.builtin.song.LoFiHipHopSongGenerator;
 import mugres.core.function.builtin.text.TextMelody;
-import mugres.core.notation.Song;
+import mugres.core.tracker.Song;
 import mugres.core.parametrizable.Parameter;
 import mugres.core.parametrizable.Parametrizable;
 

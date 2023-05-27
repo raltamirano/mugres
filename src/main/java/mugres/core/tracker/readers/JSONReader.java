@@ -1,12 +1,12 @@
-package mugres.core.notation.readers;
+package mugres.core.tracker.readers;
 
 import mugres.core.common.Context;
 import mugres.core.common.Key;
 import mugres.core.common.TimeSignature;
 import mugres.core.function.Call;
 import mugres.core.common.Party;
-import mugres.core.notation.Section;
-import mugres.core.notation.Song;
+import mugres.core.tracker.Section;
+import mugres.core.tracker.Song;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;

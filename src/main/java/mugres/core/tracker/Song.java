@@ -1,13 +1,13 @@
-package mugres.core.notation;
+package mugres.core.tracker;
 
 import mugres.MUGRES;
 import mugres.core.common.Context;
 import mugres.core.common.Event;
 import mugres.core.common.Party;
 import mugres.core.function.Call;
-import mugres.core.notation.performance.Performance;
-import mugres.core.notation.performance.Performer;
-import mugres.core.notation.performance.converters.ToMidiSequenceConverter;
+import mugres.core.tracker.performance.Performance;
+import mugres.core.tracker.performance.Performer;
+import mugres.core.tracker.performance.converters.ToMidiSequenceConverter;
 
 import javax.sound.midi.Sequence;
 import java.util.Collections;

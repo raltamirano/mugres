@@ -1,4 +1,4 @@
-package mugres.core.notation;
+package mugres.core.tracker;
 
 import java.util.ArrayList;
 import java.util.Collections;

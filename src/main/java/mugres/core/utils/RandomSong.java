@@ -15,8 +15,8 @@ import mugres.core.function.builtin.arp.Arp2;
 import mugres.core.function.builtin.euclides.Euclides;
 import mugres.core.function.builtin.random.Random;
 import mugres.core.function.builtin.text.TextMelody;
-import mugres.core.notation.Section;
-import mugres.core.notation.Song;
+import mugres.core.tracker.Section;
+import mugres.core.tracker.Song;
 
 import java.util.ArrayList;
 import java.util.Arrays;

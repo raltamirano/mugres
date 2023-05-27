@@ -11,8 +11,8 @@ import mugres.core.common.Party;
 import mugres.core.common.chords.ChordProgression;
 import mugres.core.function.Call;
 import mugres.core.function.Function;
-import mugres.core.notation.Section;
-import mugres.core.notation.Song;
+import mugres.core.tracker.Section;
+import mugres.core.tracker.Song;
 
 import java.util.HashMap;
 import java.util.List;
