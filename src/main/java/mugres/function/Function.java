@@ -2,7 +2,7 @@ package mugres.function;
 
 import mugres.common.Context;
 import mugres.common.DataType;
-import mugres.common.Event;
+import mugres.tracker.Event;
 import mugres.common.Length;
 import mugres.common.TimeSignature;
 import mugres.function.builtin.arp.Arp;

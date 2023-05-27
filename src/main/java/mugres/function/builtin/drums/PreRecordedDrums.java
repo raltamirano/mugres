@@ -6,6 +6,7 @@ import mugres.common.gridpattern.converters.DrumKitHitElementPatternParser;
 import mugres.function.Function.EventsFunction;
 import mugres.parametrizable.Parameter;
 import mugres.common.Variant;
+import mugres.tracker.Event;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -97,9 +98,9 @@ public abstract class PreRecordedDrums extends EventsFunction {
             final Set<Event> toRemove = new HashSet<>();
             events.forEach(event -> {
                 if (event.position().equals(Length.ZERO) &&
-                        (event.played().pitch().midi() != BD.midi() && event.played().pitch().midi() != SD.midi())) {
-                    if (event.played().pitch().midi() == startingHit.midi()) {
-                        event.played().velocity(HARD.getVelocity());
+                        (event.pitch().midi() != BD.midi() && event.pitch().midi() != SD.midi())) {
+                    if (event.pitch().midi() == startingHit.midi()) {
+                        event.velocity(HARD.velocity());
                         replaced.set(true);
                     } else {
                         toRemove.add(event);
@@ -110,7 +111,7 @@ public abstract class PreRecordedDrums extends EventsFunction {
             toRemove.forEach(event -> events.remove(event));
             if (!replaced.get()) {
                 events.add(0, Event.of(Length.ZERO, Pitch.of(startingHit.midi()),
-                        Value.QUARTER, HARD.getVelocity()));
+                        Value.QUARTER, HARD.velocity()));
             }
         }
 

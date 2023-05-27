@@ -2,7 +2,7 @@ package mugres.function.builtin.chords;
 
 import mugres.common.Context;
 import mugres.common.DataType;
-import mugres.common.Event;
+import mugres.tracker.Event;
 import mugres.common.Length;
 import mugres.common.Value;
 import mugres.common.chords.Chord;

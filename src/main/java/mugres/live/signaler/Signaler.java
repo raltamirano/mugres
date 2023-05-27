@@ -4,6 +4,7 @@ import mugres.common.*;
 import mugres.common.frequency.Frequency;
 import mugres.common.frequency.builtin.Fixed;
 import mugres.common.io.Input;
+import mugres.live.Signal;
 import mugres.live.signaler.config.Configuration;
 
 import java.util.PriorityQueue;
@@ -104,11 +105,11 @@ public class Signaler {
 
     private Frequency.Listener createFrequencyListener() {
         return now -> {
-            final Signal on = Signal.on(DEFAULT_CHANNEL, Played.of(Pitch.MIDDLE_C, 100));
+            final Signal on = Signal.on(DEFAULT_CHANNEL, Pitch.MIDDLE_C, 100);
             config.tags().forEach(on::addTag);
             queue.add(new Entry(now, on));
 
-            final Signal off = Signal.off(DEFAULT_CHANNEL, Played.of(Pitch.MIDDLE_C, 100));
+            final Signal off = Signal.off(DEFAULT_CHANNEL, Pitch.MIDDLE_C);
             config.tags().forEach(off::addTag);
             queue.add(new Entry(now + duration, off));
         };

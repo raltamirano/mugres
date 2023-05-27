@@ -1,7 +1,7 @@
 package mugres.function.builtin.arp;
 
 import mugres.common.Context;
-import mugres.common.Event;
+import mugres.tracker.Event;
 import mugres.common.Length;
 import mugres.common.Pitch;
 import mugres.common.Value;
@@ -101,7 +101,8 @@ public class Arp extends EventsFunction {
                 if (!isRest) {
                     final int index = Integer.parseInt(element) - 1;
                     final Event event = index >= 0 && index < chord.size() ? chord.get(index) : chord.get(0);
-                    arpeggio.add(Event.of(position, getActualPitch(event.played().pitch(), octavesUp, octavesDown), actualValue, event.played().velocity()));
+                    arpeggio.add(Event.of(position, getActualPitch(event.pitch(), octavesUp, octavesDown), actualValue,
+                            event.velocity()));
                 }
 
                 position = position.plus(value.length());

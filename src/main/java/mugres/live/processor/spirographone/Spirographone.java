@@ -4,8 +4,7 @@ import mugres.common.Context;
 import mugres.common.DataType;
 import mugres.common.Note;
 import mugres.common.Pitch;
-import mugres.common.Played;
-import mugres.common.Signal;
+import mugres.live.Signal;
 import mugres.common.io.Input;
 import mugres.common.io.Output;
 import mugres.live.processor.Processor;
@@ -23,7 +22,7 @@ public class Spirographone extends Processor {
     private boolean running;
     private Thread playingThread;
     private final Configuration config;
-    private Played threadLastPlayed;
+    private Pitch threadLastPitchPlayed;
     private double threadCurrentT = 0.0;
     private List<Note> notes;
 
@@ -97,17 +96,17 @@ public class Spirographone extends Processor {
 
                     final int note = notes.get((int) Maths.map(x, MIN, MAX,  0, notes.size()-1)).number();
                     final int octaves = Math.abs((int) Maths.map(y, MIN, MAX, config.getMinOctave(), config.getMaxOctave()));
-                    final int pitch = note + (octaves * 12);
+                    final Pitch pitch = Pitch.of(note + (octaves * 12));
                     final int velocity = Math.abs((int) Maths.map(y, MIN, MAX,  0, 100));
-                    final Played played = Played.of(Pitch.of(pitch), velocity > 20 ? velocity : 0);
-                    if (threadLastPlayed == null) {
-                        output().send(Signal.on(config.getOutputChannel(), played));
-                        threadLastPlayed = played;
+                    final int actualVelocity = velocity > 20 ? velocity : 0;
+                    if (threadLastPitchPlayed == null) {
+                        output().send(Signal.on(config.getOutputChannel(), pitch, actualVelocity));
+                        threadLastPitchPlayed = pitch;
                     } else {
-                        if (threadLastPlayed.pitch().midi() != pitch) {
-                            output().send(Signal.off(config.getOutputChannel(), threadLastPlayed));
-                            output().send(Signal.on(config.getOutputChannel(), played));
-                            threadLastPlayed = played;
+                        if (threadLastPitchPlayed.midi() != pitch.midi()) {
+                            output().send(Signal.off(config.getOutputChannel(), threadLastPitchPlayed));
+                            output().send(Signal.on(config.getOutputChannel(), pitch, actualVelocity));
+                            threadLastPitchPlayed = pitch;
                         }
                     }
                     threadCurrentT += config.getIterationDelta() / 100.0;

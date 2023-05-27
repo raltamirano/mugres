@@ -2,8 +2,8 @@ package mugres.filter.builtin.misc;
 
 import mugres.common.Context;
 import mugres.common.Pitch;
-import mugres.common.Signal;
-import mugres.common.Signals;
+import mugres.live.Signal;
+import mugres.live.Signals;
 import mugres.filter.Filter;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ public class Ranges extends Filter {
         for(final Signal in : signals.signals()) {
             boolean matched = false;
             for(final Range range : ranges) {
-                if (!range.isRemaining() && range.contains(in.played().pitch())) {
+                if (!range.isRemaining() && range.contains(in.pitch())) {
                     matched = true;
                     in.addTag(range.tag());
                     break;

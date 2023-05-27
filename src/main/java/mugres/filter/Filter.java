@@ -5,6 +5,8 @@ import mugres.filter.builtin.chords.Chorder;
 import mugres.filter.builtin.misc.*;
 import mugres.filter.builtin.scales.ScaleEnforcer;
 import mugres.filter.builtin.system.Monitor;
+import mugres.live.Signal;
+import mugres.live.Signals;
 
 import java.util.*;
 

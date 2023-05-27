@@ -2,7 +2,7 @@ package mugres.function.builtin.song;
 
 import mugres.common.Context;
 import mugres.common.Direction;
-import mugres.common.Event;
+import mugres.tracker.Event;
 import mugres.common.Instrument;
 import mugres.common.Key;
 import mugres.common.Length;

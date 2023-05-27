@@ -1,7 +1,7 @@
 package mugres.filter.builtin.system;
 
 import mugres.common.Context;
-import mugres.common.Signals;
+import mugres.live.Signals;
 import mugres.filter.Filter;
 
 import java.text.SimpleDateFormat;
@@ -27,16 +27,16 @@ public class Monitor extends Filter {
 
     @Override
     protected Signals internalHandle(final Context context, final Signals signals) {
-        final boolean onlyActives = getOnlyActives(arguments);
+        final boolean onlyNoteOns = getOnlyNoteOns(arguments);
 
-        (onlyActives ? signals.actives().signals() : signals.signals()).forEach(e -> System.out.println(String.format("%s %s %s",
+        (onlyNoteOns ? signals.noteOns().signals() : signals.signals()).forEach(e -> System.out.println(String.format("%s %s %s",
                 TIME_FORMAT.format(new Date()), getLabel(arguments), e)));
         return signals;
     }
 
-    private boolean getOnlyActives(final Map<String, Object> arguments) {
-        return arguments.containsKey("onlyActives") ?
-                Boolean.parseBoolean(arguments.get("onlyActives").toString()) : false;
+    private boolean getOnlyNoteOns(final Map<String, Object> arguments) {
+        return arguments.containsKey("onlyNoteOns") ?
+                Boolean.parseBoolean(arguments.get("onlyNoteOns").toString()) : false;
     }
 
     private String getLabel(final Map<String, Object> arguments) {

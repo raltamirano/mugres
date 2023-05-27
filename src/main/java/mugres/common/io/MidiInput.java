@@ -4,8 +4,7 @@ import mugres.common.ControlChange.MidiControlChange;
 import mugres.common.Instrument;
 import mugres.common.InstrumentChange;
 import mugres.common.Pitch;
-import mugres.common.Played;
-import mugres.common.Signal;
+import mugres.live.Signal;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
@@ -38,14 +37,16 @@ public class MidiInput extends Input {
 
             if (shortMessage.getCommand() == NOTE_ON)
                 MidiInput.this.send(Signal.on(shortMessage.getChannel() + 1,
-                        Played.of(Pitch.of(shortMessage.getData1()), shortMessage.getData2())));
+                        Pitch.of(shortMessage.getData1()), shortMessage.getData2()));
             else if (shortMessage.getCommand() == NOTE_OFF)
                 MidiInput.this.send(Signal.off(shortMessage.getChannel() + 1,
-                        Played.of(Pitch.of(shortMessage.getData1()), 0)));
+                        Pitch.of(shortMessage.getData1())));
             else if (shortMessage.getCommand() == PROGRAM_CHANGE)
-                MidiInput.this.send(InstrumentChange.of(shortMessage.getChannel() + 1, Instrument.of(shortMessage.getData1())));
+                MidiInput.this.send(InstrumentChange.of(shortMessage.getChannel() + 1,
+                        Instrument.of(shortMessage.getData1())));
             else if (shortMessage.getCommand() == CONTROL_CHANGE)
-                MidiInput.this.send(MidiControlChange.of(shortMessage.getChannel() + 1, shortMessage.getData1(), shortMessage.getData2()));
+                MidiInput.this.send(MidiControlChange.of(shortMessage.getChannel() + 1,
+                        shortMessage.getData1(), shortMessage.getData2()));
         }
 
         @Override

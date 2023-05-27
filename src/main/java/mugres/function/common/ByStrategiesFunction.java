@@ -2,7 +2,7 @@ package mugres.function.common;
 
 import mugres.common.Context;
 import mugres.common.DataType;
-import mugres.common.Event;
+import mugres.tracker.Event;
 import mugres.common.Length;
 import mugres.function.Function.EventsFunction;
 import mugres.parametrizable.Parameter;

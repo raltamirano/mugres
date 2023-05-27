@@ -2,7 +2,7 @@ package mugres.function.builtin.euclides;
 
 import mugres.common.Context;
 import mugres.common.DataType;
-import mugres.common.Event;
+import mugres.tracker.Event;
 import mugres.common.Length;
 import mugres.common.Note;
 import mugres.common.Pitch;

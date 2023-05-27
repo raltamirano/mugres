@@ -1,7 +1,7 @@
 package mugres.tracker.performance;
 
 import mugres.common.Context;
-import mugres.common.Event;
+import mugres.tracker.Event;
 import mugres.common.Length;
 import mugres.common.Party;
 import mugres.function.Call;

@@ -1,8 +1,8 @@
 package mugres.filter.builtin.misc;
 
 import mugres.common.Context;
-import mugres.common.Signal;
-import mugres.common.Signals;
+import mugres.live.Signal;
+import mugres.live.Signals;
 import mugres.filter.Filter;
 
 import java.util.*;
@@ -66,10 +66,10 @@ public class Latch extends Filter {
     }
 
     private static String latchKey(final Signal signal) {
-        return String.format("%d-%d", signal.channel(), signal.played().pitch().midi());
+        return String.format("%d-%d", signal.channel(), signal.pitch().midi());
     }
 
 
     private static final Comparator<Signal> LATCH_COMPARATOR =
-            Comparator.comparingInt(a -> (a.channel() * 1000) + a.played().pitch().midi());
+            Comparator.comparingInt(a -> (a.channel() * 1000) + a.pitch().midi());
 }

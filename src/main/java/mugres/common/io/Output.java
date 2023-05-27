@@ -2,8 +2,8 @@ package mugres.common.io;
 
 import mugres.common.ControlChange;
 import mugres.common.InstrumentChange;
-import mugres.common.Signal;
-import mugres.common.Signals;
+import mugres.live.Signal;
+import mugres.live.Signals;
 import mugres.tracker.Song;
 
 public interface Output {

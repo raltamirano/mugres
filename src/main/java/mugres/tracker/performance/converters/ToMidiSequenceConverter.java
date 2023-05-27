@@ -1,6 +1,6 @@
 package mugres.tracker.performance.converters;
 
-import mugres.common.Event;
+import mugres.tracker.Event;
 import mugres.common.Instrument;
 import mugres.common.Length;
 import mugres.tracker.performance.Control;
@@ -119,10 +119,10 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
             throws InvalidMidiDataException {
         long startTicks = event.position().length();
 
-        final ShortMessage noteOn = new ShortMessage(NOTE_ON, channel, event.played().pitch().midi(),
-                event.played().velocity());
+        final ShortMessage noteOn = new ShortMessage(NOTE_ON, channel, event.pitch().midi(),
+                event.velocity());
         midiTrack.add(new MidiEvent(noteOn, startTicks));
-        final ShortMessage noteOff = new ShortMessage(NOTE_OFF, channel, event.played().pitch().midi(),
+        final ShortMessage noteOff = new ShortMessage(NOTE_OFF, channel, event.pitch().midi(),
                 0);
         midiTrack.add(new MidiEvent(noteOff, startTicks + event.length()
                 .length()));

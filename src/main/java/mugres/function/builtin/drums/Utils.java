@@ -1,7 +1,7 @@
 package mugres.function.builtin.drums;
 
 import mugres.common.DrumKit;
-import mugres.common.Event;
+import mugres.tracker.Event;
 import mugres.common.Length;
 import mugres.common.Pitch;
 import mugres.common.gridpattern.GridEvent;
@@ -32,7 +32,7 @@ public class Utils {
 
                 final Length position = source.getDivision().length().multiply(hit.getSlot() - startingSlot);
                 final DrumKit drumKitElement = DrumKit.valueOf(hit.getElement());
-                final int velocity = hit.getData().getIntensity().getVelocity();
+                final int velocity = hit.getData().getIntensity().velocity();
 
                 events.add(Event.of(position, Pitch.of(drumKitElement.midi()),
                         source.getDivision(), velocity));

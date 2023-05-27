@@ -33,6 +33,9 @@ public class Pitch implements Comparable<Pitch> {
     }
 
     public Pitch up(final int semitones) {
+        if (semitones < 0)
+            throw new IllegalArgumentException("semitones can't be a negative number");
+
         return of(this.midi + semitones);
     }
 
@@ -41,7 +44,19 @@ public class Pitch implements Comparable<Pitch> {
     }
 
     public Pitch down(final int semitones) {
-        return up(-semitones);
+        if (semitones < 0)
+            throw new IllegalArgumentException("semitones can't be a negative number");
+
+        return of(this.midi - semitones);
+    }
+
+    public Pitch transpose(final int semitones) {
+        return of(this.midi + semitones);
+    }
+
+    public Pitch safeTranspose(final int semitones) {
+        final int newMidi = midi + semitones;
+        return isValidMidiNoteNumber(newMidi) ? of(newMidi) : this;
     }
 
     public int midi() {

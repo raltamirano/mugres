@@ -3,7 +3,7 @@ package mugres.live.processor;
 import mugres.common.Context;
 import mugres.common.ControlChange;
 import mugres.common.InstrumentChange;
-import mugres.common.Signal;
+import mugres.live.Signal;
 import mugres.common.io.Output;
 import mugres.common.io.Input;
 import mugres.controllable.Controllable;

@@ -1,43 +1,43 @@
-package mugres.common;
+package mugres.live;
+
+import mugres.common.Pitch;
+import mugres.tracker.Event;
 
 import java.util.*;
 
-/** Live signal. Analog to {@link mugres.common.Event} in the notated world. */
+/** Live signal. Analog to {@link Event} in the tracker world. */
 public class Signal implements Cloneable {
     private final int channel;
-    private final Played played;
-    private final boolean active;
+    private final Pitch pitch;
+    private final int velocity;
     private Map<String, Object> attributes;
     private final Object attributesSyncObject = new Object();
 
-    private Signal(final int channel, final Played played, final boolean active) {
+    private Signal(final int channel, final Pitch pitch, final int velocity) {
         this.channel = channel;
-        this.played = played;
-        this.active = active;
+        this.pitch = pitch;
+        this.velocity = velocity;
     }
 
     public static Signal of(final int packed) {
-        final boolean active = (packed % 10) == 1;
-        final int channelAndPlayed = packed / 10;
-        final int channel = channelAndPlayed % 100;
-        return Signal.of(channel, Played.of(channelAndPlayed / 100), active);
+        throw new RuntimeException("Not implemented!");
     }
 
-    public static Signal on(final int channel, final Played played) {
-        return of(channel, played, true);
+    public static Signal on(final int channel, final Pitch pitch, final int velocity) {
+        return of(channel, pitch, velocity);
     }
 
-    public static Signal off(final int channel, final Played played) {
-        return of(channel, played, false);
+    public static Signal off(final int channel, final Pitch pitch) {
+        return of(channel, pitch, 0);
     }
 
-    public static Signal of(final int channel, final Played played, final boolean active) {
-        return of(channel, played, active, null);
+    public static Signal of(final int channel, final Pitch pitch, final int velocity) {
+        return of(channel, pitch, velocity, null);
     }
 
-    public static Signal of(final int channel, final Played played, final boolean active,
+    public static Signal of(final int channel, final Pitch pitch, final int velocity,
                             final Map<String, Object> attributes) {
-        final Signal signal = new Signal(channel, played, active);
+        final Signal signal = new Signal(channel, pitch, velocity);
         if (attributes != null)
             for(String key : attributes.keySet())
                 signal.setAttribute(key, attributes.get(key));
@@ -46,55 +46,60 @@ public class Signal implements Cloneable {
 
     /** Pitch + Channel identification */
     public int discriminator() {
-        return played.pitch().midi() * 100 + channel;
+        return pitch.midi() * 100 + channel;
     }
 
     public int channel() {
         return channel;
     }
 
-    public Played played() {
-        return played;
+    public Pitch pitch() {
+        return pitch;
     }
 
-    @Deprecated
-    public boolean isActive() {
-        return active;
+    public int velocity() {
+        return velocity;
     }
 
     public boolean isNoteOn() {
-        return active && played.velocity() > 0;
+        return velocity > 0;
     }
 
     public boolean isNoteOff() {
-        return !active || played.velocity() == 0;
+        return !isNoteOn();
     }
 
-    public Signal modifiedPlayed(final Played newPlayed) {
+    public Signal modifiedPitch(final Pitch newPitch) {
         synchronized (attributesSyncObject) {
-            return of(channel, newPlayed, active, attributes);
+            return of(channel, newPitch, velocity, attributes);
+        }
+    }
+
+    public Signal modifiedVelocity(final int newVelocity) {
+        synchronized (attributesSyncObject) {
+            return of(channel, pitch, newVelocity, attributes);
         }
     }
 
     public Signal modifiedChannel(final int newChannel) {
         synchronized (attributesSyncObject) {
-            return of(newChannel, played, active, attributes);
+            return of(newChannel, pitch, velocity, attributes);
         }
     }
 
-    public Signal toOn() {
-        if (active)
+    public Signal toOn(final int velocity) {
+        if (isNoteOn())
             return this;
         else
             synchronized (attributesSyncObject) {
-                return of(channel, played, true, attributes);
+                return of(channel, pitch, velocity, attributes);
             }
     }
 
     public Signal toOff() {
-        if (active)
+        if (isNoteOn())
             synchronized (attributesSyncObject) {
-                return of(channel, played, false, attributes);
+                return of(channel, pitch, 0, attributes);
             }
         else
             return this;
@@ -102,7 +107,7 @@ public class Signal implements Cloneable {
 
     @Override
     public Signal clone() {
-        final Signal clone = of(channel, played.clone(), active);
+        final Signal clone = of(channel, pitch, velocity);
         synchronized (attributesSyncObject) {
             if (attributes != null)
                 for(final String key : attributes.keySet())
@@ -163,15 +168,14 @@ public class Signal implements Cloneable {
     }
 
     public int pack() {
-        return (((played.pack() * 100) + channel) * 10) + (active ? 1 : 0);
+        throw new RuntimeException("Not implemented!");
     }
 
     @Override
     public String toString() {
         final Object tags = getAttribute(TAGS);
-        return String.format("%s [%d] [%s] Tags=[%s]",
-                played, channel, active ? "on" : "off",
-                tags == null ? "" : tags);
+        return String.format("%s (%03d) [%d]Tags=[%s]",
+                pitch, velocity, channel, tags == null ? "" : tags);
     }
 
     /** Tags attribute name */

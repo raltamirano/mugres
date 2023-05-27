@@ -6,6 +6,7 @@ import mugres.common.gridpattern.GridPattern;
 import mugres.common.gridpattern.converters.DyadElementPatternParser;
 import mugres.function.Function.EventsFunction;
 import mugres.parametrizable.Parameter;
+import mugres.tracker.Event;
 
 import java.util.ArrayList;
 import java.util.List;

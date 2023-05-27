@@ -97,11 +97,11 @@ public class DrumKitHitElementPatternParser implements ElementPatternParser<Drum
                 throw new IllegalArgumentException("Unknown hit intensity with symbol: " + symbol);
             }
 
-            public String getSymbol() {
+            public String symbol() {
                 return symbol;
             }
 
-            public int getVelocity() {
+            public int velocity() {
                 return velocity;
             }
         }

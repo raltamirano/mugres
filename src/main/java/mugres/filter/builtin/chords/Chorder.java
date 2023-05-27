@@ -4,6 +4,8 @@ import mugres.common.*;
 import mugres.common.chords.Chord;
 import mugres.common.chords.Type;
 import mugres.filter.Filter;
+import mugres.live.Signal;
+import mugres.live.Signals;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,28 +38,25 @@ public class Chorder extends Filter {
         final Signals result = Signals.create();
 
         for(final Signal in : signals.signals()) {
-            final Chord chord;
             final List<Pitch> chordPitches;
             switch (getChordMode(arguments)) {
                 case DIATONIC:
                     final Key key = getKey(context);
-                    if (key.notes().contains(in.played().pitch().note())) {
+                    if (key.notes().contains(in.pitch().note())) {
                         final int numberOfNotes = getNumberOfNotes(arguments);
-                        chordPitches = key.chord(in.played().pitch(), numberOfNotes);
+                        chordPitches = key.chord(in.pitch(), numberOfNotes);
                     } else {
                         // Discard notes outside the key
                         chordPitches = emptyList();
                     }
                     break;
                 case FIXED:
-                    chordPitches = Chord.of(in.played().pitch().note(), getChordType(arguments))
-                            .pitches(in.played().pitch().octave());
-                    ;
+                    chordPitches = Chord.of(in.pitch().note(), getChordType(arguments))
+                            .pitches(in.pitch().octave());
                     break;
                 case RANDOM:
-                    chordPitches = Chord.of(in.played().pitch().note(), random(Arrays.asList(Type.values()), CUSTOM))
-                            .pitches(in.played().pitch().octave());
-                    ;
+                    chordPitches = Chord.of(in.pitch().note(), random(Arrays.asList(Type.values()), CUSTOM))
+                            .pitches(in.pitch().octave());
                     break;
                 default:
                     chordPitches = emptyList();
@@ -66,7 +65,7 @@ public class Chorder extends Filter {
 
             if (!chordPitches.isEmpty()) {
                 for (final Pitch pitch : chordPitches) {
-                    result.add(in.modifiedPlayed(Played.of(pitch, in.played().velocity())));
+                    result.add(in.modifiedPitch(pitch));
                 }
             }
         }

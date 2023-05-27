@@ -2,6 +2,8 @@ package mugres.filter.builtin.misc;
 
 import mugres.common.*;
 import mugres.filter.Filter;
+import mugres.live.Signal;
+import mugres.live.Signals;
 
 import java.util.List;
 import java.util.Map;
@@ -42,20 +44,20 @@ public class Randomizer extends Filter {
 
         final List<Pitch> availablePitches = scale.pitches(root, octaves, startingOctave);
         for(final Signal in : signals.signals()) {
-            if (in.isActive()) {
+            if (in.isNoteOn()) {
                 final Pitch newPitch = random(availablePitches);
-                result.add(in.modifiedPlayed(in.played().repitch(newPitch)));
+                result.add(in.modifiedPitch(newPitch));
                 if (deactivationFollows)
                     RANDOMIZER_MAP.put(in.discriminator(), newPitch);
             } else {
                 if (deactivationFollows) {
                     final Pitch randomizedPitch = RANDOMIZER_MAP.remove(in.discriminator());
                     if (randomizedPitch != null)
-                        result.add(in.modifiedPlayed(in.played().repitch(randomizedPitch)));
+                        result.add(in.modifiedPitch((randomizedPitch)));
                     else
-                        result.add(in.modifiedPlayed(in.played().repitch(random(availablePitches))));
+                        result.add(in.modifiedPitch((random(availablePitches))));
                 } else {
-                    result.add(in.modifiedPlayed(in.played().repitch(random(availablePitches))));
+                    result.add(in.modifiedPitch(random(availablePitches)));
                 }
             }
         }

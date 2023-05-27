@@ -1,8 +1,8 @@
 package mugres.live.processor.transformer;
 
 import mugres.common.Context;
-import mugres.common.Signal;
-import mugres.common.Signals;
+import mugres.live.Signal;
+import mugres.live.Signals;
 import mugres.common.io.Input;
 import mugres.common.io.Output;
 import mugres.filter.Filter;

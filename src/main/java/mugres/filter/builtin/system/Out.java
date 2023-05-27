@@ -1,7 +1,7 @@
 package mugres.filter.builtin.system;
 
 import mugres.common.Context;
-import mugres.common.Signals;
+import mugres.live.Signals;
 import mugres.common.io.Output;
 import mugres.filter.Filter;
 

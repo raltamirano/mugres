@@ -2,7 +2,6 @@ package mugres.tracker;
 
 import mugres.common.Context;
 import mugres.common.Context.ComposableContext;
-import mugres.common.Event;
 import mugres.common.Length;
 import mugres.common.Party;
 import mugres.function.Call;

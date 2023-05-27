@@ -2,7 +2,7 @@ package mugres.common.io;
 
 import mugres.common.ControlChange;
 import mugres.common.InstrumentChange;
-import mugres.common.Signal;
+import mugres.live.Signal;
 
 import java.util.HashSet;
 import java.util.Set;

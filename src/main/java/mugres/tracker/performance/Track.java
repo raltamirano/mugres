@@ -1,6 +1,6 @@
 package mugres.tracker.performance;
 
-import mugres.common.Event;
+import mugres.tracker.Event;
 import mugres.common.Instrument;
 import mugres.common.Party;
 

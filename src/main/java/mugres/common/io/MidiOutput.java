@@ -2,7 +2,7 @@ package mugres.common.io;
 
 import mugres.common.ControlChange;
 import mugres.common.InstrumentChange;
-import mugres.common.Signal;
+import mugres.live.Signal;
 import mugres.tracker.Song;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -33,8 +33,7 @@ public class MidiOutput implements Output {
     public void send(final Signal signal) {
         try {
             final ShortMessage message = new ShortMessage(NOTE_ON, signal.channel() - 1,
-                    signal.played().pitch().midi(),
-                    signal.isActive() ? signal.played().velocity() : 0);
+                    signal.pitch().midi(), signal.velocity());
             midiOutputPort.send(message, -1);
         } catch (final InvalidMidiDataException e) {
             throw new RuntimeException(e);

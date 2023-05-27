@@ -4,10 +4,9 @@ import mugres.common.Context;
 import mugres.common.Interval;
 import mugres.common.Note;
 import mugres.common.Pitch;
-import mugres.common.Played;
 import mugres.common.Scale;
-import mugres.common.Signal;
-import mugres.common.Signals;
+import mugres.live.Signal;
+import mugres.live.Signals;
 import mugres.filter.Filter;
 
 import java.util.List;
@@ -39,7 +38,7 @@ public class ScaleEnforcer extends Filter {
         final CorrectionMode correctionMode = getCorrectionMode(arguments);
 
         for(final Signal in : signals.signals()) {
-            if (scaleNotes.contains(in.played().pitch().note()))
+            if (scaleNotes.contains(in.pitch().note()))
                 result.add(in);
             else
                 try {
@@ -69,21 +68,21 @@ public class ScaleEnforcer extends Filter {
     }
 
     private void correctUp(final Signals result, final List<Note> scaleNotes, final Signal in) {
-        Pitch newPitch = in.played().pitch();
+        Pitch newPitch = in.pitch();
         while(!scaleNotes.contains(newPitch.note()))
             newPitch = newPitch.up(1);
-        if (newPitch.midi() < in.played().pitch().midi())
+        if (newPitch.midi() < in.pitch().midi())
             newPitch = newPitch.up(Interval.OCTAVE);
-        result.add(in.modifiedPlayed(Played.of(newPitch, in.played().velocity())));
+        result.add(in.modifiedPitch(newPitch));
     }
 
     private void correctDown(final Signals result, final List<Note> scaleNotes, final Signal in) {
-        Pitch newPitch = in.played().pitch();
+        Pitch newPitch = in.pitch();
         while(!scaleNotes.contains(newPitch.note()))
             newPitch = newPitch.down(1);
-        if (newPitch.midi() > in.played().pitch().midi())
+        if (newPitch.midi() > in.pitch().midi())
             newPitch = newPitch.down(Interval.OCTAVE);
-        result.add(in.modifiedPlayed(Played.of(newPitch, in.played().velocity())));
+        result.add(in.modifiedPitch(newPitch));
     }
 
     private List<Note> getScaleNotes(final Context context, final Map<String, Object> arguments) {

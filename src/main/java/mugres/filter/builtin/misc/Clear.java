@@ -1,7 +1,7 @@
 package mugres.filter.builtin.misc;
 
 import mugres.common.Context;
-import mugres.common.Signals;
+import mugres.live.Signals;
 import mugres.filter.Filter;
 
 import java.util.Map;

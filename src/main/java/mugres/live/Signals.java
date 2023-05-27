@@ -1,4 +1,4 @@
-package mugres.common;
+package mugres.live;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,20 +45,12 @@ public class Signals {
         return Collections.unmodifiableList(signals);
     }
 
-    public Signals actives() {
-        return of(signals.stream().filter(Signal::isActive).toArray(Signal[]::new));
-    }
-
     public Signals noteOns() {
         return of(signals.stream().filter(Signal::isNoteOn).toArray(Signal[]::new));
     }
 
     public Signals noteOffs() {
         return of(signals.stream().filter(Signal::isNoteOff).toArray(Signal[]::new));
-    }
-
-    public Signals inactives() {
-        return of(signals.stream().filter(s -> !s.isActive()).toArray(Signal[]::new));
     }
 
     public void forEach(final Consumer<? super Signal> consumer) {

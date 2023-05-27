@@ -1,14 +1,11 @@
 package mugres.filter.builtin.misc;
 
 import mugres.common.Context;
-import mugres.common.Played;
-import mugres.common.Signal;
-import mugres.common.Signals;
+import mugres.live.Signal;
+import mugres.live.Signals;
 import mugres.filter.Filter;
 
 import java.util.Map;
-
-import static mugres.common.Pitch.isValidMidiNoteNumber;
 
 public class Transpose extends Filter {
     public static final String NAME = "Transpose";
@@ -33,7 +30,7 @@ public class Transpose extends Filter {
         final int semitones = getSemitonesToTranspose(arguments);
 
         for(final Signal in : signals.signals())
-            result.add(in.modifiedPlayed(transpose(in.played(), semitones)));
+            result.add(in.modifiedPitch(in.pitch().safeTranspose(semitones)));
 
         return result;
     }
@@ -46,16 +43,5 @@ public class Transpose extends Filter {
         } catch (final Throwable ignore) {
             return 0;
         }
-    }
-
-    private Played transpose(final Played played, final int semitones) {
-        if (semitones == 0)
-            return played;
-
-        final int target = played.pitch().midi() + semitones;
-        if (!isValidMidiNoteNumber(target))
-            return played;
-
-        return semitones > 0 ? played.pitchUp(semitones) : played.pitchDown(-semitones);
     }
 }

@@ -1,7 +1,7 @@
 package mugres.function.builtin.arp;
 
 import mugres.common.Context;
-import mugres.common.Event;
+import mugres.tracker.Event;
 import mugres.common.Length;
 import mugres.common.Pitch;
 import mugres.common.Value;
