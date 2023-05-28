@@ -4,6 +4,7 @@ import mugres.common.Context;
 import mugres.common.DataType;
 import mugres.common.Note;
 import mugres.common.Pitch;
+import mugres.common.Scale;
 import mugres.live.Signal;
 import mugres.common.io.Input;
 import mugres.common.io.Output;
@@ -31,10 +32,24 @@ public class Spirographone extends Processor {
                             final Output output,
                             final Configuration configuration) {
         super(context, input, output, null, new HashSet<>(asList(
+                Parameter.of("externalCircleRadius", "External circle radius", DataType.INTEGER,
+                        true, 50),
+                Parameter.of("internalCircleRadius", "Internal circle radius", DataType.INTEGER,
+                        true, 10),
+                Parameter.of("penOffset", "Pen offset", DataType.INTEGER,
+                        true, 3),
+                Parameter.of("delta", "Iteration delta", DataType.INTEGER,
+                        true, 5),
                 Parameter.of("spaceMillis", "Space between notes, in millis", DataType.INTEGER,
                         true, 200),
-                Parameter.of("root", "Root note name", DataType.NOTE,
-                        true, Note.E)
+                Parameter.of("minOctave", "Minimum octave", DataType.INTEGER,
+                        true, 3),
+                Parameter.of("maxOctave", "Maximum octave", DataType.INTEGER,
+                        true, 5),
+                Parameter.of("root", "Root note", DataType.NOTE,
+                        true, Note.E),
+                Parameter.of("scale", "Scale", DataType.SCALE,
+                        true, Scale.MINOR_PENTATONIC)
         )));
         this.config = configuration;
         updateNotes();
@@ -53,12 +68,34 @@ public class Spirographone extends Processor {
     @Override
     public void parameterValue(final String name, final Object value) {
         switch(name) {
+            case "externalCircleRadius":
+                config.setExternalCircleRadius(Integer.valueOf(value.toString()));
+                break;
+            case "internalCircleRadius":
+                config.setInternalCircleRadius(Integer.valueOf(value.toString()));
+                break;
+            case "penOffset":
+                config.setOffsetOnInternalCircle(Integer.valueOf(value.toString()));
+                break;
+            case "delta":
+                config.setIterationDelta(Integer.valueOf(value.toString()));
+                break;
             case "spaceMillis":
                 config.setSpaceMillis((Integer.valueOf(value.toString()) * 5) + 1);
+                break;
+            case "minOctave":
+                config.setMinOctave(Maths.map(Integer.valueOf(value.toString()), 0, 127, -2, 8));
+                break;
+            case "maxOctave":
+                config.setMaxOctave(Maths.map(Integer.valueOf(value.toString()), 0, 127, -2, 8));
                 break;
             case "root":
                 config.setRoot(Note.of(Maths.map(Integer.valueOf(value.toString()), 0, 127, 0, 11)));
                 updateNotes();
+                break;
+            case "scale":
+                config.setScale(Scale.values()[Maths.map(Integer.valueOf(value.toString()), 0, 127,
+                        0, Scale.values().length - 1)]);
                 break;
         }
     }
