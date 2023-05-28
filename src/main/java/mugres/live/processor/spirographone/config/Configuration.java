@@ -5,6 +5,7 @@ import mugres.common.Scale;
 
 public class Configuration {
     private int outputChannel;
+    private boolean autoStart;
     private double externalCircleRadius;
     private double internalCircleRadius;
     private double offsetOnInternalCircle;
@@ -21,6 +22,14 @@ public class Configuration {
 
     public void setOutputChannel(int outputChannel) {
         this.outputChannel = outputChannel;
+    }
+
+    public boolean isAutoStart() {
+        return autoStart;
+    }
+
+    public void setAutoStart(boolean autoStart) {
+        this.autoStart = autoStart;
     }
 
     public double getExternalCircleRadius() {

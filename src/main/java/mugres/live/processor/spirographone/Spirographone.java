@@ -57,12 +57,26 @@ public class Spirographone extends Processor {
 
     @Override
     protected void onStart() {
-        startPlayingThread();
+        if (config.isAutoStart())
+            startPlayingThread();
     }
 
     @Override
     protected void onStop() {
         stopPlayingThread();
+    }
+
+    @Override
+    protected void doProcess(final Signal signal) {
+        if (signal.isNoteOn()) {
+            config.setRoot(signal.pitch().note());
+            updateNotes();
+            if (!running)
+                startPlayingThread();
+        } else {
+            if (running && config.getRoot().equals(signal.pitch().note()))
+                stopPlayingThread();
+        }
     }
 
     @Override
@@ -159,10 +173,14 @@ public class Spirographone extends Processor {
     }
 
     private void stopPlayingThread() {
-        if (playingThread != null) {
-            running = false;
+        if (playingThread != null)
             try { playingThread.interrupt(); } catch (final Exception ignore) {}
-            playingThread = null;
-        }
+
+        if (threadLastPitchPlayed != null)
+            output().send(Signal.off(config.getOutputChannel(), threadLastPitchPlayed));
+
+        running = false;
+        playingThread = null;
+        threadLastPitchPlayed = null;
     }
 }
