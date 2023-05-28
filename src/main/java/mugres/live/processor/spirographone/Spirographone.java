@@ -173,13 +173,14 @@ public class Spirographone extends Processor {
     }
 
     private void stopPlayingThread() {
+        running = false;
+
         if (playingThread != null)
             try { playingThread.interrupt(); } catch (final Exception ignore) {}
 
         if (threadLastPitchPlayed != null)
             output().send(Signal.off(config.getOutputChannel(), threadLastPitchPlayed));
 
-        running = false;
         playingThread = null;
         threadLastPitchPlayed = null;
     }
