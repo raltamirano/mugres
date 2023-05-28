@@ -1,8 +1,11 @@
 package mugres.common.io;
 
+import mugres.common.Context;
 import mugres.common.ControlChange;
 import mugres.common.InstrumentChange;
+import mugres.filter.Filter;
 import mugres.live.Signal;
+import mugres.live.Signals;
 import mugres.tracker.Song;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -18,7 +21,7 @@ import static javax.sound.midi.ShortMessage.NOTE_ON;
 import static javax.sound.midi.ShortMessage.PROGRAM_CHANGE;
 import static mugres.common.MIDI.END_OF_TRACK;
 
-public class MidiOutput implements Output {
+public class MidiOutput extends Output {
     private final Receiver midiOutputPort;
 
     private MidiOutput(final Receiver midiOutputPort) {
@@ -32,9 +35,18 @@ public class MidiOutput implements Output {
     @Override
     public void send(final Signal signal) {
         try {
-            final ShortMessage message = new ShortMessage(NOTE_ON, signal.channel() - 1,
-                    signal.pitch().midi(), signal.velocity());
-            midiOutputPort.send(message, -1);
+            if (filters().isEmpty()) {
+                sendSignal(signal);
+            } else {
+                Signals signals = Signals.of(signal);
+
+                // Pass through every user-defined filter
+                for(final Filter filter : filters())
+                    signals = filter.accept(Context.basicContext(), signals);
+
+                for(Signal s : signals.signals())
+                    sendSignal(s);
+            }
         } catch (final InvalidMidiDataException e) {
             throw new RuntimeException(e);
         }
@@ -84,6 +96,12 @@ public class MidiOutput implements Output {
 
     public Receiver getMidiOutputPort() {
         return midiOutputPort;
+    }
+
+    private void sendSignal(final Signal signal) throws InvalidMidiDataException {
+        final ShortMessage message = new ShortMessage(NOTE_ON, signal.channel() - 1,
+                signal.pitch().midi(), signal.velocity());
+        midiOutputPort.send(message, -1);
     }
 
     private class CloseSequencerOnSequenceEnd implements MetaEventListener {
