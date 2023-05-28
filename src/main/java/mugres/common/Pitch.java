@@ -23,8 +23,32 @@ public class Pitch implements Comparable<Pitch> {
         this.octave = octave;
     }
 
-    public static Pitch ofFrequency(final float frequency) {
-        final int midi = (int) ((12 * log(frequency / 220.0) / log(2.0)) + 57.01);
+    public synchronized static Pitch of(final int midi) {
+        if (!CACHE.containsKey(midi))
+            CACHE.put(midi, new Pitch(midi, Note.of(midi % 12), (midi / 12) - 2));
+
+        return CACHE.get(midi);
+    }
+
+    public static Pitch of(final Note note, final int octave) {
+        return of(note.number() + ((octave + 2) * 12));
+    }
+
+    public static Pitch of(final String input) {
+        try {
+            return of(Integer.parseInt(input));
+        } catch (final NumberFormatException e) {
+            final Matcher matcher = PITCH.matcher(input);
+            if (!matcher.matches())
+                throw new IllegalArgumentException("Invalid pitch: " + input);
+            final Note root = Note.of(matcher.group(1));
+            final int octave = matcher.group(2) == null ? BASE_OCTAVE : Integer.valueOf(matcher.group(3).trim());
+            return of(root, octave);
+        }
+    }
+
+    public static Pitch of(final double hz) {
+        final int midi = (int) ((12 * log(hz / 220.0) / log(2.0)) + 57.01);
         return of(midi);
     }
 
@@ -71,28 +95,8 @@ public class Pitch implements Comparable<Pitch> {
         return octave;
     }
 
-    public static Pitch of(final Note note, final int octave) {
-        return of(note.number() + ((octave + 1) * 12));
-    }
-
-    public static Pitch of(final String input) {
-        try {
-            return of(Integer.parseInt(input));
-        } catch (final NumberFormatException e) {
-            final Matcher matcher = PITCH.matcher(input);
-            if (!matcher.matches())
-                throw new IllegalArgumentException("Invalid pitch: " + input);
-            final Note root = Note.of(matcher.group(1));
-            final int octave = matcher.group(2) == null ? BASE_OCTAVE : Integer.valueOf(matcher.group(2).trim());
-            return of(root, octave);
-        }
-    }
-
-    public synchronized static Pitch of(final int midi) {
-        if (!CACHE.containsKey(midi))
-            CACHE.put(midi, new Pitch(midi, Note.of(midi % 12), (midi / 12) - 1));
-
-        return CACHE.get(midi);
+    public double hz() {
+        return 440.0  * Math.pow(2.0, (midi-69.0)/12.0);
     }
 
     public static boolean isValidMidiNoteNumber(final int noteNumber) {
@@ -125,9 +129,9 @@ public class Pitch implements Comparable<Pitch> {
     }
 
     private static final Map<Integer, Pitch> CACHE = new HashMap<>();
-    private static final Pattern PITCH = Pattern.compile("((?:C|D|E|F|G|A|B)#?)(\\[-?\\d\\])?");
+    private static final Pattern PITCH = Pattern.compile("((?:C|D|E|F|G|A|B)#?)(\\[(-?\\d)\\])?");
 
-    public static final Pitch MIDDLE_C = of(Note.C, 4);
+    public static final Pitch MIDDLE_C = of(Note.C, 3);
     public static final Pitch CONCERT_PITCH = of(Note.A, 4);
     public static final int DEFAULT_VELOCITY = 100;
 }
