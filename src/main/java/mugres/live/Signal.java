@@ -87,7 +87,7 @@ public class Signal implements Cloneable {
         }
     }
 
-    public Signal toOn(final int velocity) {
+    public Signal toNoteOn(final int velocity) {
         if (isNoteOn())
             return this;
         else
@@ -96,7 +96,7 @@ public class Signal implements Cloneable {
             }
     }
 
-    public Signal toOff() {
+    public Signal toNoteOff() {
         if (isNoteOn())
             synchronized (attributesSyncObject) {
                 return of(channel, pitch, 0, attributes);

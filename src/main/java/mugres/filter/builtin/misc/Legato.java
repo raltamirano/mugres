@@ -36,7 +36,7 @@ public class Legato extends Filter {
         final String latchKey = latchKey(signals);
 
         for(Signal l : latchedSignals)
-            result.add(l.toOff());
+            result.add(l.toNoteOff());
 
         latchedSignals.clear();
 

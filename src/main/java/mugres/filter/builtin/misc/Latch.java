@@ -38,12 +38,12 @@ public class Latch extends Filter {
 
         if (noteOns.isMono() && noteOns.hasPitch(killSwitch)) {
             for(Signal s : latchedSignals.values())
-                result.add(s.toOff());
+                result.add(s.toNoteOff());
             latchedSignals.clear();
         } else {
             for (Signal s : noteOns.signals()) {
                 if (latchedSignals.containsKey(s.discriminator())) {
-                    result.add(s.toOff());
+                    result.add(s.toNoteOff());
                     latchedSignals.remove(s.discriminator());
                 } else {
                     result.add(s);
