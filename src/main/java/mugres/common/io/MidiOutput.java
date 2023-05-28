@@ -85,6 +85,7 @@ public class MidiOutput extends Output {
         }
     }
 
+    @Override
     public Receiver getMidiOutputPort() {
         return midiOutputPort;
     }

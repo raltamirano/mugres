@@ -6,6 +6,7 @@ import mugres.filter.Filter;
 import mugres.live.Signal;
 import mugres.tracker.Song;
 
+import javax.sound.midi.Receiver;
 import java.util.List;
 
 public class ProxyOutput extends Output {
@@ -47,5 +48,10 @@ public class ProxyOutput extends Output {
     @Override
     public void send(final Song song) {
         delegate.send(song);
+    }
+
+    @Override
+    public Receiver getMidiOutputPort() {
+        return delegate.getMidiOutputPort();
     }
 }

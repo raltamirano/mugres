@@ -7,6 +7,7 @@ import mugres.live.Signal;
 import mugres.live.Signals;
 import mugres.tracker.Song;
 
+import javax.sound.midi.Receiver;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,4 +32,8 @@ public abstract class Output {
     public abstract void send(final InstrumentChange instrumentChange);
     public abstract void send(final ControlChange controlChange);
     public abstract void send(final Song song);
+
+    public Receiver getMidiOutputPort() {
+        throw new UnsupportedOperationException("getMidiOutputPort(): not supported!");
+    }
 }
