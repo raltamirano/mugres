@@ -1,24 +1,39 @@
 package mugres.controllable;
 
 import mugres.common.ControlChange;
+import mugres.controllable.mappings.ControlChangeToAction;
+import mugres.controllable.mappings.ControlChangeToParameter;
+import mugres.controllable.mappings.Mapping;
+import mugres.live.Signal;
 
-import java.util.Map;
 import java.util.Set;
 
 /**
- * Contract for elements that can be controlled by using {@link mugres.common.ControlChange control changes}.
+ * Contract for elements that can be controlled by using either
+ * {@link mugres.live.Signal signals} or
+ * {@link mugres.common.ControlChange control changes}.
  */
 public interface Controllable {
-    void mapParameterToControlChange(final String parameter, final int controlChange);
+    /**
+     * Returns the set of {@link Control controls} this {@link Controllable controllable} has.
+     */
+    Set<Control> controls();
 
-    void unmapParameterFromControlChange(final String parameter, final int controlChange);
+    Set<Mapping> mappings();
 
-    void clearAllControlChangeMappings();
+    void map(final Control control, final ControlChangeToParameter mapping);
 
-    Map<Integer, Set<String>> controlChangeMappings();
+    void map(final Control control, final ControlChangeToAction mapping);
+
+    void clearMappings();
 
     /**
-     * Accepts a Control Change.
+     * Accept a Signal.
+     */
+    void onSignal(final Signal signal);
+
+    /**
+     * Accept a Control Change.
      */
     void onControlChange(final ControlChange controlChange);
 }

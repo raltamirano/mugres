@@ -118,32 +118,12 @@ public abstract class Processor implements Parametrizable, Controllable {
 
 
     @Override
-    public void mapParameterToControlChange(final String parameterName, final int controlChange) {
-        controlChangeMappings.computeIfAbsent(controlChange, key -> new HashSet()).add(parameterName);
-    }
-
-    @Override
-    public void unmapParameterFromControlChange(final String parameterName, final int controlChange) {
-        controlChangeMappings.computeIfAbsent(controlChange, key -> new HashSet()).remove(parameterName);
-    }
-
-    @Override
-    public void clearAllControlChangeMappings() {
-        controlChangeMappings.clear();
-    }
-
-    @Override
-    public Map<Integer, Set<String>> controlChangeMappings() {
-        return Collections.unmodifiableMap(controlChangeMappings);
-    }
-
-    @Override
     public void onControlChange(final ControlChange controlChange) {
         final Set<String> mappedParameterNames = controlChangeMappings.get(controlChange.controller());
         if (mappedParameterNames != null && !mappedParameterNames.isEmpty()) {
             mappedParameterNames.forEach(parameterName -> {
-                reportStatus(String.format("Parameter %s => %s", parameterName, controlChange.value()), null);
                 parameterValue(parameterName, controlChange.value());
+                reportStatus(String.format("Parameter %s => %s", parameterName, controlChange.value()), null);
             });
         }
     }
