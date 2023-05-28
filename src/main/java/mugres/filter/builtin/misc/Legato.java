@@ -7,12 +7,12 @@ import mugres.filter.Filter;
 
 import java.util.*;
 
-public class Latch extends Filter {
-    public static final String NAME = "Latch";
+public class Legato extends Filter {
+    public static final String NAME = "Legato";
     private String lastLatched = null;
     private final List<Signal> latchedSignals = new ArrayList<>();
 
-    public Latch(final Map<String, Object> arguments) {
+    public Legato(final Map<String, Object> arguments) {
         super(arguments);
     }
 
@@ -29,15 +29,15 @@ public class Latch extends Filter {
     @Override
     protected Signals internalHandle(final Context context, final Signals signals) {
         final Signals noteOns = signals.noteOns();
-        if (noteOns.size() == 0)
+        if (noteOns.isEmpty())
             return Signals.create();
 
         final Signals result = Signals.create();
         final String latchKey = latchKey(signals);
 
-        for(Signal l : latchedSignals) {
+        for(Signal l : latchedSignals)
             result.add(l.toOff());
-        }
+
         latchedSignals.clear();
 
         if (latchKey.equals(lastLatched)) {
