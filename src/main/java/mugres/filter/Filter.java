@@ -131,6 +131,7 @@ public abstract class Filter {
         register(ScaleEnforcer.NAME, ScaleEnforcer.class);
         register(Chorder.NAME, Chorder.class);
         register(Legato.NAME, Legato.class);
+        register(Latch.NAME, Latch.class);
         register(Transpose.NAME, Transpose.class);
         register(Ranges.NAME, Ranges.class);
         register(Clear.NAME, Clear.class);

@@ -1,5 +1,8 @@
 package mugres.live;
 
+import mugres.common.Note;
+import mugres.common.Pitch;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -63,6 +66,22 @@ public class Signals {
 
     public boolean isEmpty() {
         return signals.isEmpty();
+    }
+
+    public boolean isMono() {
+        return signals.size() == 1;
+    }
+
+    public boolean isPoly() {
+        return signals.size() > 1;
+    }
+
+    public boolean hasNote(final Note note) {
+        return signals.stream().anyMatch(s -> s.pitch().note() == note);
+    }
+
+    public boolean hasPitch(final Pitch pitch) {
+        return signals.stream().anyMatch(s -> s.pitch().equals(pitch));
     }
 
     public int size() {
