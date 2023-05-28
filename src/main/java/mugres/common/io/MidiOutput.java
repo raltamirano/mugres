@@ -1,11 +1,8 @@
 package mugres.common.io;
 
-import mugres.common.Context;
 import mugres.common.ControlChange;
 import mugres.common.InstrumentChange;
-import mugres.filter.Filter;
 import mugres.live.Signal;
-import mugres.live.Signals;
 import mugres.tracker.Song;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -38,13 +35,7 @@ public class MidiOutput extends Output {
             if (filters().isEmpty()) {
                 sendSignal(signal);
             } else {
-                Signals signals = Signals.of(signal);
-
-                // Pass through every user-defined filter
-                for(final Filter filter : filters())
-                    signals = filter.accept(Context.basicContext(), signals);
-
-                for(Signal s : signals.signals())
+                for(Signal s : IOHelper.applyFilters(signal, filters()).signals())
                     sendSignal(s);
             }
         } catch (final InvalidMidiDataException e) {

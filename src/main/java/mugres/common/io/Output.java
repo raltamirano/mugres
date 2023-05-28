@@ -17,7 +17,7 @@ public abstract class Output {
         return filters;
     }
 
-    public final void addFilter(final Filter filter) {
+    public void addFilter(final Filter filter) {
         if (filter != null)
             filters.add(filter);
     }

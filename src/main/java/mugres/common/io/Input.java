@@ -1,11 +1,9 @@
 package mugres.common.io;
 
-import mugres.common.Context;
 import mugres.common.ControlChange;
 import mugres.common.InstrumentChange;
 import mugres.filter.Filter;
 import mugres.live.Signal;
-import mugres.live.Signals;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,12 +18,16 @@ public abstract class Input {
         return filters;
     }
 
-    public final void addFilter(final Filter filter) {
+    protected Set<Listener> listeners() {
+        return listeners;
+    }
+
+    public void addFilter(final Filter filter) {
         if (filter != null)
             filters.add(filter);
     }
 
-    public final void addListener(final Listener listener) {
+    public void addListener(final Listener listener) {
         if (listener != null)
             listeners.add(listener);
     }
@@ -39,14 +41,8 @@ public abstract class Input {
         if (filters.isEmpty()) {
             listeners.forEach(listener -> listener.receive(signal));
         } else {
-            Signals signals = Signals.of(signal);
-
-            // Pass through every user-defined filter
-            for(final Filter filter : filters)
-                signals = filter.accept(Context.basicContext(), signals);
-
-            for(Signal s : signals.signals())
-                listeners.forEach(listener -> listener.receive(signal));
+            for(Signal s : IOHelper.applyFilters(signal, filters).signals())
+                listeners.forEach(listener -> listener.receive(s));
         }
     }
 

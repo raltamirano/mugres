@@ -63,7 +63,7 @@ public abstract class Processor implements Parametrizable, Controllable {
     public void start() {
         onStart();
 
-        inputListener = createSignalListener();
+        inputListener = createInputListener();
         input.addListener(inputListener);
 
         if (signalers != null) signalers.forEach(signaler -> signaler.start(context, input));
@@ -97,7 +97,7 @@ public abstract class Processor implements Parametrizable, Controllable {
         statusListeners.forEach(l -> l.report(Status.of(text, data)));
     }
 
-    private Input.Listener createSignalListener() {
+    private Input.Listener createInputListener() {
         return new Input.Listener() {
             @Override
             public void receive(final Signal signal) {
