@@ -20,15 +20,15 @@ public abstract class Input {
             listeners.remove(listener);
     }
 
-    public void send(final Signal signal) {
+    public void receive(final Signal signal) {
         listeners.forEach(listener -> listener.receive(signal));
     }
 
-    public void send(final InstrumentChange instrumentChange) {
+    public void receive(final InstrumentChange instrumentChange) {
         listeners.forEach(listener -> listener.receive(instrumentChange));
     }
 
-    public void send(final ControlChange controlChange) {
+    public void receive(final ControlChange controlChange) {
         listeners.forEach(listener -> listener.receive(controlChange));
     }
 

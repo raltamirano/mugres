@@ -88,7 +88,7 @@ public class Signaler {
                         boolean run = true;
                         while(run) {
                             if (queue.peek().time() <= now) {
-                                target.send(queue.remove().signal());
+                                target.receive(queue.remove().signal());
                                 run = !queue.isEmpty();
                             } else {
                                 run = false;
