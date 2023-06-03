@@ -95,7 +95,7 @@ public class Spirographone extends Processor {
                 config.setIterationDelta(Integer.valueOf(value.toString()));
                 break;
             case "spaceMillis":
-                config.setSpaceMillis((Integer.valueOf(value.toString()) * 5) + 1);
+                config.setSpaceMillis((Integer.valueOf(value.toString()) * 2) + 1);
                 break;
             case "minOctave":
                 config.setMinOctave(Maths.map(Integer.valueOf(value.toString()), 0, 127, -2, 8));
