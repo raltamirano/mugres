@@ -2,10 +2,12 @@ package mugres.function;
 
 import mugres.common.Context;
 import mugres.common.DrumKit;
+import mugres.common.Key;
 import mugres.common.Length;
 import mugres.common.Note;
 import mugres.common.Pitch;
 import mugres.common.Scale;
+import mugres.common.TimeSignature;
 import mugres.common.Value;
 import mugres.parametrizable.Parameter;
 import mugres.common.Variant;
@@ -136,6 +138,12 @@ public class Call<T> implements Parametrizable {
                         break;
                     case SCALE:
                         argument = Scale.of((areTextDelimitersPresent(argumentString) ? removeTextDelimiters(argumentString) : argumentString));
+                        break;
+                    case KEY:
+                        argument = Key.of((areTextDelimitersPresent(argumentString) ? removeTextDelimiters(argumentString) : argumentString));
+                        break;
+                    case TIME_SIGNATURE:
+                        argument = TimeSignature.of((areTextDelimitersPresent(argumentString) ? removeTextDelimiters(argumentString) : argumentString));
                         break;
                     case TEXT:
                         if (areTextDelimitersPresent(argumentString))

@@ -43,7 +43,7 @@ public abstract class Filter {
     protected Key getKey(final Context context) {
         try {
             return arguments.containsKey("key") ?
-                    Key.fromLabel(arguments.get("key").toString()) :
+                    Key.of(arguments.get("key").toString()) :
                     context.key();
         } catch (final Throwable ignore) {
             return context.key();

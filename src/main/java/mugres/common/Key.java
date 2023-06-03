@@ -79,7 +79,7 @@ public enum Key {
         return defaultScale().harmonize(root, chordRoot, Interval.Type.THIRD, numberOfNotes, baseOctave);
     }
 
-    public static Key fromLabel(String label) {
+    public static Key of(String label) {
         for(Key key : values())
             if (key.label.equals(label))
                 return key;

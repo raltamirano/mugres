@@ -338,7 +338,7 @@ public class REPL {
         if (args.length != 2) {
             System.out.println(args[0] + ": single argument expected: Key");
         } else {
-            final Key key = Key.fromLabel(args[1]);
+            final Key key = Key.of(args[1]);
             functionCallsContext.key(key);
         }
 

@@ -11,6 +11,10 @@ public enum DataType {
     PITCH,
     /** {@link Scale} */
     SCALE,
+    /** {@link Key} */
+    KEY,
+    /** {@link TimeSignature} */
+    TIME_SIGNATURE,
     /** Plain text */
     TEXT,
     /** Integer numbers */
