@@ -2,7 +2,7 @@
   "title": "Hey Ho, Let's Go!",
   "tempo": 176,
   "key": "A",
-  "sections": [
+  "patterns": [
     {
       "name": "A",
       "measures": 8,
@@ -89,15 +89,15 @@
   ],
   "arrangement": [
     {
-      "section": "A",
+      "pattern": "A",
       "repetitions": 2
     },
     {
-      "section": "B",
+      "pattern": "B",
       "repetitions": 1
     },
     {
-      "section": "A",
+      "pattern": "A",
       "repetitions": 1
     }
   ]

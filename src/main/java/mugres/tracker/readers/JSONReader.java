@@ -5,7 +5,7 @@ import mugres.common.Key;
 import mugres.common.TimeSignature;
 import mugres.function.Call;
 import mugres.common.Party;
-import mugres.tracker.Section;
+import mugres.tracker.Pattern;
 import mugres.tracker.Song;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -31,18 +31,18 @@ public class JSONReader implements Reader {
         final Context songContext = createSongContext(songData);
         final Song song = Song.of(title, songContext);
 
-        // Sections
-        for(Object sectionDataObject : songData.getJSONArray("sections")) {
-            final JSONObject sectionData = (JSONObject) sectionDataObject;
-            final String name = sectionData.getString("name");
-            final int measures = sectionData.getInt("measures");
-            final Section section = song.createSection(name, measures);
-            loadContext(sectionData, section.context());
+        // Patterns
+        for(Object patternDataObject : songData.getJSONArray("patterns")) {
+            final JSONObject patternData = (JSONObject) patternDataObject;
+            final String name = patternData.getString("name");
+            final int measures = patternData.getInt("measures");
+            final Pattern pattern = song.createPattern(name, measures);
+            loadContext(patternData, pattern.context());
 
             // Party/function calls matrix
-            for(String partyName : sectionData.getJSONObject("matrix").keySet()) {
+            for(String partyName : patternData.getJSONObject("matrix").keySet()) {
                 final Party party = Party.WellKnownParties.valueOf(partyName).party();
-                final Object partyCallsObject = sectionData.getJSONObject("matrix").get(partyName);
+                final Object partyCallsObject = patternData.getJSONObject("matrix").get(partyName);
                 final List<Object> partyCalls = new ArrayList<>();
                 if (partyCallsObject instanceof JSONArray) {
                     final JSONArray partyCallsArray = (JSONArray) partyCallsObject;
@@ -76,10 +76,10 @@ public class JSONReader implements Reader {
 
                         final String callSpec = callData.getString("call");
                         final Call call = Call.parse(callSpec, arguments);
-                        section.addPart(party, call);
+                        pattern.addPart(party, call);
                     } else {
                         final Call call = Call.parse(callDataObject.toString());
-                        section.addPart(party, call);
+                        pattern.addPart(party, call);
                     }
                 }
             }
@@ -88,14 +88,14 @@ public class JSONReader implements Reader {
         // Arrangement
         for(Object arrangementDataObject : songData.getJSONArray("arrangement")) {
             final JSONObject arrangementData = (JSONObject) arrangementDataObject;
-            final String sectionName = arrangementData.getString("section");
+            final String patternName = arrangementData.getString("pattern");
             final int repetitions = arrangementData.getInt("repetitions");
 
-            final Section section = song.section(sectionName);
-            if (section == null)
-                throw new RuntimeException("Invalid arrangement section: " + sectionName);
+            final Pattern pattern = song.pattern(patternName);
+            if (pattern == null)
+                throw new RuntimeException("Invalid arrangement pattern: " + patternName);
 
-            song.arrangement().append(section, repetitions);
+            song.arrangement().append(pattern, repetitions);
         }
 
         return song;

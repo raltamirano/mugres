@@ -3,7 +3,7 @@ package mugres;
 import mugres.function.Call;
 import mugres.function.Function;
 import mugres.function.builtin.random.Random;
-import mugres.tracker.Section;
+import mugres.tracker.Pattern;
 import mugres.tracker.Song;
 import mugres.tracker.performance.Performance;
 import mugres.tracker.performance.Performer;
@@ -22,10 +22,10 @@ public class ConvertToMidiTests {
     @Test
     public void convertSimpleSong() {
         final Song song = Song.of("We will unit test you", basicContext());
-        final Section section = song.createSection("A", 2);
-        song.arrangement().append(section, 1);
+        final Pattern pattern = song.createPattern("A", 2);
+        song.arrangement().append(pattern, 1);
 
-        section.addPart(GUITAR1.party(), Call.of(random(), section.measures()));
+        pattern.addPart(GUITAR1.party(), Call.of(random(), pattern.measures()));
 
         final Performance performance = Performer.perform(song);
         System.out.println(String.format("Performance =>%n%s", performance));
@@ -35,7 +35,7 @@ public class ConvertToMidiTests {
         assertEquals(1, performance.tracks().size());
         final Track track = performance.tracks().iterator().next();
         assertEquals(GUITAR1.party().name(), track.party());
-        // 2 measures of random quarter notes (section A repeats once)
+        // 2 measures of random quarter notes (pattern A repeats once)
         assertEquals(8, track.events().size());
 
         // Conversion

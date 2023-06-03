@@ -7,7 +7,7 @@ import mugres.common.Party;
 import mugres.common.TimeSignature;
 import mugres.function.Call;
 import mugres.function.Function;
-import mugres.tracker.Section;
+import mugres.tracker.Pattern;
 import mugres.tracker.Song;
 import mugres.tracker.performance.Performance;
 import mugres.tracker.performance.Performer;
@@ -34,12 +34,12 @@ import java.util.Scanner;
 public class REPL {
     private static File songFile;
     private static Song song;
-    private static Map<Integer, String> sectionsMap = new HashMap<>();
+    private static Map<Integer, String> patternsMap = new HashMap<>();
     private static Sequencer sequencer;
     private static Context functionCallsContext = Context.basicContext();
     private static Party functionCallsParty = Party.WellKnownParties.PIANO.party();
-    private static String loopingSection = null;
-    private static Sequence loopingSectionMidiSequence = null;
+    private static String loopingPattern = null;
+    private static Sequence loopingPatternMidiSequence = null;
     private static final Map<String, java.util.function.Function<String[], Boolean>> HANDLERS = new HashMap<>();
     private static final JSONReader SONG_JSON_READER = new JSONReader();
     private static FileWatcher songFileWatcher = null;
@@ -69,9 +69,9 @@ public class REPL {
         HANDLERS.put("load-song", REPL::loadSong);
         HANDLERS.put("play-song", REPL::playSong);
         HANDLERS.put("random-song", REPL::randomSong);
-        HANDLERS.put("sections", REPL::sections);
-        HANDLERS.put("play-section", REPL::playSection);
-        HANDLERS.put("loop-section", REPL::loopSection);
+        HANDLERS.put("patterns", REPL::patterns);
+        HANDLERS.put("play-pattern", REPL::playPattern);
+        HANDLERS.put("loop-pattern", REPL::loopPattern);
         HANDLERS.put("calls-show-context", REPL::callsShowContext);
         HANDLERS.put("calls-tempo", REPL::callsSetTempo);
         HANDLERS.put("calls-key", REPL::callsSetKey);
@@ -137,7 +137,7 @@ public class REPL {
             if (isSongLoaded()) {
                 System.out.println("Song: " + song.title());
                 System.out.println("Source file: " + songFile.getAbsolutePath());
-                System.out.println("Looping section: " + ((loopingSection == null) ? "No" : loopingSection));
+                System.out.println("Looping pattern: " + ((loopingPattern == null) ? "No" : loopingPattern));
             }
         }
 
@@ -165,7 +165,7 @@ public class REPL {
 
             song = null;
             songFile = null;
-            sectionsMap.clear();
+            patternsMap.clear();
 
             final File file = new File(filePath);
 
@@ -183,11 +183,11 @@ public class REPL {
                 songFileWatcher.setDaemon(true);
                 songFileWatcher.start();
 
-                int sectionId = 1;
-                final List<Section> sections = new ArrayList<>(song.sections());
-                sections.sort(Comparator.comparing(Section::name));
-                for (final Section section : sections)
-                    sectionsMap.put(sectionId++, section.name());
+                int patternId = 1;
+                final List<Pattern> patterns = new ArrayList<>(song.patterns());
+                patterns.sort(Comparator.comparing(Pattern::name));
+                for (final Pattern pattern : patterns)
+                    patternsMap.put(patternId++, pattern.name());
 
                 if (!reload)
                     System.out.println(String.format("Successfully loaded song '%s' from '%s'",
@@ -200,13 +200,13 @@ public class REPL {
 
     private static void onSongFileChanged(final File changed) {
         try {
-            final String loopedSection = loopingSection;
+            final String loopedPattern = loopingPattern;
 
             doLoadSong(changed.getAbsolutePath(), true);
-            if (loopedSection != null && song.section(loopingSection) != null) {
-                loopingSectionMidiSequence = createSectionSongMidiSequence(loopedSection);
+            if (loopedPattern != null && song.pattern(loopingPattern) != null) {
+                loopingPatternMidiSequence = createPatternSongMidiSequence(loopedPattern);
                 try {
-                    sequencer.setSequence(loopingSectionMidiSequence);
+                    sequencer.setSequence(loopingPatternMidiSequence);
                 } catch (InvalidMidiDataException e) {
                     e.printStackTrace();
                 }
@@ -239,36 +239,36 @@ public class REPL {
         return true;
     }
 
-    private static boolean playSection(final String[] args) {
+    private static boolean playPattern(final String[] args) {
         if (!isSongLoaded()) {
             System.out.println(args[0] + ": no song loaded");
         } else if (args.length != 2) {
-            System.out.println(args[0] + ": single argument expected: section id (issue command 'sections' to list available sections)");
+            System.out.println(args[0] + ": single argument expected: pattern id (issue command 'patterns' to list available patterns)");
         } else {
-            final int sectionId = Integer.parseInt(args[1]);
-            String sectionName = sectionsMap.get(sectionId);
-            if (sectionName == null) {
-                System.out.println("Invalid section id: " + sectionId);
+            final int patternId = Integer.parseInt(args[1]);
+            String patternName = patternsMap.get(patternId);
+            if (patternName == null) {
+                System.out.println("Invalid pattern id: " + patternId);
             } else {
-                doPlaySection(sectionName, false);
+                doPlayPattern(patternName, false);
             }
         }
 
         return true;
     }
 
-    private static boolean loopSection(final String[] args) {
+    private static boolean loopPattern(final String[] args) {
         if (!isSongLoaded()) {
             System.out.println(args[0] + ": no song loaded");
         } else if (args.length != 2) {
-            System.out.println(args[0] + ": single argument expected: section id (issue command 'sections' to list available sections)");
+            System.out.println(args[0] + ": single argument expected: pattern id (issue command 'patterns' to list available patterns)");
         } else {
-            final int sectionId = Integer.parseInt(args[1]);
-            String sectionName = sectionsMap.get(sectionId);
-            if (sectionName == null) {
-                System.out.println("Invalid section id: " + sectionId);
+            final int patternId = Integer.parseInt(args[1]);
+            String patternName = patternsMap.get(patternId);
+            if (patternName == null) {
+                System.out.println("Invalid pattern id: " + patternId);
             } else {
-                doPlaySection(sectionName, true);
+                doPlayPattern(patternName, true);
             }
         }
 
@@ -279,28 +279,28 @@ public class REPL {
         playMidiSequence(song.toMidiSequence(), false);
     }
 
-    private static void doPlaySection(final String sectionName, final boolean loop) {
-        final Sequence sequence = createSectionSongMidiSequence(sectionName);
+    private static void doPlayPattern(final String patternName, final boolean loop) {
+        final Sequence sequence = createPatternSongMidiSequence(patternName);
         playMidiSequence(sequence, loop);
 
         if (loop) {
-            loopingSection = sectionName;
-            loopingSectionMidiSequence = sequence;
+            loopingPattern = patternName;
+            loopingPatternMidiSequence = sequence;
         }
     }
 
-    private static Sequence createSectionSongMidiSequence(final String sectionName) {
-        return song.createSectionSong(sectionName).toMidiSequence();
+    private static Sequence createPatternSongMidiSequence(final String patternName) {
+        return song.createPatternSong(patternName).toMidiSequence();
     }
 
-    private static boolean sections(final String[] args) {
+    private static boolean patterns(final String[] args) {
         if (args.length != 1) {
             System.out.println(args[0] + ": no arguments expected");
         } else if (!isSongLoaded()) {
             System.out.println(args[0] + ": no song loaded");
         } else {
-            for(Integer sectionId : sectionsMap.keySet())
-                System.out.println(String.format("%-3s\t%s", sectionId, sectionsMap.get(sectionId)));
+            for(Integer patternId : patternsMap.keySet())
+                System.out.println(String.format("%-3s\t%s", patternId, patternsMap.get(patternId)));
         }
 
         return true;
@@ -440,8 +440,8 @@ public class REPL {
     }
 
     private static void doStop() {
-        loopingSection = null;
-        loopingSectionMidiSequence = null;
+        loopingPattern = null;
+        loopingPatternMidiSequence = null;
 
         if (sequencer.isRunning())
             sequencer.stop();

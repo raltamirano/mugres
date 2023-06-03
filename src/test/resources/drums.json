@@ -1,7 +1,7 @@
 {
   "title": "Drums",
   "tempo": 160,
-  "sections": [
+  "patterns": [
     {
       "name": "A",
       "measures": 1,
@@ -26,7 +26,7 @@
   ],
   "arrangement": [
     {
-      "section": "A",
+      "pattern": "A",
       "repetitions": 1
     }
   ]

@@ -9,9 +9,9 @@ import mugres.function.Function;
 
 import java.util.*;
 
-import static mugres.common.Context.SECTION_LENGTH;
+import static mugres.common.Context.PATTERN_LENGTH;
 
-public class Section {
+public class Pattern {
     private String name;
     private final int measures;
     private final Song song;
@@ -19,12 +19,12 @@ public class Section {
     private boolean regenerate = false;
     private final Map<Party, List<Call<List<Event>>>> matrix = new HashMap<>();
 
-    public Section(final Song song, final String name, final int measures) {
+    public Pattern(final Song song, final String name, final int measures) {
         this.song = song;
         this.name = name;
         this.measures = measures;
         this.context = ComposableContext.of(song.context());
-        this.context.put(SECTION_LENGTH, measures);
+        this.context.put(PATTERN_LENGTH, measures);
     }
 
     public String name() {
@@ -90,9 +90,9 @@ public class Section {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Section section = (Section) o;
-        return name.equals(section.name) &&
-                song.equals(section.song);
+        Pattern pattern = (Pattern) o;
+        return name.equals(pattern.name) &&
+                song.equals(pattern.song);
     }
 
     @Override

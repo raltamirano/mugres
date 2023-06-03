@@ -7,8 +7,8 @@ import java.util.List;
 public class Arrangement {
     private final List<Entry> entries = new ArrayList<>();
 
-    public void append(final Section section, final int repetitions) {
-        entries.add(new Entry(section, repetitions));
+    public void append(final Pattern pattern, final int repetitions) {
+        entries.add(new Entry(pattern, repetitions));
     }
 
     public List<Entry> entries() {
@@ -16,20 +16,20 @@ public class Arrangement {
     }
 
     public static class Entry {
-        private Section section;
+        private Pattern pattern;
         private int repetitions;
 
-        public Entry(Section section, int repetitions) {
-            this.section = section;
+        public Entry(Pattern pattern, int repetitions) {
+            this.pattern = pattern;
             this.repetitions = repetitions;
         }
 
-        public Section section() {
-            return section;
+        public Pattern pattern() {
+            return pattern;
         }
 
-        public void section(Section section) {
-            this.section = section;
+        public void pattern(Pattern pattern) {
+            this.pattern = pattern;
         }
 
         public int repetitions() {
@@ -42,7 +42,7 @@ public class Arrangement {
 
         @Override
         public String toString() {
-            return String.format("%s * %d", section, repetitions);
+            return String.format("%s * %d", pattern, repetitions);
         }
     }
 }

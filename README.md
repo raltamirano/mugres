@@ -41,11 +41,11 @@ Here you have the commands:
 ###### calls-ts
 ###### help
 ###### load-song
-###### loop-section
-###### play-section
+###### loop-pattern
+###### play-pattern
 ###### play-song
 ###### quit
 ###### random-song
-###### sections
+###### patterns
 ###### status
 ###### stop    

@@ -35,7 +35,7 @@ public interface Context {
     String TEMPO = "tempo";
     String KEY = "key";
     String TIME_SIGNATURE = "time-signature";
-    String SECTION_LENGTH = "section-length";
+    String PATTERN_LENGTH = "pattern-length";
     String CHORD_PROGRESSION = "chord-progression";
 
     final class ComposableContext implements Context

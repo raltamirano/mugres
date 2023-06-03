@@ -20,7 +20,6 @@ import mugres.function.builtin.song.LoFiHipHopSongGenerator;
 import mugres.function.builtin.text.TextMelody;
 import mugres.tracker.Song;
 import mugres.parametrizable.Parameter;
-import mugres.parametrizable.Parametrizable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static mugres.common.Context.SECTION_LENGTH;
+import static mugres.common.Context.PATTERN_LENGTH;
 
 /** Function that generates musical artifacts. */
 public abstract class Function<T> {
@@ -80,8 +79,8 @@ public abstract class Function<T> {
 
     public T execute(final Context context, final Map<String, Object> arguments) {
         if (!arguments.containsKey(LENGTH_PARAMETER.name()))
-            if (context.has(SECTION_LENGTH))
-                arguments.put(LENGTH_PARAMETER.name(), context.get(SECTION_LENGTH));
+            if (context.has(PATTERN_LENGTH))
+                arguments.put(LENGTH_PARAMETER.name(), context.get(PATTERN_LENGTH));
 
         final T result = doExecute(context, prepareArguments(arguments));
         // TODO: Validate length/complete to length with rests / etc.

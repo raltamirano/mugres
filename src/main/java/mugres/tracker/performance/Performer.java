@@ -27,22 +27,22 @@ public class Performer {
             for(Arrangement.Entry arrangementEntry : song.arrangement().entries()) {
                 for(int arrangementEntryIndex = 1; arrangementEntryIndex <= arrangementEntry.repetitions();
                     arrangementEntryIndex++) {
-                    if (arrangementEntry.section().hasPartsFor(party)) {
-                        if (!arrangementEntry.section().isRegenerate() &&
-                                generatedMatrix.containsKey(arrangementEntry.section().name()) &&
-                                generatedMatrix.get(arrangementEntry.section().name()).containsKey(party.name())) {
-                            for (Event event : generatedMatrix.get(arrangementEntry.section().name())
+                    if (arrangementEntry.pattern().hasPartsFor(party)) {
+                        if (!arrangementEntry.pattern().isRegenerate() &&
+                                generatedMatrix.containsKey(arrangementEntry.pattern().name()) &&
+                                generatedMatrix.get(arrangementEntry.pattern().name()).containsKey(party.name())) {
+                            for (Event event : generatedMatrix.get(arrangementEntry.pattern().name())
                                     .get(party.name())) {
                                 track.addEvent(event.offset(offset));
                             }
                         } else {
-                            if (!generatedMatrix.containsKey(arrangementEntry.section().name()))
-                                generatedMatrix.put(arrangementEntry.section().name(), new HashMap<>());
+                            if (!generatedMatrix.containsKey(arrangementEntry.pattern().name()))
+                                generatedMatrix.put(arrangementEntry.pattern().name(), new HashMap<>());
 
                             final List<Event> partyEvents = new ArrayList<>();
                             Length previousCallsOffset = Length.ZERO;
-                            for (Call<List<Event>> call : arrangementEntry.section().matrix().get(party)) {
-                                final Context callContext = arrangementEntry.section().context();
+                            for (Call<List<Event>> call : arrangementEntry.pattern().matrix().get(party)) {
+                                final Context callContext = arrangementEntry.pattern().context();
                                 final Result<List<Event>> functionResult = call.execute(callContext);
                                 if (functionResult.succeeded()) {
                                     final List<Event> events = sortEventList(functionResult.data());
@@ -58,11 +58,11 @@ public class Performer {
                                 }
                             }
 
-                            generatedMatrix.get(arrangementEntry.section().name())
+                            generatedMatrix.get(arrangementEntry.pattern().name())
                                     .put(party.name(), partyEvents);
                         }
                     }
-                    offset = offset.plus(arrangementEntry.section().length());
+                    offset = offset.plus(arrangementEntry.pattern().length());
                 }
             }
         }
@@ -78,7 +78,7 @@ public class Performer {
             for (int arrangementEntryIndex = 1; arrangementEntryIndex <= arrangementEntry.repetitions();
                  arrangementEntryIndex++) {
 
-                final Context context = arrangementEntry.section().context();
+                final Context context = arrangementEntry.pattern().context();
                 final Control currentControl = Control.of(context.tempo(), context.key(),
                         context.timeSignature());
 
@@ -90,7 +90,7 @@ public class Performer {
                 if (lastControl == null || !lastControl.equals(currentControl))
                     performance.addControlEvent(offset, currentControl);
 
-                offset = offset.plus(arrangementEntry.section().length());
+                offset = offset.plus(arrangementEntry.pattern().length());
             }
         }
     }

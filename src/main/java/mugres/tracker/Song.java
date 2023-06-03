@@ -19,7 +19,7 @@ import java.util.Set;
 public class Song {
     private String title;
     private final Context context;
-    private final Set<Section> sections = new HashSet<>();
+    private final Set<Pattern> patterns = new HashSet<>();
     private final Set<Party> parties = new HashSet<>();
     private final Arrangement arrangement = new Arrangement();
 
@@ -61,9 +61,9 @@ public class Song {
                           final Party functionCallsParty,
                           final Call<List<Event>> call) {
         final Song functionCallSong = new Song("Untitled", functionCallsContext);
-        final Section section = functionCallSong.createSection("A", call.getLengthInMeasures());
-        section.addPart(functionCallsParty, call);
-        functionCallSong.arrangement.append(section, 1);
+        final Pattern pattern = functionCallSong.createPattern("A", call.getLengthInMeasures());
+        pattern.addPart(functionCallsParty, call);
+        functionCallSong.arrangement.append(pattern, 1);
         return functionCallSong;
     }
 
@@ -79,28 +79,28 @@ public class Song {
         return context;
     }
 
-    public Section createSection(final String sectionName, final int measures) {
-        if (sections.stream().anyMatch(s -> s.name().equals(sectionName)))
-            throw new IllegalArgumentException(String.format("Section '%s' already exists!", sectionName));
+    public Pattern createPattern(final String patternName, final int measures) {
+        if (patterns.stream().anyMatch(s -> s.name().equals(patternName)))
+            throw new IllegalArgumentException(String.format("Pattern '%s' already exists!", patternName));
 
-        final Section section = new Section(this, sectionName, measures);
-        sections.add(section);
-        return section;
+        final Pattern pattern = new Pattern(this, patternName, measures);
+        patterns.add(pattern);
+        return pattern;
     }
 
-    /** Creates a song that contains a single section from this songs. That section will be arranged
+    /** Creates a song that contains a single pattern from this song. That pattern will be arranged
      * to be repeated once. */
-    public Song createSectionSong(final String sectionName) {
-        final Section section = section(sectionName);
-        if (section == null)
-            throw new IllegalArgumentException("Unknown section: " + sectionName);
+    public Song createPatternSong(final String patternName) {
+        final Pattern pattern = pattern(patternName);
+        if (pattern == null)
+            throw new IllegalArgumentException("Unknown pattern: " + patternName);
 
-        final Song sectionSong = Song.of(sectionName, context);
-        sectionSong.parties.addAll(parties);
-        sectionSong.sections.add(section);
-        sectionSong.arrangement.append(section, 1);
+        final Song patternSong = Song.of(patternName, context);
+        patternSong.parties.addAll(parties);
+        patternSong.patterns.add(pattern);
+        patternSong.arrangement.append(pattern, 1);
 
-        return sectionSong;
+        return patternSong;
     }
 
     void addParty(final Party party) {
@@ -110,14 +110,14 @@ public class Song {
         parties.add(party);
     }
 
-    public Set<Section> sections() {
-        return Collections.unmodifiableSet(sections);
+    public Set<Pattern> patterns() {
+        return Collections.unmodifiableSet(patterns);
     }
 
-    public Section section(final String name) {
-        for(Section section : sections)
-            if (section.name().equals(name))
-                return section;
+    public Pattern pattern(final String name) {
+        for(Pattern pattern : patterns)
+            if (pattern.name().equals(name))
+                return pattern;
 
         return null;
     }

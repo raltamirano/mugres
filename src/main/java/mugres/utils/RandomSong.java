@@ -15,7 +15,7 @@ import mugres.function.builtin.arp.Arp2;
 import mugres.function.builtin.euclides.Euclides;
 import mugres.function.builtin.random.Random;
 import mugres.function.builtin.text.TextMelody;
-import mugres.tracker.Section;
+import mugres.tracker.Pattern;
 import mugres.tracker.Song;
 
 import java.util.ArrayList;
@@ -55,13 +55,13 @@ public class RandomSong {
         final Party percussionParty = hasPercussion ?
                 new Party("Percussion", Instrument.DrumKit, PERCUSSION) : null;
 
-        final List<Section> sections = new ArrayList<>();
-        final int numberOfSections = RND.nextInt(RANDOM_MAX_SECTIONS) + 1;
-        for(int i = 0; i < numberOfSections; i++) {
-            final Section section = song.createSection("Section " + i, random(RANDOM_SECTIONS_LENGTHS));
-            section.context().tempo(RND.nextBoolean() ? section.context().tempo() :
-                    RND.nextBoolean() ? section.context().tempo() / 2 : section.context().tempo() * 2);
-            sections.add(section);
+        final List<Pattern> patterns = new ArrayList<>();
+        final int numberOfPatterns = RND.nextInt(RANDOM_MAX_PATTERNS) + 1;
+        for(int i = 0; i < numberOfPatterns; i++) {
+            final Pattern pattern = song.createPattern("Pattern " + i, random(RANDOM_PATTERNS_LENGTHS));
+            pattern.context().tempo(RND.nextBoolean() ? pattern.context().tempo() :
+                    RND.nextBoolean() ? pattern.context().tempo() / 2 : pattern.context().tempo() * 2);
+            patterns.add(pattern);
         }
 
         final boolean useSameRoot = RND.nextBoolean();
@@ -73,7 +73,7 @@ public class RandomSong {
         final Scale scale = random(scales);
         final Note root = random(Note.values());
 
-        for(final Section section : sections) {
+        for(final Pattern pattern : patterns) {
             for (final Party party : parties) {
                 final Note actualRoot = useSameRoot ? root : random(Note.values());
                 final Scale actualScale = useSameScale ? scale : random(scales);
@@ -87,7 +87,7 @@ public class RandomSong {
                                 Random.OCTAVES_TO_GENERATE, octavesToGenerate,
                                 Random.ROOT, actualRoot
                         );
-                        section.addPart(party, Call.of("random", section.measures(), randomArguments));
+                        pattern.addPart(party, Call.of("random", pattern.measures(), randomArguments));
                         break;
                     case 1: // Text Melody
                         final Map<String, Object> textMelodyArguments = toMap(
@@ -102,7 +102,7 @@ public class RandomSong {
                                         UUID.randomUUID().toString(),
                                         UUID.randomUUID().toString()))
                         );
-                        section.addPart(party, Call.of("textMelody", section.measures(), textMelodyArguments));
+                        pattern.addPart(party, Call.of("textMelody", pattern.measures(), textMelodyArguments));
                         break;
                     case 2: // Arp
                         final Map<String, Object> arpArguments = toMap(
@@ -110,23 +110,23 @@ public class RandomSong {
                                         RANDOM_MAX_ARP_PITCHES, startingOctave),
                                 Arp2.PATTERN, randomArpPattern()
                         );
-                        section.addPart(party, Call.of("arp2", section.measures(), arpArguments));
+                        pattern.addPart(party, Call.of("arp2", pattern.measures(), arpArguments));
                         break;
                     case 3: // Euclidean patterns
-                        final List<EuclideanPattern> patterns = new ArrayList<>();
+                        final List<EuclideanPattern> euclideanPatterns = new ArrayList<>();
                         for(int i = MIN_EUCLIDES_PATTERNS; i <= MAX_EUCLIDES_PATTERNS; i++)
-                            patterns.add(EuclideanPattern.of(EUCLIDES_STEPS,
+                            euclideanPatterns.add(EuclideanPattern.of(EUCLIDES_STEPS,
                                     randomBetween(MIN_EUCLIDES_PATTERN_EVENTS, MAX_EUCLIDES_PATTERN_EVENTS)));
 
                         final Map<String, Object> euclidesArguments = toMap(
-                                Euclides.PATTERNS, patterns,
+                                Euclides.PATTERNS, euclideanPatterns,
                                 Euclides.SCALE, actualScale,
                                 Euclides.STARTING_OCTAVE, startingOctave,
                                 Euclides.OCTAVES_TO_GENERATE, octavesToGenerate,
                                 Euclides.ROOT, actualRoot,
-                                Euclides.CYCLE, section.context().timeSignature().measuresLength(RND.nextBoolean() ? 1 : 2)
+                                Euclides.CYCLE, pattern.context().timeSignature().measuresLength(RND.nextBoolean() ? 1 : 2)
                         );
-                        section.addPart(party, Call.of("euclides", section.measures(), euclidesArguments));
+                        pattern.addPart(party, Call.of("euclides", pattern.measures(), euclidesArguments));
                         break;
                 }
             }
@@ -138,47 +138,47 @@ public class RandomSong {
 
                     switch (style) {
                         case EUCLIDEAN:
-                            final List<EuclideanPattern> patterns = new ArrayList<>();
+                            final List<EuclideanPattern> euclideanPatterns = new ArrayList<>();
                             final List<DrumKit> kitPieces = new ArrayList<>();
                             for(int i = MIN_EUCLIDES_PATTERNS; i <= MAX_EUCLIDES_PATTERNS; i++) {
-                                patterns.add(EuclideanPattern.of(EUCLIDES_STEPS,
+                                euclideanPatterns.add(EuclideanPattern.of(EUCLIDES_STEPS,
                                         randomBetween(MIN_EUCLIDES_PERCUSSION_PATTERN_EVENTS, MAX_EUCLIDES_PERCUSSION_PATTERN_EVENTS)));
                                 kitPieces.add(random(asList(DrumKit.values()), kitPieces));
                             }
 
                             final Map<String, Object> euclidesArguments = toMap(
-                                    Euclides.PATTERNS, patterns,
+                                    Euclides.PATTERNS, euclideanPatterns,
                                     Euclides.PITCHES, kitPieces.stream().map(DrumKit::pitch).collect(Collectors.toList()),
-                                    Euclides.CYCLE, section.context().timeSignature().measuresLength(min((RND.nextBoolean() ? 1 : 2), section.measures()))
+                                    Euclides.CYCLE, pattern.context().timeSignature().measuresLength(min((RND.nextBoolean() ? 1 : 2), pattern.measures()))
                             );
-                            section.addPart(percussionParty, Call.of("euclides", section.measures(), euclidesArguments));
+                            pattern.addPart(percussionParty, Call.of("euclides", pattern.measures(), euclidesArguments));
                             break;
                     }
                 }
             }
         }
 
-        switch(numberOfSections) {
+        switch(numberOfPatterns) {
             case 1:
-                song.arrangement().append(sections.get(0), random(RANDOM_SINGLE_SECTION_REPETITIONS));
+                song.arrangement().append(patterns.get(0), random(RANDOM_SINGLE_PATTERN_REPETITIONS));
                 break;
             case 2:
                 for(int i = 0; i < RANDOM_BASIC_ARRANGEMENT_ENTRIES; i++)
-                    song.arrangement().append(sections.get(i % 2), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
+                    song.arrangement().append(patterns.get(i % 2), random(RANDOM_BASIC_ARRANGEMENT_PATTERN_REPETITIONS));
                 break;
             case 3:
                 final boolean thirdAsMiddle8 = RND.nextBoolean();
                 if (thirdAsMiddle8) {
                     for(int i = 0; i < RANDOM_BASIC_ARRANGEMENT_ENTRIES -2; i++)
-                        song.arrangement().append(sections.get(i % 2), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
-                    song.arrangement().append(sections.get(2), random(RANDOM_MIDDLE8_REPETITIONS));
-                    song.arrangement().append(sections.get(0), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
+                        song.arrangement().append(patterns.get(i % 2), random(RANDOM_BASIC_ARRANGEMENT_PATTERN_REPETITIONS));
+                    song.arrangement().append(patterns.get(2), random(RANDOM_MIDDLE8_REPETITIONS));
+                    song.arrangement().append(patterns.get(0), random(RANDOM_BASIC_ARRANGEMENT_PATTERN_REPETITIONS));
                 } else {
                     for(int i = 0; i < RANDOM_BASIC_ARRANGEMENT_ENTRIES; i++)
-                        song.arrangement().append(sections.get(i % 3), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
+                        song.arrangement().append(patterns.get(i % 3), random(RANDOM_BASIC_ARRANGEMENT_PATTERN_REPETITIONS));
                 }
                 for(int i = 0; i < RANDOM_BASIC_ARRANGEMENT_ENTRIES; i++)
-                    song.arrangement().append(sections.get(i % 2), random(RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS));
+                    song.arrangement().append(patterns.get(i % 2), random(RANDOM_BASIC_ARRANGEMENT_PATTERN_REPETITIONS));
                 break;
         }
 
@@ -202,12 +202,12 @@ public class RandomSong {
     }
 
     private static final int RANDOM_MAX_PARTIES = 5;
-    private static final int RANDOM_MAX_SECTIONS = 3;
-    private static final Set<Integer> RANDOM_SECTIONS_LENGTHS = new HashSet<>(asList(8, 16, 32 ));
-    private static final Set<Integer> RANDOM_SINGLE_SECTION_REPETITIONS = new HashSet<>(asList( 8, 12, 16, 20, 24 ));
+    private static final int RANDOM_MAX_PATTERNS = 3;
+    private static final Set<Integer> RANDOM_PATTERNS_LENGTHS = new HashSet<>(asList(8, 16, 32 ));
+    private static final Set<Integer> RANDOM_SINGLE_PATTERN_REPETITIONS = new HashSet<>(asList( 8, 12, 16, 20, 24 ));
     private static final Set<Integer> RANDOM_MIDDLE8_REPETITIONS = new HashSet<>(asList( 1, 2, 4 ));
     private static final int RANDOM_BASIC_ARRANGEMENT_ENTRIES = 8;
-    private static final Set<Integer> RANDOM_BASIC_ARRANGEMENT_SECTION_REPETITIONS = new HashSet<>(asList( 1, 2 ));
+    private static final Set<Integer> RANDOM_BASIC_ARRANGEMENT_PATTERN_REPETITIONS = new HashSet<>(asList( 1, 2 ));
     private static final Set<Integer> RANDOM_STARTING_OCTAVE_OPTIONS = new HashSet<>(asList( 1, 2, 3, 4, 5 ));
     private static final Set<Integer> RANDOM_OCTAVE_TO_GENERATE_OPTIONS = new HashSet<>(asList( 1, 2, 3 ));
     private static final int RANDOM_MIN_TEMPO = 20;

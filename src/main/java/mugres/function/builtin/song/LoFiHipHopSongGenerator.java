@@ -11,7 +11,7 @@ import mugres.common.Party;
 import mugres.common.chords.ChordProgression;
 import mugres.function.Call;
 import mugres.function.Function;
-import mugres.tracker.Section;
+import mugres.tracker.Pattern;
 import mugres.tracker.Song;
 
 import java.util.HashMap;
@@ -40,48 +40,48 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
                         .key(key())
         );
 
-        final Section prototypeSection = createSongSection("A", song);
+        final Pattern prototypePattern = createSongPattern("A", song);
 
         // Alter prototype as a way of making an intro
 
         // Song's main development
-        song.arrangement().append(prototypeSection, 1);
+        song.arrangement().append(prototypePattern, 1);
 
         // Alter prototype as a way of making a bridge / variation
 
         // Finale
-        //song.getArrangement().addEntry(prototypeSection, 1);
+        //song.getArrangement().addEntry(prototypePattern, 1);
 
         return song;
     }
 
-    private Section createSongSection(final String name, final Song song) {
-        final Section section = song.createSection(name, RND.nextBoolean() ? 4 : 8);
-        final ChordProgression chordProgression = improviseChordProgression(section.context(),
-                section.measures());
-        section.context().chordProgression(chordProgression);
+    private Pattern createSongPattern(final String name, final Song song) {
+        final Pattern pattern = song.createPattern(name, RND.nextBoolean() ? 4 : 8);
+        final ChordProgression chordProgression = improviseChordProgression(pattern.context(),
+                pattern.measures());
+        pattern.context().chordProgression(chordProgression);
 
-        createBeat(section);
-        createEPianoChords(section);
-        createLeadMelody(section);
+        createBeat(pattern);
+        createEPianoChords(pattern);
+        createLeadMelody(pattern);
 
-        return section;
+        return pattern;
     }
 
-    private void createBeat(final Section section) {
+    private void createBeat(final Pattern pattern) {
         final Map<String, Object> args = new HashMap<>();
         args.put("variant", RANDOM);
-        section.addPart(DRUMS, Call.of("hipHopBeat", args));
+        pattern.addPart(DRUMS, Call.of("hipHopBeat", args));
     }
 
-    private void createEPianoChords(final Section section) {
+    private void createEPianoChords(final Pattern pattern) {
         final int BASE_OCTAVE = random(asList(2, 3));
 
         final boolean arpeggiate = RND.nextBoolean();
         final Direction[] directions = directionsSequence();
         int octave = BASE_OCTAVE;
         final StringBuilder progression = new StringBuilder();
-        final Map<Length, ChordProgression.ChordEvent> events = section.context().chordProgression().events();
+        final Map<Length, ChordProgression.ChordEvent> events = pattern.context().chordProgression().events();
         for(int index = 0; index < events.size(); index++) {
             if (index > 0) progression.append("|");
 
@@ -114,14 +114,14 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
             arpArgs.put("pattern", "1q2q3q3q");
             call = call.compose("arp", arpArgs);
         }
-        section.addPart(E_PIANO, call);
+        pattern.addPart(E_PIANO, call);
     }
 
-    private void createLeadMelody(final Section section) {
+    private void createLeadMelody(final Pattern pattern) {
         final StringBuilder progression = new StringBuilder();
 
         boolean first = true;
-        for (ChordProgression.ChordEvent c : section.context().chordProgression().events().values()) {
+        for (ChordProgression.ChordEvent c : pattern.context().chordProgression().events().values()) {
             if (!first) progression.append("|");
             progression.append(c.notation());
             progression.append(" [4]");
@@ -138,7 +138,7 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
         arpArgs.put("octavesUp", random(asList(0, 1, 2)));
         arpArgs.put("octavesDown", random(asList(0, 1, 2)));
         call = call.compose("arp", arpArgs);
-        section.addPart(MELODY, call);
+        pattern.addPart(MELODY, call);
     }
 
     private static int tempo() {

@@ -3,7 +3,7 @@
   "tempo": 140,
   "key": "C",
   "timeSignature": "4/4",
-  "sections": [
+  "patterns": [
     {
       "name": "A",
       "measures": 2,
@@ -41,11 +41,11 @@
   ],
   "arrangement": [
     {
-      "section": "A",
+      "pattern": "A",
       "repetitions": 1
     },
     {
-      "section": "B",
+      "pattern": "B",
       "repetitions": 2
     }
   ]
