@@ -21,6 +21,7 @@ public class TimeSignature {
         if ("3/4".equals(timeSignature)) return TS34;
         if ("4/4".equals(timeSignature)) return TS44;
         if ("6/8".equals(timeSignature)) return TS68;
+        if ("7/8".equals(timeSignature)) return TS78;
         if ("8/8".equals(timeSignature)) return TS88;
         if ("12/8".equals(timeSignature)) return TS128;
 
@@ -72,8 +73,23 @@ public class TimeSignature {
     public static final TimeSignature TS44 = of(4, Value.QUARTER);
     /** 6/8 */
     public static final TimeSignature TS68 = of(6, Value.EIGHTH);
+    /** 7/8 */
+    public static final TimeSignature TS78 = of(7, Value.EIGHTH);
     /** 8/8 */
     public static final TimeSignature TS88 = of(8, Value.EIGHTH);
     /** 12/8 */
     public static final TimeSignature TS128 = of(12, Value.EIGHTH);
+
+    private static final TimeSignature[] COMMON_TIME_SIGNATURES = new TimeSignature[] {
+            TS34,
+            TS44,
+            TS68,
+            TS78,
+            TS88,
+            TS128
+    };
+
+    public static TimeSignature[] commonTimeSignatures() {
+        return COMMON_TIME_SIGNATURES;
+    }
 }

@@ -85,4 +85,10 @@ public enum Key {
                 return key;
         throw new IllegalArgumentException("Invalid Key label: " + label);
     }
+
+
+    @Override
+    public String toString() {
+        return label;
+    }
 }
