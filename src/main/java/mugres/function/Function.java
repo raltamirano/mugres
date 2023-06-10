@@ -113,6 +113,11 @@ public abstract class Function<T> {
         return execute(context, arguments);
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
     protected abstract T doExecute(final Context context, final Map<String, Object> arguments);
 
     protected Length lengthFromNumberOfMeasures(final Context context, final Map<String, Object> arguments) {
