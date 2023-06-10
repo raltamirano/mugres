@@ -12,7 +12,7 @@ public class Parameter {
     private final Object defaultValue;
     private final boolean multiple;
 
-    public Parameter(final String name, final String documentation, final DataType dataType) {
+    private Parameter(final String name, final String documentation, final DataType dataType) {
         this(name, documentation, dataType, false, null, false);
     }
 

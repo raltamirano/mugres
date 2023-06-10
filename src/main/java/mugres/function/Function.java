@@ -207,9 +207,9 @@ public abstract class Function<T> {
     }
 
     /** Mandatory length parameter some functions must have */
-    public static final Parameter LENGTH_PARAMETER = new Parameter("len", "Length in measures",
+    public static final Parameter LENGTH_PARAMETER = Parameter.of("len", "Length in measures",
             DataType.INTEGER);
-    public static final Parameter COMPOSED_CALL_RESULT_PARAMETER = new Parameter("composedCallResult", "Result of composed Call",
+    public static final Parameter COMPOSED_CALL_RESULT_PARAMETER = Parameter.of("composedCallResult", "Result of composed Call",
             DataType.UNKNOWN);
 
     private static final Map<String, Function> REGISTRY = new HashMap<>();
