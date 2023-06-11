@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import static mugres.utils.ObjectMapping.mapToPojo;
+
 /** MUGRES internal representation of a song. */
 public class Song {
     private String title;
@@ -89,6 +91,14 @@ public class Song {
 
     public Map<String, Object> metadata() {
         return metadata;
+    }
+
+    public <X> X metadataAs(final Class<X> clazz) {
+        return mapToPojo(metadata, clazz);
+    }
+
+    public <X> X metadataAs(final String key, final Class<X> clazz) {
+        return mapToPojo((Map<String, Object>) metadata.get(key), clazz);
     }
 
     public Pattern createPattern(final String patternName, final int measures) {
