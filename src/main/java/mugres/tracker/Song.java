@@ -10,8 +10,10 @@ import mugres.tracker.performance.converters.ToMidiSequenceConverter;
 
 import javax.sound.midi.Sequence;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -19,17 +21,23 @@ import java.util.Set;
 public class Song {
     private String title;
     private final Context context;
+    private final Map<String, Object> metadata;
     private final Set<Pattern> patterns = new HashSet<>();
     private final Set<Party> parties = new HashSet<>();
     private final Arrangement arrangement = new Arrangement();
 
-    private Song(final String title, final Context context) {
+    private Song(final String title, final Context context, final Map<String, Object> metadata) {
         this.title = title;
         this.context = context;
+        this.metadata = metadata != null ? new HashMap<>(metadata) : new HashMap<>();
     }
 
     public static Song of(final String title, final Context context) {
-        return new Song(title, context);
+        return new Song(title, context, null);
+    }
+
+    public static Song of(final String title, final Context context, final Map<String, Object> metadata) {
+        return new Song(title, context, metadata);
     }
 
     public static Song of(final Call<List<Event>> call) {
@@ -60,7 +68,7 @@ public class Song {
     public static Song of(final Context functionCallsContext,
                           final Party functionCallsParty,
                           final Call<List<Event>> call) {
-        final Song functionCallSong = new Song("Untitled", functionCallsContext);
+        final Song functionCallSong = new Song("Untitled", functionCallsContext, null);
         final Pattern pattern = functionCallSong.createPattern("A", call.getLengthInMeasures());
         pattern.addPart(functionCallsParty, call);
         functionCallSong.arrangement.append(pattern, 1);
@@ -77,6 +85,10 @@ public class Song {
 
     public Context context() {
         return context;
+    }
+
+    public Map<String, Object> metadata() {
+        return metadata;
     }
 
     public Pattern createPattern(final String patternName, final int measures) {

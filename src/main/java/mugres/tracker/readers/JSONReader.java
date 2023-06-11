@@ -29,7 +29,8 @@ public class JSONReader implements Reader {
         // Song
         final String title = songData.getString("title");
         final Context songContext = createSongContext(songData);
-        final Song song = Song.of(title, songContext);
+        final JSONObject metadataObject = songData.getJSONObject("metadata");
+        final Song song = Song.of(title, songContext, metadataObject != null ? metadataObject.toMap() : null);
 
         // Patterns
         for(Object patternDataObject : songData.getJSONArray("patterns")) {
