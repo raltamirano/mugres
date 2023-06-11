@@ -163,6 +163,11 @@ public enum Instrument {
                 id;
     }
 
+    @Override
+    public String toString() {
+        return label;
+    }
+
     public static Instrument of(final int id) {
         for(Instrument instrument : values())
             if (instrument.id == id)
