@@ -15,6 +15,13 @@ public class Arrangement {
         return Collections.unmodifiableList(entries);
     }
 
+    @Override
+    public String toString() {
+        return "Arrangement{" +
+                "entries=" + entries +
+                '}';
+    }
+
     public static class Entry {
         private Pattern pattern;
         private int repetitions;

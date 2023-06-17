@@ -82,5 +82,13 @@ public interface Context {
 
             return false;
         }
+
+        @Override
+        public String toString() {
+            return "ComposableContext{" +
+                    "data=" + data +
+                    ", parents=" + parents +
+                    '}';
+        }
     }
 }

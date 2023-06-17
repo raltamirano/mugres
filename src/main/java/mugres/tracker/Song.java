@@ -162,6 +162,19 @@ public class Song {
     }
 
     @Override
+    public String toString() {
+        return "Song" +
+                "\n{" +
+                "\n\ttitle='" + title + '\'' +
+                ",\n\tcontext=" + context +
+                ",\n\tmetadata=" + metadata +
+                ",\n\tpatterns=" + patterns +
+                ",\n\tparties=" + parties +
+                ",\n\tarrangement=" + arrangement +
+                "\n}";
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
