@@ -1,32 +1,70 @@
 package mugres.common;
 
+import mugres.common.euclides.EuclideanPattern;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import static mugres.utils.Reflections.getMethodFor;
+import static mugres.utils.Reflections.setMethodFor;
+
 public enum DataType {
     /** {@link Length} */
-    LENGTH,
+    LENGTH(Length.class),
     /** {@link Value} */
-    VALUE,
+    VALUE(Value.class),
     /** {@link Note} */
-    NOTE,
+    NOTE(Note.class),
     /** {@link Pitch} */
-    PITCH,
+    PITCH(Pitch.class),
     /** {@link Scale} */
-    SCALE,
+    SCALE(Scale.class),
     /** {@link Key} */
-    KEY,
+    KEY(Key.class),
     /** {@link TimeSignature} */
-    TIME_SIGNATURE,
+    TIME_SIGNATURE(TimeSignature.class),
     /** Plain text */
-    TEXT,
+    TEXT(String.class),
     /** Integer numbers */
-    INTEGER,
+    INTEGER(Integer.class),
     /** A DrumKit piece*/
-    DRUM_KIT,
+    DRUM_KIT(DrumKit.class),
     /** Variants of something */
-    VARIANT,
+    VARIANT(Variant.class),
     /** True/False values */
-    BOOLEAN,
+    BOOLEAN(Boolean.class),
     /** Euclidean pattern */
-    EUCLIDEAN_PATTERN,
+    EUCLIDEAN_PATTERN(EuclideanPattern.class),
     /** Unknown */
-    UNKNOWN
+    UNKNOWN(Object.class);
+
+    private final Class<?> baseType;
+
+    DataType(final Class<?> baseType) {
+        this.baseType = baseType;
+    }
+
+    public Class<?> baseType() {
+        return baseType;
+    }
+
+    public void set(final Object target, final String propertyName, final Object value) {
+        try {
+            setMethodFor(target.getClass(), propertyName, baseType).invoke(target, value);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Object get(final Object target, final String propertyName) {
+        try {
+            return getMethodFor(target.getClass(), propertyName).invoke(target);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String capitalizeFirstLetter(final String input) {
+        return Character.toUpperCase(input.charAt(0)) + input.substring(1);
+    }
 }

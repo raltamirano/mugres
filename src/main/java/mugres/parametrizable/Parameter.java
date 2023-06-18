@@ -2,6 +2,9 @@ package mugres.parametrizable;
 
 import mugres.common.DataType;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
 public class Parameter {
@@ -11,33 +14,51 @@ public class Parameter {
     private final boolean optional;
     private final Object defaultValue;
     private final boolean multiple;
-
-    private Parameter(final String name, final String documentation, final DataType dataType) {
-        this(name, documentation, dataType, false, null, false);
-    }
+    private final Object min;
+    private final Object max;
+    private final Collection<Object> domain;
 
     private Parameter(final String name, final String documentation, final DataType dataType,
-                      final boolean optional, final Object defaultValue, final boolean multiple) {
+                      final boolean optional, final Object defaultValue, final boolean multiple,
+                      final Object min, final Object max, final Collection<Object> domain) {
         this.name = name;
         this.documentation = documentation;
         this.dataType = dataType;
         this.optional = optional;
         this.defaultValue = defaultValue;
         this.multiple = multiple;
+        this.min = min;
+        this.max = max;
+        this.domain = domain != null ? new ArrayList<>(domain) : Collections.emptyList();
     }
 
     public static Parameter of(final String name, final String documentation, final DataType dataType) {
-        return new Parameter(name, documentation, dataType);
+        return new Parameter(name, documentation, dataType, false, null, false,
+                null, null, null);
     }
 
     public static Parameter of(final String name, final String documentation, final DataType dataType,
                                boolean optional, final Object defaultValue) {
-        return new Parameter(name, documentation, dataType, optional, defaultValue, false);
+        return new Parameter(name, documentation, dataType, optional, defaultValue, false,
+                null, null, null);
+    }
+
+    public static Parameter of(final String name, final String documentation, final DataType dataType,
+                               boolean optional, final Object defaultValue, final Object min, final Object max) {
+        return new Parameter(name, documentation, dataType, optional, defaultValue, false,
+                min, max, null);
+    }
+
+    public static Parameter of(final String name, final String documentation, final DataType dataType,
+                               boolean optional, final Object defaultValue, final Collection<Object> domain) {
+        return new Parameter(name, documentation, dataType, optional, defaultValue, false,
+                null, null, domain);
     }
 
     public static Parameter of(final String name, final String documentation, final DataType dataType,
                                final boolean optional, final Object defaultValue, final boolean multiple) {
-        return new Parameter(name, documentation, dataType, optional, defaultValue, multiple);
+        return new Parameter(name, documentation, dataType, optional, defaultValue, multiple,
+                null, null, null);
     }
 
     public String name() {
@@ -62,6 +83,18 @@ public class Parameter {
 
     public boolean isMultiple() {
         return multiple;
+    }
+
+    public Object min() {
+        return min;
+    }
+
+    public Object max() {
+        return max;
+    }
+
+    public Collection<Object> domain() {
+        return domain;
     }
 
     @Override

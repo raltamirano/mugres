@@ -2,8 +2,14 @@ package mugres.tracker;
 
 import mugres.MUGRES;
 import mugres.common.Context;
+import mugres.common.DataType;
+import mugres.common.Key;
 import mugres.common.Party;
+import mugres.common.TimeSignature;
 import mugres.function.Call;
+import mugres.parametrizable.Parameter;
+import mugres.parametrizable.Parametrizable;
+import mugres.parametrizable.ParametrizableSupport;
 import mugres.tracker.performance.Performance;
 import mugres.tracker.performance.Performer;
 import mugres.tracker.performance.converters.ToMidiSequenceConverter;
@@ -20,18 +26,39 @@ import java.util.Set;
 import static mugres.utils.ObjectMapping.mapToPojo;
 
 /** MUGRES internal representation of a song. */
-public class Song {
+public class Song implements Parametrizable {
+    public static final Object MIN_TEMPO = 1;
+    public static final Object MAX_TEMPO = 10000;
+
     private String title;
     private final Context context;
     private final Map<String, Object> metadata;
     private final Set<Pattern> patterns = new HashSet<>();
     private final Set<Party> parties = new HashSet<>();
     private final Arrangement arrangement = new Arrangement();
+    private final ParametrizableSupport parametrizableSupport;
+
+    private static final Set<Parameter> PARAMETERS;
+
+    static {
+        PARAMETERS = new HashSet<>();
+
+        PARAMETERS.add(Parameter.of("title", "Title", DataType.TEXT, false,
+                "Untitled"));
+        PARAMETERS.add(Parameter.of("tempo", "BPM", DataType.INTEGER, false,
+                120, MIN_TEMPO, MAX_TEMPO));
+        PARAMETERS.add(Parameter.of("key", "Key", DataType.KEY, false,
+                Key.C));
+        PARAMETERS.add(Parameter.of("timeSignature", "Time Sig.", DataType.TIME_SIGNATURE, false,
+                TimeSignature.TS44));
+    }
 
     private Song(final String title, final Context context, final Map<String, Object> metadata) {
         this.title = title;
         this.context = context;
         this.metadata = metadata != null ? new HashMap<>(metadata) : new HashMap<>();
+
+        this.parametrizableSupport = ParametrizableSupport.of(PARAMETERS, this);
     }
 
     public static Song of(final String title, final Context context) {
@@ -83,6 +110,30 @@ public class Song {
 
     public void title(final String title) {
         this.title = title;
+    }
+
+    public int tempo() {
+        return context.tempo();
+    }
+
+    public void tempo(final int tempo) {
+        context.tempo(tempo);
+    }
+
+    public Key key() {
+        return context.key();
+    }
+
+    public void key(final Key key) {
+        context.key(key);
+    }
+
+    public TimeSignature timeSignature() {
+        return context.timeSignature();
+    }
+
+    public void timeSignature(final TimeSignature timeSignature) {
+        context.timeSignature(timeSignature);
     }
 
     public Context context() {
@@ -185,5 +236,30 @@ public class Song {
     @Override
     public int hashCode() {
         return Objects.hash(title);
+    }
+
+    @Override
+    public Set<Parameter> parameters() {
+        return parametrizableSupport.parameters();
+    }
+
+    @Override
+    public Parameter parameter(final String name) {
+        return parametrizableSupport.parameter(name);
+    }
+
+    @Override
+    public void parameterValue(final String name, Object value) {
+        parametrizableSupport.parameterValue(name, value);
+    }
+
+    @Override
+    public Object parameterValue(final String name) {
+        return parametrizableSupport.parameterValue(name);
+    }
+
+    @Override
+    public Map<String, Object> parameterValues() {
+        return parametrizableSupport.parameterValues();
     }
 }
