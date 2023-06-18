@@ -2,22 +2,54 @@ package mugres.tracker;
 
 import mugres.common.Context;
 import mugres.common.Context.ComposableContext;
+import mugres.common.DataType;
+import mugres.common.Key;
 import mugres.common.Length;
 import mugres.common.Party;
+import mugres.common.TimeSignature;
 import mugres.function.Call;
 import mugres.function.Function;
+import mugres.parametrizable.Parameter;
+import mugres.parametrizable.Parametrizable;
+import mugres.parametrizable.ParametrizableSupport;
 
 import java.util.*;
 
 import static mugres.common.Context.PATTERN_LENGTH;
 
-public class Pattern {
+public class Pattern implements Parametrizable {
+    public static final int MIN_MEASURES = 1;
+    public static final int MAX_MEASURES = 10000;
+    public static final int MIN_BEAT_SUBDIVISION = 0;
+    public static final int MAX_BEAT_SUBDIVISION = 128;
+
     private String name;
-    private final int measures;
+    private int measures;
     private final Song song;
     private final Context context;
     private boolean regenerate = false;
+    private int beatSubdivision = 0;
     private final Map<Party, List<Call<List<Event>>>> matrix = new HashMap<>();
+    private final ParametrizableSupport parametrizableSupport;
+
+    private static final Set<Parameter> PARAMETERS;
+
+    static {
+        PARAMETERS = new HashSet<>();
+
+        PARAMETERS.add(Parameter.of("measures", "Measures", DataType.INTEGER, false,
+                8, MIN_MEASURES, MAX_MEASURES));
+        PARAMETERS.add(Parameter.of("tempo", "BPM", DataType.INTEGER, false,
+                120, Song.MIN_TEMPO, Song.MAX_TEMPO));
+        PARAMETERS.add(Parameter.of("key", "Key", DataType.KEY, false,
+                Key.C));
+        PARAMETERS.add(Parameter.of("timeSignature", "Time Signature", DataType.TIME_SIGNATURE, false,
+                TimeSignature.TS44));
+        PARAMETERS.add(Parameter.of("regenerate", "Tells whether this pattern should be regenerated every time it is referenced in the Arrangement",
+                DataType.BOOLEAN, true, false));
+        PARAMETERS.add(Parameter.of("beatSubdivision", "Beat subdivision", DataType.INTEGER, true,
+                0, MIN_BEAT_SUBDIVISION, MAX_BEAT_SUBDIVISION));
+    }
 
     public Pattern(final Song song, final String name, final int measures) {
         this.song = song;
@@ -25,13 +57,15 @@ public class Pattern {
         this.measures = measures;
         this.context = ComposableContext.of(song.context());
         this.context.put(PATTERN_LENGTH, measures);
+
+        this.parametrizableSupport = ParametrizableSupport.of(PARAMETERS, this);
     }
 
     public String name() {
         return name;
     }
 
-    public void name(String name) {
+    public void name(final String name) {
         this.name = name;
     }
 
@@ -43,6 +77,34 @@ public class Pattern {
         return measures;
     }
 
+    public int measures(final int measures) {
+        return this.measures = measures;
+    }
+
+    public int tempo() {
+        return context.tempo();
+    }
+
+    public void tempo(final int tempo) {
+        context.tempo(tempo);
+    }
+
+    public Key key() {
+        return context.key();
+    }
+
+    public void key(final Key key) {
+        context.key(key);
+    }
+
+    public TimeSignature timeSignature() {
+        return context.timeSignature();
+    }
+
+    public void timeSignature(final TimeSignature timeSignature) {
+        context.timeSignature(timeSignature);
+    }
+
     public Context context() {
         return context;
     }
@@ -51,8 +113,16 @@ public class Pattern {
         return regenerate;
     }
 
-    public void setRegenerate(boolean regenerate) {
+    public void setRegenerate(final boolean regenerate) {
         this.regenerate = regenerate;
+    }
+
+    public int beatSubdivision() {
+        return beatSubdivision;
+    }
+
+    public void beatSubdivision(final int beatSubdivision) {
+        this.beatSubdivision = beatSubdivision;
     }
 
     public Map<Party, List<Call<List<Event>>>> matrix() {
@@ -79,7 +149,7 @@ public class Pattern {
     }
 
     public boolean hasPartsFor(final Party party) {
-        return matrix.containsKey(party);
+        return matrix.containsKey(party) && !matrix.get(party).isEmpty();
     }
 
     public Length length() {
@@ -102,6 +172,41 @@ public class Pattern {
 
     @Override
     public String toString() {
-        return name;
+        return "Pattern" +
+                "\n{" +
+                "\n\tname='" + name + '\'' +
+                ",\n\tmeasures=" + measures +
+                ",\n\tsong=" + song.title() +
+                ",\n\tcontext=" + context +
+                ",\n\tregenerate=" + regenerate +
+                ",\n\tbeatSubdivision=" + beatSubdivision +
+                ",\n\tmatrix=" + matrix +
+                ",\n\tparametrizableSupport=" + parametrizableSupport +
+                "\n}";
+    }
+
+    @Override
+    public Set<Parameter> parameters() {
+        return parametrizableSupport.parameters();
+    }
+
+    @Override
+    public Parameter parameter(final String name) {
+        return parametrizableSupport.parameter(name);
+    }
+
+    @Override
+    public void parameterValue(final String name, Object value) {
+        parametrizableSupport.parameterValue(name, value);
+    }
+
+    @Override
+    public Object parameterValue(final String name) {
+        return parametrizableSupport.parameterValue(name);
+    }
+
+    @Override
+    public Map<String, Object> parameterValues() {
+        return parametrizableSupport.parameterValues();
     }
 }

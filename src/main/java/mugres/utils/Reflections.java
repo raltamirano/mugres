@@ -26,6 +26,8 @@ public class Reflections {
 
         try { return clazz.getMethod("get" + capitalizeFirstLetter(propertyName)); } catch (NoSuchMethodException ignore) {}
 
+        try { return clazz.getMethod("is" + capitalizeFirstLetter(propertyName)); } catch (NoSuchMethodException ignore) {}
+
         throw new IllegalArgumentException("Couldn't find getter for: " + clazz.getSimpleName() + "->" + propertyName);
     }
 
@@ -39,10 +41,10 @@ public class Reflections {
 
         final String setterName = "set" + capitalizeFirstLetter(propertyName);
 
-        try { clazz.getMethod(setterName, type); } catch (NoSuchMethodException ignore) {}
+        try { return clazz.getMethod(setterName, type); } catch (NoSuchMethodException ignore) {}
 
         if (primitiveType != null)
-            try { clazz.getMethod(setterName, primitiveType); } catch (NoSuchMethodException ignore) {}
+            try { return clazz.getMethod(setterName, primitiveType); } catch (NoSuchMethodException ignore) {}
 
         throw new IllegalArgumentException("Couldn't find setter for: " + clazz.getSimpleName() + "->" + propertyName);
     }

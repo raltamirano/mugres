@@ -49,7 +49,7 @@ public class Song implements Parametrizable {
                 120, MIN_TEMPO, MAX_TEMPO));
         PARAMETERS.add(Parameter.of("key", "Key", DataType.KEY, false,
                 Key.C));
-        PARAMETERS.add(Parameter.of("timeSignature", "Time Sig.", DataType.TIME_SIGNATURE, false,
+        PARAMETERS.add(Parameter.of("timeSignature", "Time Signature", DataType.TIME_SIGNATURE, false,
                 TimeSignature.TS44));
     }
 

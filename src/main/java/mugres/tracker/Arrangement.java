@@ -49,7 +49,7 @@ public class Arrangement {
 
         @Override
         public String toString() {
-            return String.format("%s * %d", pattern, repetitions);
+            return String.format("%s * %d", pattern.name(), repetitions);
         }
     }
 }
