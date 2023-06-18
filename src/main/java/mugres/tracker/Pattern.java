@@ -24,7 +24,6 @@ public class Pattern implements Parametrizable {
     public static final int MAX_BEAT_SUBDIVISION = 128;
 
     private String name;
-    private int measures;
     private final Song song;
     private final Context context;
     private boolean regenerate = false;
@@ -54,7 +53,6 @@ public class Pattern implements Parametrizable {
     public Pattern(final Song song, final String name, final int measures) {
         this.song = song;
         this.name = name;
-        this.measures = measures;
         this.context = ComposableContext.of(song.context());
         this.context.put(PATTERN_LENGTH, measures);
 
@@ -74,11 +72,11 @@ public class Pattern implements Parametrizable {
     }
 
     public int measures() {
-        return measures;
+        return context.get(PATTERN_LENGTH);
     }
 
-    public int measures(final int measures) {
-        return this.measures = measures;
+    public void measures(final int measures) {
+        context.put(PATTERN_LENGTH, measures);
     }
 
     public int tempo() {
@@ -153,7 +151,7 @@ public class Pattern implements Parametrizable {
     }
 
     public Length length() {
-        return context.timeSignature().measuresLength(measures);
+        return context.timeSignature().measuresLength(measures());
     }
 
     @Override
@@ -175,7 +173,7 @@ public class Pattern implements Parametrizable {
         return "Pattern" +
                 "\n{" +
                 "\n\tname='" + name + '\'' +
-                ",\n\tmeasures=" + measures +
+                ",\n\tmeasures=" + measures() +
                 ",\n\tsong=" + song.title() +
                 ",\n\tcontext=" + context +
                 ",\n\tregenerate=" + regenerate +
