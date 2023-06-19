@@ -46,11 +46,11 @@ public class Song implements Parametrizable {
 
         PARAMETERS.add(Parameter.of("title", "Title", 1, "Title",
                 DataType.TEXT, false, "Untitled"));
-        PARAMETERS.add(Parameter.of("tempo", "BPM", 2, "BPM",
+        PARAMETERS.add(Parameter.of(Context.TEMPO, "BPM", 2, "BPM",
                 DataType.INTEGER, false,120, MIN_TEMPO, MAX_TEMPO));
-        PARAMETERS.add(Parameter.of("key", "Key", 3, "Key",
+        PARAMETERS.add(Parameter.of(Context.KEY, "Key", 3, "Key",
                 DataType.KEY, false, Key.C));
-        PARAMETERS.add(Parameter.of("timeSignature", "Time Signature", 4,
+        PARAMETERS.add(Parameter.of(Context.TIME_SIGNATURE, "Time Signature", 4,
                 "Time Signature", DataType.TIME_SIGNATURE, false, TimeSignature.TS44));
     }
 
@@ -60,6 +60,8 @@ public class Song implements Parametrizable {
         this.metadata = metadata != null ? new HashMap<>(metadata) : new HashMap<>();
 
         this.parametrizableSupport = ParametrizableSupport.forTarget(PARAMETERS, this);
+        this.parametrizableSupport.setCustomHasParameterValueLogic(p ->
+                Context.MAIN_PROPERTIES.contains(p) ? context.overrides(p) : null);
     }
 
     public static Song of(final String title, final Context context) {
@@ -261,10 +263,12 @@ public class Song implements Parametrizable {
 
     @Override
     public boolean hasParameterValue(final String name) {
-        if (Context.MAIN_PROPERTIES.contains(name))
-            return context.overrides(name);
-        else
-            return parametrizableSupport.hasParameterValue(name);
+        return parametrizableSupport.hasParameterValue(name);
+    }
+
+    @Override
+    public boolean hasParentParameterValueSource() {
+        return parametrizableSupport.hasParentParameterValueSource();
     }
 
     @Override

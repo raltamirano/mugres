@@ -36,6 +36,11 @@ public interface Parametrizable {
     boolean hasParameterValue(final String name);
 
     /**
+     * Tells whether this Parametrizable has a Parent Parameter Value Source or not
+     */
+    boolean hasParentParameterValueSource();
+
+    /**
      * Gets all parameter values
      */
     Map<String, Object> parameterValues();

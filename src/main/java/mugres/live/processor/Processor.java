@@ -42,6 +42,8 @@ public abstract class Processor implements Parametrizable, Controllable {
         this.output = output;
         this.signalers = signalers;
         this.parametrizableSupport = ParametrizableSupport.of(parameters);
+        this.parametrizableSupport.setCustomHasParameterValueLogic(p ->
+                Context.MAIN_PROPERTIES.contains(p) ? context.overrides(p) : null);
     }
 
     public Context context() {
@@ -170,10 +172,12 @@ public abstract class Processor implements Parametrizable, Controllable {
 
     @Override
     public boolean hasParameterValue(final String name) {
-        if (Context.MAIN_PROPERTIES.contains(name))
-            return context.overrides(name);
-        else
-            return parametrizableSupport.hasParameterValue(name);
+        return parametrizableSupport.hasParameterValue(name);
+    }
+
+    @Override
+    public boolean hasParentParameterValueSource() {
+        return parametrizableSupport.hasParentParameterValueSource();
     }
 
     @Override

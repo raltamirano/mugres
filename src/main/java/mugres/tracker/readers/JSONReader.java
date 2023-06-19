@@ -109,11 +109,11 @@ public class JSONReader implements Reader {
     }
 
     private void loadContext(final JSONObject data, final Context context) {
-        if (data.has("tempo"))
-            context.tempo(data.getInt("tempo"));
-        if (data.has("key"))
-            context.key(Key.of(data.getString("key")));
-        if (data.has("timeSignature"))
-            context.timeSignature(TimeSignature.of(data.getString("timeSignature")));
+        if (data.has(Context.TEMPO))
+            context.tempo(data.getInt(Context.TEMPO));
+        if (data.has(Context.KEY))
+            context.key(Key.of(data.getString(Context.KEY)));
+        if (data.has(Context.TIME_SIGNATURE))
+            context.timeSignature(TimeSignature.of(data.getString(Context.TIME_SIGNATURE)));
     }
 }

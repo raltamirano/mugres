@@ -28,8 +28,8 @@ public abstract class Filter {
 
     protected int getTempo(final Context context) {
         try {
-            final Integer tempo = arguments.containsKey("tempo") ?
-                    Integer.valueOf(arguments.get("tempo").toString()) :
+            final Integer tempo = arguments.containsKey(Context.TEMPO) ?
+                    Integer.valueOf(arguments.get(Context.TEMPO).toString()) :
                     context.tempo();
 
             return tempo > 0 ?
@@ -42,8 +42,8 @@ public abstract class Filter {
 
     protected Key getKey(final Context context) {
         try {
-            return arguments.containsKey("key") ?
-                    Key.of(arguments.get("key").toString()) :
+            return arguments.containsKey(Context.KEY) ?
+                    Key.of(arguments.get(Context.KEY).toString()) :
                     context.key();
         } catch (final Throwable ignore) {
             return context.key();
@@ -52,8 +52,8 @@ public abstract class Filter {
 
     protected TimeSignature getTimeSignature(final Context context) {
         try {
-            return arguments.containsKey("timeSignature") ?
-                    TimeSignature.of(arguments.get("timeSignature").toString()) :
+            return arguments.containsKey(Context.TIME_SIGNATURE) ?
+                    TimeSignature.of(arguments.get(Context.TIME_SIGNATURE).toString()) :
                     context.timeSignature();
         } catch (final Throwable ignore) {
             return context.timeSignature();

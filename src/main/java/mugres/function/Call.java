@@ -323,6 +323,11 @@ public class Call<T> implements Parametrizable {
     }
 
     @Override
+    public boolean hasParentParameterValueSource() {
+        return parametrizableSupport.hasParentParameterValueSource();
+    }
+
+    @Override
     public Map<String, Object> parameterValues() {
         return parametrizableSupport.parameterValues();
     }

@@ -2,13 +2,13 @@ package mugres.parametrizable;
 
 import mugres.common.DataType;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import static mugres.utils.Reflections.getMethodFor;
 
@@ -18,6 +18,7 @@ public final class ParametrizableSupport implements Parametrizable {
     private final Object target;
     private final Parametrizable parentParameterValuesSource;
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private Function<String, Boolean> customHasParameterValueLogic;
 
     private ParametrizableSupport(final Set<Parameter> parameters,
                                   final Map<String, Object> values,
@@ -121,7 +122,7 @@ public final class ParametrizableSupport implements Parametrizable {
             oldValue = values.get(name);
             values.put(name, value);
         }
-        propertyChangeSupport.firePropertyChange(name, oldValue, value);
+        propertyChangeSupport.firePropertyChange(name, oldValue, ChangedValue.of(value, false));
     }
 
     @Override
@@ -134,17 +135,25 @@ public final class ParametrizableSupport implements Parametrizable {
 
     @Override
     public boolean hasParameterValue(final String name) {
+        if (customHasParameterValueLogic != null) {
+            final Boolean result = customHasParameterValueLogic.apply(name);
+            if (result != null)
+                return result;
+        }
+
         if (target != null)
             try {
-                if (target instanceof Parametrizable)
-                    return ((Parametrizable)target).hasParameterValue(name);
-                else
-                    return getMethodFor(target.getClass(), name).invoke(target) != null;
+                return getMethodFor(target.getClass(), name).invoke(target) != null;
             } catch (final Exception ignore) {
                 return false;
             }
         else
             return values.containsKey(name);
+    }
+
+    @Override
+    public boolean hasParentParameterValueSource() {
+        return parentParameterValuesSource != null;
     }
 
     @Override
@@ -168,14 +177,42 @@ public final class ParametrizableSupport implements Parametrizable {
 
         parentParameterValuesSource.addPropertyChangeListener(e -> {
             if (!hasParameterValue(e.getPropertyName()))
-                propertyChangeSupport.firePropertyChange(new FromParentPropertyChangeEvent(this,
-                        e.getPropertyName(), e.getOldValue(), e.getNewValue()));
+                propertyChangeSupport.firePropertyChange(e.getPropertyName(), e.getOldValue(),
+                        ChangedValue.of(e.getNewValue(), true));
         });
     }
 
-    public static class FromParentPropertyChangeEvent extends PropertyChangeEvent {
-        public FromParentPropertyChangeEvent(Object source, String propertyName, Object oldValue, Object newValue) {
-            super(source, propertyName, oldValue, newValue);
+    public void setCustomHasParameterValueLogic(final Function<String, Boolean> customHasParameterValueLogic) {
+        this.customHasParameterValueLogic = customHasParameterValueLogic;
+    }
+
+    public static class ChangedValue {
+        private final Object value;
+        private final boolean fromParent;
+
+        private ChangedValue(final Object value, final boolean fromParent) {
+            this.value = value instanceof ChangedValue ? ((ChangedValue)value).value() : value;
+            this.fromParent = fromParent;
+        }
+
+        public static ChangedValue of(final Object value, final boolean fromParent) {
+            return new ChangedValue(value, fromParent);
+        }
+
+        public Object value() {
+            return value;
+        }
+
+        public boolean fromParent() {
+            return fromParent;
+        }
+
+        @Override
+        public String toString() {
+            return "ChangedValue{" +
+                    "value=" + value +
+                    ", fromParent=" + fromParent +
+                    '}';
         }
     }
 }

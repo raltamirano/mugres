@@ -39,11 +39,11 @@ public class Pattern implements Parametrizable {
 
         PARAMETERS.add(Parameter.of("measures", "Measures", 1, "Measures",
                 DataType.INTEGER, false, 8, MIN_MEASURES, MAX_MEASURES));
-        PARAMETERS.add(Parameter.of("tempo", "BPM" , 2, "BPM",
+        PARAMETERS.add(Parameter.of(Context.TEMPO, "BPM" , 2, "BPM",
                 DataType.INTEGER, false, 120, Song.MIN_TEMPO, Song.MAX_TEMPO));
-        PARAMETERS.add(Parameter.of("key", "Key", 3, "Key",
+        PARAMETERS.add(Parameter.of(Context.KEY, "Key", 3, "Key",
                 DataType.KEY, false, Key.C));
-        PARAMETERS.add(Parameter.of("timeSignature", "Time Signature", 4,
+        PARAMETERS.add(Parameter.of(Context.TIME_SIGNATURE, "Time Signature", 4,
                 "Time Signature",
                 DataType.TIME_SIGNATURE, false, TimeSignature.TS44));
         PARAMETERS.add(Parameter.of("regenerate", "Regenerate?", 5,
@@ -62,6 +62,8 @@ public class Pattern implements Parametrizable {
         this.context.put(PATTERN_LENGTH, measures);
 
         this.parametrizableSupport = ParametrizableSupport.forTarget(PARAMETERS, this, song);
+        this.parametrizableSupport.setCustomHasParameterValueLogic(p ->
+                Context.MAIN_PROPERTIES.contains(p) ? context.overrides(p) : null);
     }
 
     public String name() {
@@ -209,10 +211,12 @@ public class Pattern implements Parametrizable {
 
     @Override
     public boolean hasParameterValue(final String name) {
-        if (Context.MAIN_PROPERTIES.contains(name))
-            return context.overrides(name);
-        else
-            return parametrizableSupport.hasParameterValue(name);
+        return parametrizableSupport.hasParameterValue(name);
+    }
+
+    @Override
+    public boolean hasParentParameterValueSource() {
+        return parametrizableSupport.hasParentParameterValueSource();
     }
 
     @Override
