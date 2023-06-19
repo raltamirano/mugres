@@ -15,6 +15,7 @@ import mugres.tracker.performance.Performer;
 import mugres.tracker.performance.converters.ToMidiSequenceConverter;
 
 import javax.sound.midi.Sequence;
+import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -261,5 +262,15 @@ public class Song implements Parametrizable {
     @Override
     public Map<String, Object> parameterValues() {
         return parametrizableSupport.parameterValues();
+    }
+
+    @Override
+    public void addPropertyChangeListener(final PropertyChangeListener listener) {
+        parametrizableSupport.addPropertyChangeListener(listener);
+    }
+
+    @Override
+    public void removePropertyChangeListener(final PropertyChangeListener listener) {
+        parametrizableSupport.removePropertyChangeListener(listener);
     }
 }

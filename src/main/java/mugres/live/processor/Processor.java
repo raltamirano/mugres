@@ -10,7 +10,9 @@ import mugres.controllable.Controllable;
 import mugres.live.signaler.Signaler;
 import mugres.parametrizable.Parameter;
 import mugres.parametrizable.Parametrizable;
+import mugres.parametrizable.ParametrizableSupport;
 
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -27,8 +29,7 @@ public abstract class Processor implements Parametrizable, Controllable {
     private final Context context;
     private final List<Signaler> signalers;
     private Input.Listener inputListener;
-    private final Set<Parameter> parameters = new HashSet<>();
-    private final Map<String, Object> parameterValues = new ConcurrentHashMap<>();
+    private final ParametrizableSupport parametrizableSupport;
     private final Map<Integer, Set<String>> controlChangeMappings = new ConcurrentHashMap<>();
 
     protected Processor(final Context context,
@@ -40,8 +41,7 @@ public abstract class Processor implements Parametrizable, Controllable {
         this.input = input;
         this.output = output;
         this.signalers = signalers;
-        if (parameters != null)
-            parameters.forEach(this::addParameter);
+        this.parametrizableSupport = ParametrizableSupport.of(parameters);
     }
 
     public Context context() {
@@ -150,29 +150,37 @@ public abstract class Processor implements Parametrizable, Controllable {
 
     @Override
     public Set<Parameter> parameters() {
-        return Collections.unmodifiableSet(parameters);
+        return parametrizableSupport.parameters();
     }
 
     @Override
-    public void parameterValue(final String name, final Object value) {
-        parameterValues.put(name, value);
+    public Parameter parameter(final String name) {
+        return parametrizableSupport.parameter(name);
+    }
+
+    @Override
+    public void parameterValue(final String name, Object value) {
+        parametrizableSupport.parameterValue(name, value);
     }
 
     @Override
     public Object parameterValue(final String name) {
-        return parameterValues.get(name);
+        return parametrizableSupport.parameterValue(name);
     }
 
     @Override
     public Map<String, Object> parameterValues() {
-        return Collections.unmodifiableMap(parameterValues);
+        return parametrizableSupport.parameterValues();
     }
 
-    protected void addParameter(final Parameter parameter) {
-        if (parameters.contains(parameter.name()))
-            throw new IllegalArgumentException(String.format("Parameter '%s' already exists!", parameter.name()));
+    @Override
+    public void addPropertyChangeListener(final PropertyChangeListener listener) {
+        parametrizableSupport.addPropertyChangeListener(listener);
+    }
 
-        parameters.add(parameter);
+    @Override
+    public void removePropertyChangeListener(final PropertyChangeListener listener) {
+        parametrizableSupport.removePropertyChangeListener(listener);
     }
 
     public interface StatusListener {

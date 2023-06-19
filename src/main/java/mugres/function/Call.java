@@ -12,7 +12,9 @@ import mugres.common.Value;
 import mugres.parametrizable.Parameter;
 import mugres.common.Variant;
 import mugres.parametrizable.Parametrizable;
+import mugres.parametrizable.ParametrizableSupport;
 
+import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,16 +28,17 @@ import static mugres.function.Function.LENGTH_PARAMETER;
 /** Function call. */
 public class Call<T> implements Parametrizable {
     protected final Function<T> function;
-    protected final Map<String, Object> arguments = new HashMap<>();
+    private final ParametrizableSupport parametrizableSupport;
 
     protected Call(final Function<T> function, final Map<String, Object> arguments) {
         this.function = function;
-        this.arguments.putAll(arguments);
+        this.parametrizableSupport = ParametrizableSupport.of(function.parameters(), arguments);
     }
 
     private Call(final Function<T> function, final int lengthInMeasures) {
         this.function = function;
-        this.arguments.put(LENGTH_PARAMETER.name(), lengthInMeasures);
+        this.parametrizableSupport = ParametrizableSupport.of(function.parameters());
+        this.parametrizableSupport.parameterValue(LENGTH_PARAMETER.name(), lengthInMeasures);
     }
 
     public static <X> Call<X> of(final String functionName, final Map<String, Object> arguments) {
@@ -211,34 +214,49 @@ public class Call<T> implements Parametrizable {
 
     public Result<T> execute(final Context context) {
         try {
-            return new Result(function.execute(context, arguments));
+            return new Result(function.execute(context, parameterValues()));
         } catch (final Throwable t) {
             return new Result(t);
         }
     }
 
     public int getLengthInMeasures() {
-        return (int)arguments.get(LENGTH_PARAMETER.name());
+        return (int)parameterValue(LENGTH_PARAMETER.name());
     }
 
     @Override
     public Set<Parameter> parameters() {
-        return Collections.unmodifiableSet(function.parameters());
+        return parametrizableSupport.parameters();
     }
 
     @Override
-    public void parameterValue(final String name, final Object value) {
-        arguments.put(name, value);
+    public Parameter parameter(final String name) {
+        return parametrizableSupport.parameter(name);
+    }
+
+    @Override
+    public void parameterValue(final String name, Object value) {
+        parametrizableSupport.parameterValue(name, value);
     }
 
     @Override
     public Object parameterValue(final String name) {
-        return arguments.get(name);
+        return parametrizableSupport.parameterValue(name);
     }
 
     @Override
     public Map<String, Object> parameterValues() {
-        return Collections.unmodifiableMap(arguments);
+        return parametrizableSupport.parameterValues();
+    }
+
+    @Override
+    public void addPropertyChangeListener(final PropertyChangeListener listener) {
+        parametrizableSupport.addPropertyChangeListener(listener);
+    }
+
+    @Override
+    public void removePropertyChangeListener(final PropertyChangeListener listener) {
+        parametrizableSupport.removePropertyChangeListener(listener);
     }
 
     private static final Pattern FUNCTION_CALL = Pattern.compile("([a-z][0-9a-zA-Z_-]+[0-9a-zA-Z])\\((.*)\\)");
@@ -259,8 +277,8 @@ public class Call<T> implements Parametrizable {
         public Result<X> execute(Context context) {
             try {
                 final Result<X> wrappedResult = wrapped.execute(context);
-                arguments.put(COMPOSED_CALL_RESULT_PARAMETER.name(), wrappedResult);
-                return new Result(function.execute(context, arguments));
+                parameterValue(COMPOSED_CALL_RESULT_PARAMETER.name(), wrappedResult);
+                return new Result(function.execute(context, parameterValues()));
             } catch (final Throwable t) {
                 return new Result(t);
             }

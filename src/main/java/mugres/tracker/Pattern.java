@@ -13,6 +13,7 @@ import mugres.parametrizable.Parameter;
 import mugres.parametrizable.Parametrizable;
 import mugres.parametrizable.ParametrizableSupport;
 
+import java.beans.PropertyChangeListener;
 import java.util.*;
 
 import static mugres.common.Context.PATTERN_LENGTH;
@@ -183,7 +184,6 @@ public class Pattern implements Parametrizable {
                 ",\n\tregenerate=" + regenerate +
                 ",\n\tbeatSubdivision=" + beatSubdivision +
                 ",\n\tmatrix=" + matrix +
-                ",\n\tparametrizableSupport=" + parametrizableSupport +
                 "\n}";
     }
 
@@ -210,5 +210,15 @@ public class Pattern implements Parametrizable {
     @Override
     public Map<String, Object> parameterValues() {
         return parametrizableSupport.parameterValues();
+    }
+
+    @Override
+    public void addPropertyChangeListener(final PropertyChangeListener listener) {
+        parametrizableSupport.addPropertyChangeListener(listener);
+    }
+
+    @Override
+    public void removePropertyChangeListener(final PropertyChangeListener listener) {
+        parametrizableSupport.removePropertyChangeListener(listener);
     }
 }

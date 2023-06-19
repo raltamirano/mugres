@@ -1,7 +1,9 @@
 package mugres.parametrizable;
 
-import mugres.utils.Reflections;
+import mugres.common.DataType;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -11,6 +13,7 @@ public final class ParametrizableSupport implements Parametrizable {
     private final Set<Parameter> parameters;
     private final Map<String, Object> values;
     private final Object target;
+    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     private ParametrizableSupport(final Set<Parameter> parameters,
                                   final Map<String, Object> values) {
@@ -69,10 +72,16 @@ public final class ParametrizableSupport implements Parametrizable {
 
     @Override
     public void parameterValue(final String name, final Object value) {
-        if (target != null)
-             parameter(name).dataType().set(target, name, value);
-        else
+        final Object oldValue;
+        if (target != null) {
+            final DataType dataType = parameter(name).dataType();
+            oldValue = dataType.get(target, name);
+            dataType.set(target, name, value);
+        } else {
+            oldValue = values.get(name);
             values.put(name, value);
+        }
+        propertyChangeSupport.firePropertyChange(name, oldValue, value);
     }
 
     @Override
@@ -86,5 +95,15 @@ public final class ParametrizableSupport implements Parametrizable {
     @Override
     public Map<String, Object> parameterValues() {
         return Collections.unmodifiableMap(values);
+    }
+
+    @Override
+    public void addPropertyChangeListener(final PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    @Override
+    public void removePropertyChangeListener(final PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 }

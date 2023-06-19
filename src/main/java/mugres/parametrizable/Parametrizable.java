@@ -1,5 +1,6 @@
 package mugres.parametrizable;
 
+import java.beans.PropertyChangeListener;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,4 +34,14 @@ public interface Parametrizable {
      * Gets all parameter values
      */
     Map<String, Object> parameterValues();
+
+    /**
+     * Registers a PropertyChangeListener
+     */
+    void addPropertyChangeListener(final PropertyChangeListener listener);
+
+    /**
+     * Unregisters a PropertyChangeListener
+     */
+    void removePropertyChangeListener(final PropertyChangeListener listener);
 }
