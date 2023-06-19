@@ -2,8 +2,11 @@ package mugres.common;
 
 import mugres.common.chords.ChordProgression;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,9 +26,14 @@ public interface Context {
     void put(final String key, Object value);
     <X> X get(final String key);
     boolean has(final String key);
+    boolean overrides(final String key);
+    void undoOverride(final String key);
+
+    void addPropertyChangeListener(final PropertyChangeListener listener);
+    void removePropertyChangeListener(final PropertyChangeListener listener);
 
     static Context basicContext() {
-        final Context context = new Context.ComposableContext();
+        final Context context = Context.ComposableContext.of();
         context.put(Context.TEMPO, 120);
         context.put(Context.KEY, Key.C);
         context.put(Context.TIME_SIGNATURE, TimeSignature.TS44);
@@ -42,9 +50,13 @@ public interface Context {
     {
         private final Map<String, Object> data = new HashMap<>();
         private final Set<Context> parents = new HashSet<>();
+        private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+        private final PropertyChangeListener propertyChangeListener = createPropertyChangeListener();
 
         private ComposableContext(final Context... parents) {
-            this.parents.addAll(asList(parents));
+            final List<Context> parentContexts = asList(parents);
+            this.parents.addAll(parentContexts);
+            parentContexts.forEach(p -> p.addPropertyChangeListener(propertyChangeListener));
         }
 
         public static ComposableContext of(final Context... parents) {
@@ -52,23 +64,33 @@ public interface Context {
         }
 
         @Override
+        public void addPropertyChangeListener(final PropertyChangeListener listener) {
+            propertyChangeSupport.addPropertyChangeListener(listener);
+        }
+
+        @Override
+        public void removePropertyChangeListener(final PropertyChangeListener listener) {
+            propertyChangeSupport.removePropertyChangeListener(listener);
+        }
+
+        @Override
         public void put(final String key, final Object value) {
+            final Object oldValue = get(key);
             this.data.put(key, value);
+            propertyChangeSupport.firePropertyChange(key, oldValue, value);
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public <X> X get(final String key) {
-            Object found = data.get(key);
-            if (found == null) {
-                for(Context parent : parents) {
-                    found = parent.get(key);
-                    if (found != null)
-                        break;
-                }
-            }
+            if (data.containsKey(key))
+                return (X)data.get(key);
 
-            return (X)found;
+            for(final Context parent : parents)
+                if (parent.has(key))
+                    return parent.get(key);
+
+            return null;
         }
 
         @Override
@@ -76,11 +98,25 @@ public interface Context {
             if (data.containsKey(key))
                 return true;
 
-            for(Context parent : parents)
+            for(final Context parent : parents)
                 if (parent.has(key))
                     return true;
 
             return false;
+        }
+
+        @Override
+        public boolean overrides(final String key) {
+            return data.containsKey(key);
+        }
+
+        @Override
+        public void undoOverride(final String key) {
+            if (overrides(key)) {
+                final Object oldValue = get(key);
+                data.remove(key);
+                propertyChangeSupport.firePropertyChange(key, oldValue, get(key));
+            }
         }
 
         @Override
@@ -89,6 +125,13 @@ public interface Context {
                     "data=" + data +
                     ", parents=" + parents +
                     '}';
+        }
+
+        private PropertyChangeListener createPropertyChangeListener() {
+            return e -> {
+                if (!overrides(e.getPropertyName()))
+                    propertyChangeSupport.firePropertyChange(e.getPropertyName(), e.getOldValue(), e.getNewValue());
+            };
         }
     }
 }
