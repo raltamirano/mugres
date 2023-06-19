@@ -38,21 +38,21 @@ public class Pattern implements Parametrizable {
         PARAMETERS = new HashSet<>();
 
         PARAMETERS.add(Parameter.of("measures", "Measures", 1, "Measures",
-                DataType.INTEGER, false, 8, MIN_MEASURES, MAX_MEASURES));
+                DataType.INTEGER, false, 8, MIN_MEASURES, MAX_MEASURES, false));
         PARAMETERS.add(Parameter.of(Context.TEMPO, "BPM" , 2, "BPM",
-                DataType.INTEGER, false, 120, Song.MIN_TEMPO, Song.MAX_TEMPO));
+                DataType.INTEGER, false, 120, Song.MIN_TEMPO, Song.MAX_TEMPO, true));
         PARAMETERS.add(Parameter.of(Context.KEY, "Key", 3, "Key",
-                DataType.KEY, false, Key.C));
+                DataType.KEY, false, Key.C, false, true));
         PARAMETERS.add(Parameter.of(Context.TIME_SIGNATURE, "Time Signature", 4,
                 "Time Signature",
-                DataType.TIME_SIGNATURE, false, TimeSignature.TS44));
+                DataType.TIME_SIGNATURE, false, TimeSignature.TS44, false, true));
         PARAMETERS.add(Parameter.of("regenerate", "Regenerate?", 5,
                 "Whether this pattern should be regenerated every time it's referenced " +
                         "in the Arrangement or not",
-                DataType.BOOLEAN, true, false));
+                DataType.BOOLEAN, true, false, false, false));
         PARAMETERS.add(Parameter.of("beatSubdivision", "Beat subdivision", 6,
                 "Beat subdivision", DataType.INTEGER, true,  0, MIN_BEAT_SUBDIVISION,
-                MAX_BEAT_SUBDIVISION));
+                MAX_BEAT_SUBDIVISION, false));
     }
 
     public Pattern(final Song song, final String name, final int measures) {

@@ -22,7 +22,7 @@ public class Chords extends EventsFunction {
     public Chords() {
         super("chords", "Reproduces a predefined chord progression",
                 Parameter.of("progression", "Progression", 1,
-                        "The chord progression to play", DataType.TEXT),
+                        "The chord progression to play", DataType.TEXT, false),
                 Parameter.of("octave", "Base octave", 2, "Base octave", DataType.INTEGER,
                         true, 2),
                 Parameter.of("value", "Value", 3, "Note value for events", DataType.VALUE,

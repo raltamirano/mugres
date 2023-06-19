@@ -16,7 +16,7 @@ public class Drums extends EventsFunction {
     public Drums() {
         super("drums", "Reproduces a predefined drum pattern",
                 Parameter.of("pattern", "Pattern", 1, "The pattern to play",
-                        DataType.TEXT));
+                        DataType.TEXT, false));
     }
 
     @Override

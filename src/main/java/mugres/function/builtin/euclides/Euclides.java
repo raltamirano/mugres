@@ -25,9 +25,9 @@ public class Euclides extends EventsFunction {
     public Euclides() {
         super("euclides", "Plays an Euclidean polyrhythm",
                 Parameter.of(PATTERNS, "Patterns", 1, "Patterns",
-                        DataType.EUCLIDEAN_PATTERN, false, emptyList(), true),
+                        DataType.EUCLIDEAN_PATTERN, false, emptyList(), true, false),
                 Parameter.of(PITCHES, "Pitches", 2, "Pitches for every pattern (same order)",
-                        DataType.PITCH, true, null, true),
+                        DataType.PITCH, true, null, true, false),
                 Parameter.of(CYCLE, "Cycle length", 3, "Cycle length (defaults to one measure)",
                         DataType.LENGTH, true, null),
                 Parameter.of(STARTING_OCTAVE, "Starting octave", 4, "Starting octave",

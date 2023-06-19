@@ -47,7 +47,7 @@ public class Song implements Parametrizable {
         PARAMETERS.add(Parameter.of("title", "Title", 1, "Title",
                 DataType.TEXT, false, "Untitled"));
         PARAMETERS.add(Parameter.of(Context.TEMPO, "BPM", 2, "BPM",
-                DataType.INTEGER, false,120, MIN_TEMPO, MAX_TEMPO));
+                DataType.INTEGER, false,120, MIN_TEMPO, MAX_TEMPO, false));
         PARAMETERS.add(Parameter.of(Context.KEY, "Key", 3, "Key",
                 DataType.KEY, false, Key.C));
         PARAMETERS.add(Parameter.of(Context.TIME_SIGNATURE, "Time Signature", 4,

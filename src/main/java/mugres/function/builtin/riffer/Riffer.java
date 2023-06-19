@@ -18,7 +18,7 @@ import static mugres.common.Value.QUARTER;
 public class Riffer extends EventsFunction {
     public Riffer() {
         super("riffer", "Reproduces a predefined riff",
-                Parameter.of("riff", "Riff", 1, "The riff to play", DataType.TEXT),
+                Parameter.of("riff", "Riff", 1, "The riff to play", DataType.TEXT, false),
                 Parameter.of("octave", "Octave", 2, "Base octave", DataType.INTEGER,
                         true, 3),
                 Parameter.of("value", "Value", 3, "Note value for events", DataType.VALUE,
