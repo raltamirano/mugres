@@ -31,6 +31,11 @@ public interface Parametrizable {
     Object parameterValue(final String name);
 
     /**
+     * Tells whether this Parametrizable has value for the specified parameter name within itself or not
+     */
+    boolean hasParameterValue(final String name);
+
+    /**
      * Gets all parameter values
      */
     Map<String, Object> parameterValues();

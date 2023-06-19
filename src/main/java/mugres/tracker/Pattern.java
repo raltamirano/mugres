@@ -61,7 +61,7 @@ public class Pattern implements Parametrizable {
         this.context = ComposableContext.of(song.context());
         this.context.put(PATTERN_LENGTH, measures);
 
-        this.parametrizableSupport = ParametrizableSupport.of(PARAMETERS, this);
+        this.parametrizableSupport = ParametrizableSupport.forTarget(PARAMETERS, this, song);
     }
 
     public String name() {
@@ -205,6 +205,14 @@ public class Pattern implements Parametrizable {
     @Override
     public Object parameterValue(final String name) {
         return parametrizableSupport.parameterValue(name);
+    }
+
+    @Override
+    public boolean hasParameterValue(final String name) {
+        if (Context.MAIN_PROPERTIES.contains(name))
+            return context.overrides(name);
+        else
+            return parametrizableSupport.hasParameterValue(name);
     }
 
     @Override

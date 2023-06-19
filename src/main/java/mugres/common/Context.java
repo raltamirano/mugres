@@ -45,6 +45,7 @@ public interface Context {
     String TIME_SIGNATURE = "time-signature";
     String PATTERN_LENGTH = "pattern-length";
     String CHORD_PROGRESSION = "chord-progression";
+    Set<String> MAIN_PROPERTIES = new HashSet<>(asList(TEMPO, KEY, TIME_SIGNATURE, CHORD_PROGRESSION));
 
     final class ComposableContext implements Context
     {

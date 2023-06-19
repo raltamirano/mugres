@@ -169,6 +169,14 @@ public abstract class Processor implements Parametrizable, Controllable {
     }
 
     @Override
+    public boolean hasParameterValue(final String name) {
+        if (Context.MAIN_PROPERTIES.contains(name))
+            return context.overrides(name);
+        else
+            return parametrizableSupport.hasParameterValue(name);
+    }
+
+    @Override
     public Map<String, Object> parameterValues() {
         return parametrizableSupport.parameterValues();
     }

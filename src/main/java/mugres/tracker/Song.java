@@ -59,7 +59,7 @@ public class Song implements Parametrizable {
         this.context = context;
         this.metadata = metadata != null ? new HashMap<>(metadata) : new HashMap<>();
 
-        this.parametrizableSupport = ParametrizableSupport.of(PARAMETERS, this);
+        this.parametrizableSupport = ParametrizableSupport.forTarget(PARAMETERS, this);
     }
 
     public static Song of(final String title, final Context context) {
@@ -257,6 +257,14 @@ public class Song implements Parametrizable {
     @Override
     public Object parameterValue(final String name) {
         return parametrizableSupport.parameterValue(name);
+    }
+
+    @Override
+    public boolean hasParameterValue(final String name) {
+        if (Context.MAIN_PROPERTIES.contains(name))
+            return context.overrides(name);
+        else
+            return parametrizableSupport.hasParameterValue(name);
     }
 
     @Override

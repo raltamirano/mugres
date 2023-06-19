@@ -30,15 +30,26 @@ public class Call<T> implements Parametrizable {
     protected final Function<T> function;
     private final ParametrizableSupport parametrizableSupport;
 
-    protected Call(final Function<T> function, final Map<String, Object> arguments) {
+    protected Call(final Function<T> function, final Map<String, Object> arguments,
+                   final Parametrizable parentParameterValuesSource) {
         this.function = function;
-        this.parametrizableSupport = ParametrizableSupport.of(function.parameters(), arguments);
+        if (parentParameterValuesSource != null)
+            this.parametrizableSupport = ParametrizableSupport.forTarget(function.parameters(),
+                    this, parentParameterValuesSource);
+        else
+            this.parametrizableSupport = ParametrizableSupport.forTarget(function.parameters(), this);
+        if (arguments != null)
+            arguments.forEach((key, value) -> parameterValue(key, value));
     }
 
-    private Call(final Function<T> function, final int lengthInMeasures) {
+    private Call(final Function<T> function, final int lengthInMeasures,
+                 final Parametrizable parentParameterValuesSource) {
         this.function = function;
-        this.parametrizableSupport = ParametrizableSupport.of(function.parameters());
-        this.parametrizableSupport.parameterValue(LENGTH_PARAMETER.name(), lengthInMeasures);
+        if (parentParameterValuesSource != null)
+            this.parametrizableSupport = ParametrizableSupport.of(function.parameters(), parentParameterValuesSource);
+        else
+            this.parametrizableSupport = ParametrizableSupport.of(function.parameters());
+        parameterValue(LENGTH_PARAMETER.name(), lengthInMeasures);
     }
 
     public static <X> Call<X> of(final String functionName, final Map<String, Object> arguments) {
@@ -49,8 +60,28 @@ public class Call<T> implements Parametrizable {
         return of(function, arguments);
     }
 
+    public static <X> Call<X> of(final String functionName, final Map<String, Object> arguments,
+                                 final Parametrizable parentParameterValuesSource) {
+        final Function function = Function.forName(functionName);
+        if (function == null)
+            throw new RuntimeException("Unknown function: " + functionName);
+
+        if (parentParameterValuesSource == null)
+            throw new IllegalArgumentException("parentParameterValuesSource");
+
+        return of(function, arguments, parentParameterValuesSource);
+    }
+
     public static <X> Call of(final Function<X> function, final Map<String, Object> arguments) {
-        return new Call(function, arguments);
+        return new Call(function, arguments, null);
+    }
+
+    public static <X> Call of(final Function<X> function, final Map<String, Object> arguments,
+                              final Parametrizable parentParameterValuesSource) {
+        if (parentParameterValuesSource == null)
+            throw new IllegalArgumentException("parentParameterValuesSource");
+
+        return new Call(function, arguments, parentParameterValuesSource);
     }
 
     public static <X> Call of(final String functionName, final int lengthInMeasures) {
@@ -61,8 +92,28 @@ public class Call<T> implements Parametrizable {
         return of(function, lengthInMeasures);
     }
 
+    public static <X> Call of(final String functionName, final int lengthInMeasures,
+                              final Parametrizable parentParameterValuesSource) {
+        final Function function = Function.forName(functionName);
+        if (function == null)
+            throw new RuntimeException("Unknown function: " + functionName);
+
+        if (parentParameterValuesSource == null)
+            throw new IllegalArgumentException("parentParameterValuesSource");
+
+        return of(function, lengthInMeasures, parentParameterValuesSource);
+    }
+
     public static <X> Call of(final Function<X> function, final int lengthInMeasures) {
-        return new Call(function, lengthInMeasures);
+        return new Call(function, lengthInMeasures, null);
+    }
+
+    public static <X> Call of(final Function<X> function, final int lengthInMeasures,
+                              final Parametrizable parentParameterValuesSource) {
+        if (parentParameterValuesSource == null)
+            throw new IllegalArgumentException("parentParameterValuesSource");
+
+        return new Call(function, lengthInMeasures, parentParameterValuesSource);
     }
 
     public static <X> Call of(final String functionName, final int lengthInMeasures,
@@ -72,11 +123,33 @@ public class Call<T> implements Parametrizable {
         return of(functionName, theArgs);
     }
 
+    public static <X> Call of(final String functionName, final int lengthInMeasures,
+                              final Map<String, Object> arguments,
+                              final Parametrizable parentParameterValuesSource) {
+        if (parentParameterValuesSource == null)
+            throw new IllegalArgumentException("parentParameterValuesSource");
+
+        final Map<String, Object> theArgs = arguments != null ? arguments : Collections.emptyMap();
+        theArgs.put(LENGTH_PARAMETER.name(), lengthInMeasures);
+        return of(functionName, theArgs, parentParameterValuesSource);
+    }
+
     public static <X> Call of(final Function<X> function, final int lengthInMeasures,
                               final Map<String, Object> arguments) {
         final Map<String, Object> theArgs = arguments != null ? arguments : Collections.emptyMap();
         theArgs.put(LENGTH_PARAMETER.name(), lengthInMeasures);
         return of(function, theArgs);
+    }
+
+    public static <X> Call of(final Function<X> function, final int lengthInMeasures,
+                              final Map<String, Object> arguments,
+                              final Parametrizable parentParameterValuesSource) {
+        if (parentParameterValuesSource == null)
+            throw new IllegalArgumentException("parentParameterValuesSource");
+
+        final Map<String, Object> theArgs = arguments != null ? arguments : Collections.emptyMap();
+        theArgs.put(LENGTH_PARAMETER.name(), lengthInMeasures);
+        return of(function, theArgs, parentParameterValuesSource);
     }
 
     public static <X> Call<X> parse(final String input) {
@@ -245,6 +318,11 @@ public class Call<T> implements Parametrizable {
     }
 
     @Override
+    public boolean hasParameterValue(final String name) {
+        return parametrizableSupport.hasParameterValue(name);
+    }
+
+    @Override
     public Map<String, Object> parameterValues() {
         return parametrizableSupport.parameterValues();
     }
@@ -268,7 +346,7 @@ public class Call<T> implements Parametrizable {
         ComposedCall(final Call<X> wrapped,
                              final Function<X> functionToApply,
                              final Map<String, Object> functionToApplyArguments) {
-            super(functionToApply, functionToApplyArguments);
+            super(functionToApply, functionToApplyArguments, wrapped.parametrizableSupport.parentParameterValuesSource());
 
             this.wrapped = wrapped;
         }

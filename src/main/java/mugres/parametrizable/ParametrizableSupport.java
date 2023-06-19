@@ -2,6 +2,7 @@ package mugres.parametrizable;
 
 import mugres.common.DataType;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Collections;
@@ -9,14 +10,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static mugres.utils.Reflections.getMethodFor;
+
 public final class ParametrizableSupport implements Parametrizable {
     private final Set<Parameter> parameters;
     private final Map<String, Object> values;
     private final Object target;
+    private final Parametrizable parentParameterValuesSource;
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     private ParametrizableSupport(final Set<Parameter> parameters,
-                                  final Map<String, Object> values) {
+                                  final Map<String, Object> values,
+                                  final Parametrizable parentParameterValuesSource) {
         if (parameters == null || parameters.isEmpty())
             throw new IllegalArgumentException("parameters");
 
@@ -27,10 +32,13 @@ public final class ParametrizableSupport implements Parametrizable {
             this.values.putAll(values);
 
         this.target = null;
+        this.parentParameterValuesSource = parentParameterValuesSource;
+        setUpParentParameterValuesSource();
     }
 
     private ParametrizableSupport(final Set<Parameter> parameters,
-                                  final Object target) {
+                                  final Object target,
+                                  final Parametrizable parentParameterValuesSource) {
         if (parameters == null || parameters.isEmpty())
             throw new IllegalArgumentException("parameters");
         if (target == null)
@@ -40,24 +48,56 @@ public final class ParametrizableSupport implements Parametrizable {
         this.parameters = parameters;
         this.values = null;
         this.target = target;
+        this.parentParameterValuesSource = parentParameterValuesSource;
+        setUpParentParameterValuesSource();
     }
 
     public static ParametrizableSupport of(final Set<Parameter> parameters) {
-        return new ParametrizableSupport(parameters, null);
+        return new ParametrizableSupport(parameters, null, null);
+    }
+
+    public static ParametrizableSupport of(final Set<Parameter> parameters,
+                                           final Parametrizable parentParameterValuesSource) {
+        if (parentParameterValuesSource == null)
+            throw new IllegalArgumentException("parentParameterValuesSource");
+
+        return new ParametrizableSupport(parameters, null, parentParameterValuesSource);
     }
 
     public static ParametrizableSupport of(final Set<Parameter> parameters,
                                            final Map<String, Object> values) {
-        return new ParametrizableSupport(parameters, values);
+        return new ParametrizableSupport(parameters, values, null);
     }
 
     public static ParametrizableSupport of(final Set<Parameter> parameters,
+                                           final Map<String, Object> values,
+                                           final Parametrizable parentParameterValuesSource) {
+        if (parentParameterValuesSource == null)
+            throw new IllegalArgumentException("parentParameterValuesSource");
+
+        return new ParametrizableSupport(parameters, values, parentParameterValuesSource);
+    }
+
+    public static ParametrizableSupport forTarget(final Set<Parameter> parameters,
                                            final Object target) {
-        return new ParametrizableSupport(parameters, target);
+        return new ParametrizableSupport(parameters, target, null);
+    }
+
+    public static ParametrizableSupport forTarget(final Set<Parameter> parameters,
+                                           final Object target,
+                                           final Parametrizable parentParameterValuesSource) {
+        if (parentParameterValuesSource == null)
+            throw new IllegalArgumentException("parentParameterValuesSource");
+
+        return new ParametrizableSupport(parameters, target, parentParameterValuesSource);
     }
 
     public Object target() {
         return target;
+    }
+
+    public Parametrizable parentParameterValuesSource() {
+        return parentParameterValuesSource;
     }
 
     @Override
@@ -93,6 +133,21 @@ public final class ParametrizableSupport implements Parametrizable {
     }
 
     @Override
+    public boolean hasParameterValue(final String name) {
+        if (target != null)
+            try {
+                if (target instanceof Parametrizable)
+                    return ((Parametrizable)target).hasParameterValue(name);
+                else
+                    return getMethodFor(target.getClass(), name).invoke(target) != null;
+            } catch (final Exception ignore) {
+                return false;
+            }
+        else
+            return values.containsKey(name);
+    }
+
+    @Override
     public Map<String, Object> parameterValues() {
         return Collections.unmodifiableMap(values);
     }
@@ -105,5 +160,22 @@ public final class ParametrizableSupport implements Parametrizable {
     @Override
     public void removePropertyChangeListener(final PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
+    }
+
+    private void setUpParentParameterValuesSource() {
+        if (parentParameterValuesSource == null)
+            return;
+
+        parentParameterValuesSource.addPropertyChangeListener(e -> {
+            if (!hasParameterValue(e.getPropertyName()))
+                propertyChangeSupport.firePropertyChange(new FromParentPropertyChangeEvent(this,
+                        e.getPropertyName(), e.getOldValue(), e.getNewValue()));
+        });
+    }
+
+    public static class FromParentPropertyChangeEvent extends PropertyChangeEvent {
+        public FromParentPropertyChangeEvent(Object source, String propertyName, Object oldValue, Object newValue) {
+            super(source, propertyName, oldValue, newValue);
+        }
     }
 }
