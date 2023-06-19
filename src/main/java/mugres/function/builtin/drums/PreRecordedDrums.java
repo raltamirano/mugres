@@ -24,11 +24,12 @@ import static mugres.utils.Randoms.random;
 public abstract class PreRecordedDrums extends EventsFunction {
     protected PreRecordedDrums(final String name, final String description) {
         super(name, description,
-                Parameter.of("variant", "The pattern variant to play",
+                Parameter.of("variant", "Variant", 1, "The pattern variant to play",
                         DataType.VARIANT, true, V0),
-                Parameter.of("startingHit", "Starting Hit (usually a crash cymbal)",
-                        DataType.DRUM_KIT, true, null),
-                Parameter.of("fill", "Ending fill",
+                Parameter.of("startingHit", "Starting Hit", 2,
+                        "Starting Hit (usually a crash cymbal)", DataType.DRUM_KIT, true,
+                        null),
+                Parameter.of("fill", "Fill", 3,"Ending fill",
                         DataType.VARIANT, true, NONE));
     }
 

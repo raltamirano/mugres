@@ -27,13 +27,13 @@ import static mugres.utils.Utils.rangeClosed;
 public class Arp extends EventsFunction {
     public Arp() {
         super("arp", "Arpeggiates composed call's events",
-                Parameter.of("pattern", "Arp pattern",
+                Parameter.of("pattern", "Pattern", 1, "Arp pattern",
                         TEXT, true, "1232"),
-                Parameter.of("octavesUp", "Octaves up (for transposition)",
+                Parameter.of("octavesUp", "Octaves up", 2, "Octaves up (for transposition)",
                         INTEGER, true, 0),
-                Parameter.of("octavesDown", "Octaves down (for transposition)",
+                Parameter.of("octavesDown", "Octaves down", 3, "Octaves down (for transposition)",
                         INTEGER, true, 0),
-                Parameter.of("restart", "Restart the pattern every new chord",
+                Parameter.of("restart", "Restart", 4, "Restart the pattern every new chord",
                         BOOLEAN, true, true)
 
         );

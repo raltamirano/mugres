@@ -24,9 +24,9 @@ import static mugres.function.builtin.arp.Utils.parseNoteValue;
 public class Arp2 extends EventsFunction {
     public Arp2() {
         super("arp2", "Arpeggiates provided pitches",
-                Parameter.of(PITCHES, "Ordered list of pitches to arpeggiate",
+                Parameter.of(PITCHES, "Pitches", 1,  "Ordered list of pitches to arpeggiate",
                         PITCH, false, emptyList(), true),
-                Parameter.of(PATTERN, "Arp pattern",
+                Parameter.of(PATTERN, "Pattern", 2, "Arp pattern",
                         TEXT, false, null)
         );
     }

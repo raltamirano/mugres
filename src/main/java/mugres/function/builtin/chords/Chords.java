@@ -21,10 +21,11 @@ import static mugres.common.Value.WHOLE;
 public class Chords extends EventsFunction {
     public Chords() {
         super("chords", "Reproduces a predefined chord progression",
-                Parameter.of("progression", "The chord progression to play", DataType.TEXT),
-                Parameter.of("octave", "Base octave", DataType.INTEGER,
+                Parameter.of("progression", "Progression", 1,
+                        "The chord progression to play", DataType.TEXT),
+                Parameter.of("octave", "Base octave", 2, "Base octave", DataType.INTEGER,
                         true, 2),
-                Parameter.of("value", "Note value for events", DataType.VALUE,
+                Parameter.of("value", "Value", 3, "Note value for events", DataType.VALUE,
                         true, WHOLE));
     }
 

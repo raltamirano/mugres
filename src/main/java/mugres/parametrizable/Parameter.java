@@ -7,8 +7,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
-public class Parameter {
+public class Parameter implements Comparable<Parameter> {
     private final String name;
+    private final String label;
+    private final int order;
     private final String documentation;
     private final DataType dataType;
     private final boolean optional;
@@ -18,10 +20,12 @@ public class Parameter {
     private final Object max;
     private final Collection<Object> domain;
 
-    private Parameter(final String name, final String documentation, final DataType dataType,
-                      final boolean optional, final Object defaultValue, final boolean multiple,
-                      final Object min, final Object max, final Collection<Object> domain) {
+    private Parameter(final String name, final String label, final int order, final String documentation,
+                      final DataType dataType, final boolean optional, final Object defaultValue,
+                      final boolean multiple, final Object min, final Object max, final Collection<Object> domain) {
         this.name = name;
+        this.label = label;
+        this.order = order;
         this.documentation = documentation;
         this.dataType = dataType;
         this.optional = optional;
@@ -32,37 +36,49 @@ public class Parameter {
         this.domain = domain != null ? new ArrayList<>(domain) : Collections.emptyList();
     }
 
-    public static Parameter of(final String name, final String documentation, final DataType dataType) {
-        return new Parameter(name, documentation, dataType, false, null, false,
+    public static Parameter of(final String name, final String label, final int order, final String documentation,
+                               final DataType dataType) {
+        return new Parameter(name, label, order, documentation, dataType, false, null, false,
                 null, null, null);
     }
 
-    public static Parameter of(final String name, final String documentation, final DataType dataType,
-                               boolean optional, final Object defaultValue) {
-        return new Parameter(name, documentation, dataType, optional, defaultValue, false,
+    public static Parameter of(final String name, final String label, final int order, final String documentation,
+                               final DataType dataType, final boolean optional, final Object defaultValue) {
+        return new Parameter(name, label, order, documentation, dataType, optional, defaultValue, false,
                 null, null, null);
     }
 
-    public static Parameter of(final String name, final String documentation, final DataType dataType,
-                               boolean optional, final Object defaultValue, final Object min, final Object max) {
-        return new Parameter(name, documentation, dataType, optional, defaultValue, false,
+    public static Parameter of(final String name, final String label, final int order, final String documentation,
+                               final DataType dataType, final boolean optional, final Object defaultValue,
+                               final Object min, final Object max) {
+        return new Parameter(name, label, order, documentation, dataType, optional, defaultValue, false,
                 min, max, null);
     }
 
-    public static Parameter of(final String name, final String documentation, final DataType dataType,
-                               boolean optional, final Object defaultValue, final Collection<Object> domain) {
-        return new Parameter(name, documentation, dataType, optional, defaultValue, false,
+    public static Parameter of(final String name, final String label, final int order, final String documentation,
+                               final DataType dataType, final boolean optional, final Object defaultValue,
+                               final Collection<Object> domain) {
+        return new Parameter(name, label, order, documentation, dataType, optional, defaultValue, false,
                 null, null, domain);
     }
 
-    public static Parameter of(final String name, final String documentation, final DataType dataType,
-                               final boolean optional, final Object defaultValue, final boolean multiple) {
-        return new Parameter(name, documentation, dataType, optional, defaultValue, multiple,
+    public static Parameter of(final String name, final String label, final int order, final String documentation,
+                               final DataType dataType, final boolean optional, final Object defaultValue,
+                               final boolean multiple) {
+        return new Parameter(name, label, order, documentation, dataType, optional, defaultValue, multiple,
                 null, null, null);
     }
 
     public String name() {
         return name;
+    }
+
+    public String label() {
+        return label;
+    }
+
+    public int order() {
+        return order;
     }
 
     public String documentation() {
@@ -108,5 +124,10 @@ public class Parameter {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public int compareTo(final Parameter o) {
+        return Integer.compare(this.order, o.order);
     }
 }

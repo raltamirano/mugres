@@ -24,15 +24,15 @@ import static mugres.utils.Randoms.RND;
 public class Random extends EventsFunction {
     public Random() {
         super("random", "Generates random pitches",
-                Parameter.of(STARTING_OCTAVE, "Starting octave",
+                Parameter.of(STARTING_OCTAVE, "Starting octave", 1, "Starting octave",
                         DataType.INTEGER, true, BASE_OCTAVE),
-                Parameter.of(OCTAVES_TO_GENERATE, "Octaves to generate",
+                Parameter.of(OCTAVES_TO_GENERATE, "Octaves to generate", 2, "Octaves to generate",
                         DataType.INTEGER, true, 2),
-                Parameter.of(NOTE_VALUE, "Note value",
+                Parameter.of(NOTE_VALUE, "Value", 3, "Note value",
                         DataType.VALUE, true, QUARTER),
-                Parameter.of(SCALE, "Scale to pick notes from",
+                Parameter.of(SCALE, "Scale", 4, "Scale to pick notes from",
                         DataType.SCALE, true, MINOR_PENTATONIC),
-                Parameter.of(ROOT, "Scale root",
+                Parameter.of(ROOT, "Root", 5, "Scale root",
                         DataType.NOTE, true, C)
         );
     }

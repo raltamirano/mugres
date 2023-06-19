@@ -14,8 +14,8 @@ import static mugres.utils.Randoms.random;
 public abstract class ByStrategiesFunction extends EventsFunction {
     protected ByStrategiesFunction(final String name, final String description) {
         super(name, description,
-            Parameter.of("totalMeasures", "Total measures to generate", DataType.INTEGER,
-                    true, null));
+            Parameter.of("totalMeasures", "Total measures", 1,
+                    "Total measures to generate", DataType.INTEGER, true, null));
     }
     @Override
     protected List<Event> doExecute(final Context context, final Map<String, Object> arguments) {

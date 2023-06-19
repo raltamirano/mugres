@@ -43,14 +43,14 @@ public class Song implements Parametrizable {
     static {
         PARAMETERS = new HashSet<>();
 
-        PARAMETERS.add(Parameter.of("title", "Title", DataType.TEXT, false,
-                "Untitled"));
-        PARAMETERS.add(Parameter.of("tempo", "BPM", DataType.INTEGER, false,
-                120, MIN_TEMPO, MAX_TEMPO));
-        PARAMETERS.add(Parameter.of("key", "Key", DataType.KEY, false,
-                Key.C));
-        PARAMETERS.add(Parameter.of("timeSignature", "Time Signature", DataType.TIME_SIGNATURE, false,
-                TimeSignature.TS44));
+        PARAMETERS.add(Parameter.of("title", "Title", 1, "Title",
+                DataType.TEXT, false, "Untitled"));
+        PARAMETERS.add(Parameter.of("tempo", "BPM", 2, "BPM",
+                DataType.INTEGER, false,120, MIN_TEMPO, MAX_TEMPO));
+        PARAMETERS.add(Parameter.of("key", "Key", 3, "Key",
+                DataType.KEY, false, Key.C));
+        PARAMETERS.add(Parameter.of("timeSignature", "Time Signature", 4,
+                "Time Signature", DataType.TIME_SIGNATURE, false, TimeSignature.TS44));
     }
 
     private Song(final String title, final Context context, final Map<String, Object> metadata) {

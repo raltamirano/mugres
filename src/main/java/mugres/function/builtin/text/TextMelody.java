@@ -29,15 +29,15 @@ import static mugres.utils.Randoms.randomBetween;
 public class TextMelody extends EventsFunction {
     public TextMelody() {
         super("textMelody", "Translates a text into a melody",
-                Parameter.of(SOURCE_TEXT, "Source text",
+                Parameter.of(SOURCE_TEXT, "Text", 1, "Source text",
                         DataType.TEXT, false, ""),
-                Parameter.of(STARTING_OCTAVE, "Starting octave",
+                Parameter.of(STARTING_OCTAVE, "Starting octave", 2, "Starting octave",
                         DataType.INTEGER, true, BASE_OCTAVE),
-                Parameter.of(OCTAVES_TO_GENERATE, "Octaves to generate",
+                Parameter.of(OCTAVES_TO_GENERATE, "Octaves to generate", 3, "Octaves to generate",
                         DataType.INTEGER, true, 2),
-                Parameter.of(SCALE, "Scale to pick notes from",
+                Parameter.of(SCALE, "Scale", 4, "Scale to pick notes from",
                         DataType.SCALE, true, MINOR_PENTATONIC),
-                Parameter.of(ROOT, "Scale root",
+                Parameter.of(ROOT, "Root", 5, "Scale root",
                         DataType.NOTE, true, C)
         );
     }

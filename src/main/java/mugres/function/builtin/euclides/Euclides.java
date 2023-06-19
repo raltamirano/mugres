@@ -24,19 +24,19 @@ import static mugres.utils.Randoms.RND;
 public class Euclides extends EventsFunction {
     public Euclides() {
         super("euclides", "Plays an Euclidean polyrhythm",
-                Parameter.of(PATTERNS, "Patterns",
+                Parameter.of(PATTERNS, "Patterns", 1, "Patterns",
                         DataType.EUCLIDEAN_PATTERN, false, emptyList(), true),
-                Parameter.of(PITCHES, "Pitches for every pattern (same order)",
+                Parameter.of(PITCHES, "Pitches", 2, "Pitches for every pattern (same order)",
                         DataType.PITCH, true, null, true),
-                Parameter.of(CYCLE, "Cycle length (defaults to one measure)",
+                Parameter.of(CYCLE, "Cycle length", 3, "Cycle length (defaults to one measure)",
                         DataType.LENGTH, true, null),
-                Parameter.of(STARTING_OCTAVE, "Starting octave",
+                Parameter.of(STARTING_OCTAVE, "Starting octave", 4, "Starting octave",
                         DataType.INTEGER, true, BASE_OCTAVE),
-                Parameter.of(OCTAVES_TO_GENERATE, "Octaves to generate",
+                Parameter.of(OCTAVES_TO_GENERATE, "Octaves to generate", 5, "Octaves to generate",
                         DataType.INTEGER, true, 2),
-                Parameter.of(SCALE, "Scale to pick notes from",
+                Parameter.of(SCALE, "Scale", 6, "Scale to pick notes from",
                         DataType.SCALE, true, MINOR_PENTATONIC),
-                Parameter.of(ROOT, "Scale root",
+                Parameter.of(ROOT, "Root", 7, "Scale root",
                         DataType.NOTE, true, C)
         );
     }
