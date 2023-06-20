@@ -338,13 +338,13 @@ public class Call<T> implements Parametrizable {
     }
 
     @Override
-    public void addPropertyChangeListener(final PropertyChangeListener listener) {
-        parametrizableSupport.addPropertyChangeListener(listener);
+    public void addParameterValueChangeListener(final PropertyChangeListener listener) {
+        parametrizableSupport.addParameterValueChangeListener(listener);
     }
 
     @Override
-    public void removePropertyChangeListener(final PropertyChangeListener listener) {
-        parametrizableSupport.removePropertyChangeListener(listener);
+    public void removeParameterValueChangeListener(final PropertyChangeListener listener) {
+        parametrizableSupport.removeParameterValueChangeListener(listener);
     }
 
     private static final Pattern FUNCTION_CALL = Pattern.compile("([a-z][0-9a-zA-Z_-]+[0-9a-zA-Z])\\((.*)\\)");

@@ -191,13 +191,13 @@ public abstract class Processor implements Parametrizable, Controllable {
     }
 
     @Override
-    public void addPropertyChangeListener(final PropertyChangeListener listener) {
-        parametrizableSupport.addPropertyChangeListener(listener);
+    public void addParameterValueChangeListener(final PropertyChangeListener listener) {
+        parametrizableSupport.addParameterValueChangeListener(listener);
     }
 
     @Override
-    public void removePropertyChangeListener(final PropertyChangeListener listener) {
-        parametrizableSupport.removePropertyChangeListener(listener);
+    public void removeParameterValueChangeListener(final PropertyChangeListener listener) {
+        parametrizableSupport.removeParameterValueChangeListener(listener);
     }
 
     public interface StatusListener {

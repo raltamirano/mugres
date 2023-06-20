@@ -178,12 +178,12 @@ public final class ParametrizableSupport implements Parametrizable {
     }
 
     @Override
-    public void addPropertyChangeListener(final PropertyChangeListener listener) {
+    public void addParameterValueChangeListener(final PropertyChangeListener listener) {
         propertyChangeSupport.addPropertyChangeListener(listener);
     }
 
     @Override
-    public void removePropertyChangeListener(final PropertyChangeListener listener) {
+    public void removeParameterValueChangeListener(final PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
@@ -191,7 +191,7 @@ public final class ParametrizableSupport implements Parametrizable {
         if (parentParameterValuesSource == null)
             return;
 
-        parentParameterValuesSource.addPropertyChangeListener(e -> {
+        parentParameterValuesSource.addParameterValueChangeListener(e -> {
             if (!overrides(e.getPropertyName()))
                 propertyChangeSupport.firePropertyChange(e.getPropertyName(), e.getOldValue(),
                         ChangedValue.of(e.getNewValue(), true));

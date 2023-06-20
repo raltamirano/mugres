@@ -62,10 +62,10 @@ public interface Parametrizable {
     /**
      * Registers a PropertyChangeListener
      */
-    void addPropertyChangeListener(final PropertyChangeListener listener);
+    void addParameterValueChangeListener(final PropertyChangeListener listener);
 
     /**
      * Unregisters a PropertyChangeListener
      */
-    void removePropertyChangeListener(final PropertyChangeListener listener);
+    void removeParameterValueChangeListener(final PropertyChangeListener listener);
 }

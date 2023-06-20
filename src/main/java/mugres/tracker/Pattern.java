@@ -18,7 +18,7 @@ import java.util.*;
 
 import static mugres.common.Context.PATTERN_LENGTH;
 
-public class Pattern implements Parametrizable {
+public class Pattern implements Parametrizable, Comparable<Pattern> {
     public static final int MIN_MEASURES = 1;
     public static final int MAX_MEASURES = 10000;
     public static final int MIN_BEAT_SUBDIVISION = 0;
@@ -232,12 +232,17 @@ public class Pattern implements Parametrizable {
     }
 
     @Override
-    public void addPropertyChangeListener(final PropertyChangeListener listener) {
-        parametrizableSupport.addPropertyChangeListener(listener);
+    public void addParameterValueChangeListener(final PropertyChangeListener listener) {
+        parametrizableSupport.addParameterValueChangeListener(listener);
     }
 
     @Override
-    public void removePropertyChangeListener(final PropertyChangeListener listener) {
-        parametrizableSupport.removePropertyChangeListener(listener);
+    public void removeParameterValueChangeListener(final PropertyChangeListener listener) {
+        parametrizableSupport.removeParameterValueChangeListener(listener);
+    }
+
+    @Override
+    public int compareTo(final Pattern o) {
+        return this.name.compareTo(o.name);
     }
 }
