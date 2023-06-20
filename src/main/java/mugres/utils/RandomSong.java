@@ -45,7 +45,7 @@ public class RandomSong {
         final List<Party> parties = new ArrayList<>();
         final int numberOfParties = RND.nextInt(RANDOM_MAX_PARTIES) + 1;
         for(int i = 0; i < numberOfParties; i++)
-            parties.add(new Party("Party " + i, random(Instrument.values(), Instrument.DrumKit), i));
+            parties.add(Party.of("Party " + i, random(Instrument.values(), Instrument.DrumKit), i));
 
         final boolean hasPercussion = RND.nextBoolean();
         final boolean percussionAlwaysPresent = RND.nextBoolean();
@@ -53,7 +53,7 @@ public class RandomSong {
         final PercussionStyle percussionStyle = alwaysSamePercussionStyle ?
                 random(asList(PercussionStyle.values())) : null;
         final Party percussionParty = hasPercussion ?
-                new Party("Percussion", Instrument.DrumKit, PERCUSSION) : null;
+                Party.of("Percussion", Instrument.DrumKit, PERCUSSION) : null;
 
         final List<Pattern> patterns = new ArrayList<>();
         final int numberOfPatterns = RND.nextInt(RANDOM_MAX_PATTERNS) + 1;

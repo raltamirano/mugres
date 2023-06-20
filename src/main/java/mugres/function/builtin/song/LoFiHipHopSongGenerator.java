@@ -2,7 +2,6 @@ package mugres.function.builtin.song;
 
 import mugres.common.Context;
 import mugres.common.Direction;
-import mugres.tracker.Event;
 import mugres.common.Instrument;
 import mugres.common.Key;
 import mugres.common.Length;
@@ -11,6 +10,7 @@ import mugres.common.Party;
 import mugres.common.chords.ChordProgression;
 import mugres.function.Call;
 import mugres.function.Function;
+import mugres.tracker.Event;
 import mugres.tracker.Pattern;
 import mugres.tracker.Song;
 
@@ -22,8 +22,8 @@ import static java.util.Arrays.asList;
 import static mugres.common.Context.basicContext;
 import static mugres.common.Direction.ASCENDING;
 import static mugres.common.Direction.DESCENDING;
-import static mugres.common.chords.Chords.improviseChordProgression;
 import static mugres.common.Variant.RANDOM;
+import static mugres.common.chords.Chords.improviseChordProgression;
 import static mugres.utils.Randoms.RND;
 import static mugres.utils.Randoms.random;
 
@@ -191,8 +191,8 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
     private static final Party DRUMS = Party.WellKnownParties.DRUMS.party();
     private static final Party BASS = Party.WellKnownParties.BASS.party();
     private static final Party PAD = Party.WellKnownParties.PAD1.party();
-    private static final Party E_PIANO = new Party("E-Piano", Instrument.Rhodes_Piano, 3);
-    private static final Party MELODY = new Party("Melody", Instrument.Synth_Voice, 4);
+    private static final Party E_PIANO = Party.of("E-Piano", Instrument.Rhodes_Piano, 3);
+    private static final Party MELODY = Party.of("Melody", Instrument.Synth_Voice, 4);
 
     private static final int MIN_TEMPO = 60;
     private static final int MAX_TEMPO = 100;

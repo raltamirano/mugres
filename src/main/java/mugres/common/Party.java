@@ -2,15 +2,25 @@ package mugres.common;
 
 import java.util.Objects;
 
+import static mugres.common.MIDI.DEFAULT_CHANNEL;
+
 public class Party {
     private String name;
     private Instrument instrument;
     private int channel;
 
-    public Party(String name, Instrument instrument, int channel) {
+    private Party(final String name, final Instrument instrument, final int channel) {
         this.name = name;
         this.instrument = instrument;
         this.channel = channel;
+    }
+
+    public static Party of(final String name, final Instrument instrument) {
+        return new Party(name, instrument, DEFAULT_CHANNEL);
+    }
+
+    public static Party of(final String name, final Instrument instrument, final int channel) {
+        return new Party(name, instrument, channel);
     }
 
     public String name() {

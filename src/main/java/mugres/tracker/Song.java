@@ -3,6 +3,7 @@ package mugres.tracker;
 import mugres.MUGRES;
 import mugres.common.Context;
 import mugres.common.DataType;
+import mugres.common.Instrument;
 import mugres.common.Key;
 import mugres.common.Party;
 import mugres.common.TimeSignature;
@@ -34,6 +35,7 @@ public class Song implements Parametrizable {
     public static final Object MAX_TEMPO = 10000;
     public static final String TITLE = "title";
     public static final String PATTERNS = "patterns";
+    public static final String PARTIES = "parties";
     public static final String ARRANGEMENT = "arrangement";
 
     private String title;
@@ -215,11 +217,34 @@ public class Song implements Parametrizable {
         return patternSong;
     }
 
-    void addParty(final Party party) {
+    public void addParty(final Party party) {
         if (party == null)
             throw new IllegalArgumentException("party");
+        if (parties.contains(party))
+            throw new IllegalArgumentException("Party with same name already exists: " + party.name());
 
         parties.add(party);
+        propertyChangeSupport.firePropertyChange(PARTIES, null, parties());
+    }
+
+    public void createParty(final Instrument instrument) {
+        if (instrument == null)
+            throw new IllegalArgumentException("instrument");
+
+        parties.add(Party.of(createPartyName(), instrument));
+        propertyChangeSupport.firePropertyChange(PARTIES, null, parties());
+    }
+
+    public void removeParty(final Party party) {
+        if (party == null)
+            throw new IllegalArgumentException("party");
+        if (!parties.contains(party))
+            return;
+
+        if(parties.remove(party)) {
+            patterns.forEach(p -> p.removePartsFor(party));
+            propertyChangeSupport.firePropertyChange(PARTIES, null, parties());
+        }
     }
 
     public Set<Pattern> patterns() {
@@ -237,6 +262,15 @@ public class Song implements Parametrizable {
     public Set<Party> parties() {
         return Collections.unmodifiableSet(parties);
     }
+
+    public Party party(final String name) {
+        for(Party party : parties)
+            if (party.name().equals(name))
+                return party;
+
+        return null;
+    }
+
 
     public Arrangement arrangement() {
         return arrangement;
@@ -267,6 +301,16 @@ public class Song implements Parametrizable {
         }
 
         throw new IllegalStateException("Couldn't generate unique pattern name!");
+    }
+
+    private String createPartyName() {
+        for(int index=0; index<Integer.MAX_VALUE; index++) {
+            final String candidate = String.format("Party %04d", index);
+            if (party(candidate) == null)
+                return candidate;
+        }
+
+        throw new IllegalStateException("Couldn't generate unique party name!");
     }
 
     @Override

@@ -10,6 +10,7 @@ import mugres.live.signaler.config.Configuration;
 import java.util.PriorityQueue;
 
 import static java.util.Comparator.comparingLong;
+import static mugres.common.MIDI.DEFAULT_CHANNEL;
 
 public class Signaler {
     private final Configuration config;
@@ -114,8 +115,6 @@ public class Signaler {
             queue.add(new Entry(now + duration, off));
         };
     }
-
-    private static final int DEFAULT_CHANNEL = 1;
 
     private class Entry {
         private final long time;

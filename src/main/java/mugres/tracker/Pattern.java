@@ -149,10 +149,19 @@ public class Pattern implements Parametrizable, Comparable<Pattern> {
         if (call == null)
             throw new IllegalArgumentException("call");
         if (!(call.getFunction() instanceof Function.EventsFunction))
-            throw new IllegalArgumentException("call must be an instance of " + Function.EventsFunction.class.getName());
+            throw new IllegalArgumentException("Call's function must be an instance of " + Function.EventsFunction.class.getName());
 
-        song.addParty(party);
+        if (!song.parties().contains(party))
+            song.addParty(party);
+
         matrix.computeIfAbsent(party, p -> new ArrayList()).add(call);
+    }
+
+    public void removePartsFor(final Party party) {
+        if (party == null)
+            throw new IllegalArgumentException("party");
+
+        matrix.remove(party);
     }
 
     public boolean hasPartsFor(final Party party) {
