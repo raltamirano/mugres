@@ -37,20 +37,22 @@ public class Pattern implements Parametrizable {
     static {
         PARAMETERS = new HashSet<>();
 
-        PARAMETERS.add(Parameter.of("measures", "Measures", 1, "Measures",
+        PARAMETERS.add(Parameter.of("name", "Name", 1, "Pattern name",
+                DataType.TEXT, false));
+        PARAMETERS.add(Parameter.of("measures", "Measures", 2, "Measures",
                 DataType.INTEGER, false, 8, MIN_MEASURES, MAX_MEASURES, false));
-        PARAMETERS.add(Parameter.of(Context.TEMPO, "BPM" , 2, "BPM",
+        PARAMETERS.add(Parameter.of(Context.TEMPO, "BPM" , 3, "BPM",
                 DataType.INTEGER, false, 120, Song.MIN_TEMPO, Song.MAX_TEMPO, true));
-        PARAMETERS.add(Parameter.of(Context.KEY, "Key", 3, "Key",
+        PARAMETERS.add(Parameter.of(Context.KEY, "Key", 4, "Key",
                 DataType.KEY, false, Key.C, false, true));
-        PARAMETERS.add(Parameter.of(Context.TIME_SIGNATURE, "Time Signature", 4,
+        PARAMETERS.add(Parameter.of(Context.TIME_SIGNATURE, "Time Signature", 5,
                 "Time Signature",
                 DataType.TIME_SIGNATURE, false, TimeSignature.TS44, false, true));
-        PARAMETERS.add(Parameter.of("regenerate", "Regenerate?", 5,
+        PARAMETERS.add(Parameter.of("regenerate", "Regenerate?", 6,
                 "Whether this pattern should be regenerated every time it's referenced " +
                         "in the Arrangement or not",
                 DataType.BOOLEAN, true, false, false, false));
-        PARAMETERS.add(Parameter.of("beatSubdivision", "Beat subdivision", 6,
+        PARAMETERS.add(Parameter.of("beatSubdivision", "Beat subdivision", 7,
                 "Beat subdivision", DataType.INTEGER, true,  0, MIN_BEAT_SUBDIVISION,
                 MAX_BEAT_SUBDIVISION, false));
     }
