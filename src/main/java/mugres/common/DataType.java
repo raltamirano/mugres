@@ -1,6 +1,8 @@
 package mugres.common;
 
 import mugres.common.euclides.EuclideanPattern;
+import mugres.common.literal.Literal;
+import mugres.common.ttm.TwelveToneMatrix;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -36,6 +38,10 @@ public enum DataType {
     BOOLEAN(Boolean.class),
     /** Euclidean pattern */
     EUCLIDEAN_PATTERN(EuclideanPattern.class),
+    /** Literal */
+    LITERAL(Literal.class),
+    /** Twelve Tone Matrix */
+    TWELVE_TONE_MATRIX(TwelveToneMatrix.class),
     /** Unknown */
     UNKNOWN(Object.class);
 

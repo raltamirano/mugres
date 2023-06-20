@@ -2,6 +2,7 @@ package mugres.function;
 
 import mugres.common.Context;
 import mugres.common.DataType;
+import mugres.function.builtin.literal.Literal;
 import mugres.tracker.Event;
 import mugres.common.Length;
 import mugres.common.TimeSignature;
@@ -228,6 +229,7 @@ public abstract class Function<T> {
         new LoFiHipHopSongGenerator();
         new TextMelody();
         new Euclides();
+        new Literal();
     }
 
     private static synchronized void register(final Function function) {
@@ -249,6 +251,15 @@ public abstract class Function<T> {
 
     public static Set<Function> allFunctions() {
         return Collections.unmodifiableSet(new HashSet<>(REGISTRY.values()));
+    }
+
+    public static Set<EventsFunction> allEventsFunctions() {
+        return Collections.unmodifiableSet(new HashSet<>(REGISTRY.values()
+                .stream()
+                .filter(f -> f instanceof EventsFunction)
+                .map(EventsFunction.class::cast)
+                .collect(Collectors.toList()))
+        );
     }
 
     /** Musical artifacts a Function can produce. */
