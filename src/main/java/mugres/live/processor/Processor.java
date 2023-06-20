@@ -171,8 +171,8 @@ public abstract class Processor implements Parametrizable, Controllable {
     }
 
     @Override
-    public boolean hasParameterValue(final String name) {
-        return parametrizableSupport.hasParameterValue(name);
+    public boolean overrides(final String name) {
+        return parametrizableSupport.overrides(name);
     }
 
     @Override

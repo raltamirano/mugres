@@ -33,7 +33,7 @@ public interface Parametrizable {
     /**
      * Tells whether this Parametrizable has value for the specified parameter name within itself or not
      */
-    boolean hasParameterValue(final String name);
+    boolean overrides(final String name);
 
     /**
      * Tells whether this Parametrizable has a Parent Parameter Value Source or not

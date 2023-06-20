@@ -134,7 +134,7 @@ public final class ParametrizableSupport implements Parametrizable {
     }
 
     @Override
-    public boolean hasParameterValue(final String name) {
+    public boolean overrides(final String name) {
         if (customHasParameterValueLogic != null) {
             final Boolean result = customHasParameterValueLogic.apply(name);
             if (result != null)
@@ -176,7 +176,7 @@ public final class ParametrizableSupport implements Parametrizable {
             return;
 
         parentParameterValuesSource.addPropertyChangeListener(e -> {
-            if (!hasParameterValue(e.getPropertyName()))
+            if (!overrides(e.getPropertyName()))
                 propertyChangeSupport.firePropertyChange(e.getPropertyName(), e.getOldValue(),
                         ChangedValue.of(e.getNewValue(), true));
         });

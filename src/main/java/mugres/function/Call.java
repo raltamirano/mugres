@@ -318,8 +318,8 @@ public class Call<T> implements Parametrizable {
     }
 
     @Override
-    public boolean hasParameterValue(final String name) {
-        return parametrizableSupport.hasParameterValue(name);
+    public boolean overrides(final String name) {
+        return parametrizableSupport.overrides(name);
     }
 
     @Override
