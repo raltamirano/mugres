@@ -6,6 +6,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -152,6 +153,21 @@ public final class ParametrizableSupport implements Parametrizable {
     }
 
     @Override
+    public void undoOverride(final String name) {
+        if (overrides(name)) {
+            final Object oldValue;
+            if (target != null) {
+                final DataType dataType = parameter(name).dataType();
+                oldValue = dataType.get(target, name);
+                dataType.clear(target, name);
+            } else {
+                oldValue = values.remove(name);
+            }
+            propertyChangeSupport.firePropertyChange(name, oldValue, ChangedValue.of(parameterValue(name), true));
+        }
+    }
+
+    @Override
     public boolean hasParentParameterValueSource() {
         return parentParameterValuesSource != null;
     }
@@ -191,12 +207,16 @@ public final class ParametrizableSupport implements Parametrizable {
         private final boolean fromParent;
 
         private ChangedValue(final Object value, final boolean fromParent) {
-            this.value = value instanceof ChangedValue ? ((ChangedValue)value).value() : value;
+            this.value = unwrap(value);
             this.fromParent = fromParent;
         }
 
         public static ChangedValue of(final Object value, final boolean fromParent) {
             return new ChangedValue(value, fromParent);
+        }
+
+        public static Object unwrap(final Object value) {
+            return value instanceof ChangedValue ? ((ChangedValue)value).value() : value;
         }
 
         public Object value() {
@@ -205,6 +225,23 @@ public final class ParametrizableSupport implements Parametrizable {
 
         public boolean fromParent() {
             return fromParent;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null) return false;
+            if (o instanceof ChangedValue) {
+                final ChangedValue that = (ChangedValue) o;
+                return Objects.equals(value, that.value);
+            } else {
+                return Objects.equals(value, o);
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(value);
         }
 
         @Override

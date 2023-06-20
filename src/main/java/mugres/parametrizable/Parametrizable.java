@@ -36,6 +36,20 @@ public interface Parametrizable {
     boolean overrides(final String name);
 
     /**
+     * Ensures the parameter value is overridden in this Parametrizable by copying the current value
+     * from the Parent if necessary
+     */
+    default void makeOverride(final String name) {
+        if (!overrides(name))
+            parameterValue(name, parameterValue(name));
+    }
+
+    /**
+     * Undoes override of the given parameter
+     */
+    void undoOverride(final String name);
+
+    /**
      * Tells whether this Parametrizable has a Parent Parameter Value Source or not
      */
     boolean hasParentParameterValueSource();

@@ -267,6 +267,11 @@ public class Song implements Parametrizable {
     }
 
     @Override
+    public void undoOverride(final String name) {
+        parametrizableSupport.undoOverride(name);
+    }
+
+    @Override
     public boolean hasParentParameterValueSource() {
         return parametrizableSupport.hasParentParameterValueSource();
     }

@@ -77,7 +77,10 @@ public interface Context {
         @Override
         public void put(final String key, final Object value) {
             final Object oldValue = get(key);
-            this.data.put(key, value);
+            if (value == null || TEMPO.equals(key) && ((int)value) == 0)
+                this.data.remove(key);
+            else
+                this.data.put(key, value);
             propertyChangeSupport.firePropertyChange(key, oldValue, value);
         }
 

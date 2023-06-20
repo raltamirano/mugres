@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 
 import static mugres.utils.Reflections.getMethodFor;
 import static mugres.utils.Reflections.setMethodFor;
+import static mugres.utils.Utils.defaultValue;
 
 public enum DataType {
     /** {@link Length} */
@@ -64,7 +65,12 @@ public enum DataType {
         }
     }
 
-    private static String capitalizeFirstLetter(final String input) {
-        return Character.toUpperCase(input.charAt(0)) + input.substring(1);
+    public void clear(final Object target, final String propertyName) {
+        try {
+            final Method setter = setMethodFor(target.getClass(), propertyName, baseType);
+            setter.invoke(target, defaultValue(setter.getParameterTypes()[0]));
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
