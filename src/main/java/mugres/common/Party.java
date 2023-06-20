@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import static mugres.common.MIDI.DEFAULT_CHANNEL;
 
-public class Party {
+public class Party implements Comparable<Party> {
     private String name;
     private Instrument instrument;
     private int channel;
@@ -67,6 +67,11 @@ public class Party {
                 ", instrument=" + instrument +
                 ", channel=" + channel +
                 '}';
+    }
+
+    @Override
+    public int compareTo(final Party o) {
+        return name.compareTo(o.name);
     }
 
     // A handful of commonly used parties.
