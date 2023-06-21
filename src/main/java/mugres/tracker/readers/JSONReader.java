@@ -3,8 +3,8 @@ package mugres.tracker.readers;
 import mugres.common.Context;
 import mugres.common.Key;
 import mugres.common.TimeSignature;
+import mugres.common.Track;
 import mugres.function.Call;
-import mugres.common.Party;
 import mugres.tracker.Pattern;
 import mugres.tracker.Song;
 import org.apache.commons.io.IOUtils;
@@ -40,19 +40,19 @@ public class JSONReader implements Reader {
             final Pattern pattern = song.createPattern(name, measures);
             loadContext(patternData, pattern.context());
 
-            // Party/function calls matrix
-            for(String partyName : patternData.getJSONObject("matrix").keySet()) {
-                final Party party = Party.WellKnownParties.valueOf(partyName).party();
-                final Object partyCallsObject = patternData.getJSONObject("matrix").get(partyName);
-                final List<Object> partyCalls = new ArrayList<>();
-                if (partyCallsObject instanceof JSONArray) {
-                    final JSONArray partyCallsArray = (JSONArray) partyCallsObject;
-                    for(int index=0; index < partyCallsArray.length(); index++)
-                        partyCalls.add(partyCallsArray.get(index));
+            // Track/function calls matrix
+            for(String trackName : patternData.getJSONObject("matrix").keySet()) {
+                final Track track = Track.WellKnownTracks.valueOf(trackName).track();
+                final Object trackCallsObject = patternData.getJSONObject("matrix").get(trackName);
+                final List<Object> trackCalls = new ArrayList<>();
+                if (trackCallsObject instanceof JSONArray) {
+                    final JSONArray trackCallsArray = (JSONArray) trackCallsObject;
+                    for(int index=0; index < trackCallsArray.length(); index++)
+                        trackCalls.add(trackCallsArray.get(index));
                 } else
-                    partyCalls.add(partyCallsObject);
+                    trackCalls.add(trackCallsObject);
 
-                for(Object callDataObject : partyCalls) {
+                for(Object callDataObject : trackCalls) {
                     if (callDataObject instanceof JSONObject) {
                         final JSONObject callData = (JSONObject)callDataObject;
                         final Map<String, String> arguments = new HashMap<>();
@@ -77,10 +77,10 @@ public class JSONReader implements Reader {
 
                         final String callSpec = callData.getString("call");
                         final Call call = Call.parse(callSpec, arguments);
-                        pattern.addPart(party, call);
+                        pattern.addPart(track, call);
                     } else {
                         final Call call = Call.parse(callDataObject.toString());
-                        pattern.addPart(party, call);
+                        pattern.addPart(track, call);
                     }
                 }
             }

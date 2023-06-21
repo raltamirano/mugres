@@ -5,7 +5,7 @@ import mugres.common.DrumKit;
 import mugres.common.Instrument;
 import mugres.common.Interval;
 import mugres.common.Note;
-import mugres.common.Party;
+import mugres.common.Track;
 import mugres.common.Scale;
 import mugres.common.Tonality;
 import mugres.common.Value;
@@ -42,18 +42,18 @@ public class RandomSong {
         final Song song = Song.of("Song " + UUID.randomUUID(),
                 Context.basicContext().tempo(RND.nextInt(RANDOM_MAX_TEMPO - RANDOM_MIN_TEMPO) + RANDOM_MIN_TEMPO ));
 
-        final List<Party> parties = new ArrayList<>();
-        final int numberOfParties = RND.nextInt(RANDOM_MAX_PARTIES) + 1;
-        for(int i = 0; i < numberOfParties; i++)
-            parties.add(Party.of("Party " + i, random(Instrument.values(), Instrument.DrumKit), i));
+        final List<Track> tracks = new ArrayList<>();
+        final int numberOfTracks = RND.nextInt(RANDOM_MAX_TRACKS) + 1;
+        for(int i = 0; i < numberOfTracks; i++)
+            tracks.add(Track.of("Track " + i, random(Instrument.values(), Instrument.DrumKit), i));
 
         final boolean hasPercussion = RND.nextBoolean();
         final boolean percussionAlwaysPresent = RND.nextBoolean();
         final boolean alwaysSamePercussionStyle = RND.nextBoolean();
         final PercussionStyle percussionStyle = alwaysSamePercussionStyle ?
                 random(asList(PercussionStyle.values())) : null;
-        final Party percussionParty = hasPercussion ?
-                Party.of("Percussion", Instrument.DrumKit, PERCUSSION) : null;
+        final Track percussionTrack = hasPercussion ?
+                Track.of("Percussion", Instrument.DrumKit, PERCUSSION) : null;
 
         final List<Pattern> patterns = new ArrayList<>();
         final int numberOfPatterns = RND.nextInt(RANDOM_MAX_PATTERNS) + 1;
@@ -74,7 +74,7 @@ public class RandomSong {
         final Note root = random(Note.values());
 
         for(final Pattern pattern : patterns) {
-            for (final Party party : parties) {
+            for (final Track track : tracks) {
                 final Note actualRoot = useSameRoot ? root : random(Note.values());
                 final Scale actualScale = useSameScale ? scale : random(scales);
                 final int startingOctave = random(RANDOM_STARTING_OCTAVE_OPTIONS);
@@ -87,7 +87,7 @@ public class RandomSong {
                                 Random.OCTAVES_TO_GENERATE, octavesToGenerate,
                                 Random.ROOT, actualRoot
                         );
-                        pattern.addPart(party, Call.of("random", pattern.measures(), randomArguments));
+                        pattern.addPart(track, Call.of("random", pattern.measures(), randomArguments));
                         break;
                     case 1: // Text Melody
                         final Map<String, Object> textMelodyArguments = toMap(
@@ -102,7 +102,7 @@ public class RandomSong {
                                         UUID.randomUUID().toString(),
                                         UUID.randomUUID().toString()))
                         );
-                        pattern.addPart(party, Call.of("textMelody", pattern.measures(), textMelodyArguments));
+                        pattern.addPart(track, Call.of("textMelody", pattern.measures(), textMelodyArguments));
                         break;
                     case 2: // Arp
                         final Map<String, Object> arpArguments = toMap(
@@ -110,7 +110,7 @@ public class RandomSong {
                                         RANDOM_MAX_ARP_PITCHES, startingOctave),
                                 Arp2.PATTERN, randomArpPattern()
                         );
-                        pattern.addPart(party, Call.of("arp2", pattern.measures(), arpArguments));
+                        pattern.addPart(track, Call.of("arp2", pattern.measures(), arpArguments));
                         break;
                     case 3: // Euclidean patterns
                         final List<EuclideanPattern> euclideanPatterns = new ArrayList<>();
@@ -126,7 +126,7 @@ public class RandomSong {
                                 Euclides.ROOT, actualRoot,
                                 Euclides.CYCLE, pattern.context().timeSignature().measuresLength(RND.nextBoolean() ? 1 : 2)
                         );
-                        pattern.addPart(party, Call.of("euclides", pattern.measures(), euclidesArguments));
+                        pattern.addPart(track, Call.of("euclides", pattern.measures(), euclidesArguments));
                         break;
                 }
             }
@@ -151,7 +151,7 @@ public class RandomSong {
                                     Euclides.PITCHES, kitPieces.stream().map(DrumKit::pitch).collect(Collectors.toList()),
                                     Euclides.CYCLE, pattern.context().timeSignature().measuresLength(min((RND.nextBoolean() ? 1 : 2), pattern.measures()))
                             );
-                            pattern.addPart(percussionParty, Call.of("euclides", pattern.measures(), euclidesArguments));
+                            pattern.addPart(percussionTrack, Call.of("euclides", pattern.measures(), euclidesArguments));
                             break;
                     }
                 }
@@ -201,7 +201,7 @@ public class RandomSong {
         return String.join("", steps);
     }
 
-    private static final int RANDOM_MAX_PARTIES = 5;
+    private static final int RANDOM_MAX_TRACKS = 5;
     private static final int RANDOM_MAX_PATTERNS = 3;
     private static final Set<Integer> RANDOM_PATTERNS_LENGTHS = new HashSet<>(asList(8, 16, 32 ));
     private static final Set<Integer> RANDOM_SINGLE_PATTERN_REPETITIONS = new HashSet<>(asList( 8, 12, 16, 20, 24 ));

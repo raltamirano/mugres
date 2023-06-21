@@ -2,7 +2,6 @@ package mugres.tracker.performance;
 
 import mugres.tracker.Event;
 import mugres.common.Instrument;
-import mugres.common.Party;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,23 +9,23 @@ import java.util.List;
 import java.util.Objects;
 
 public class Track {
-    private final Party party;
+    private final mugres.common.Track track;
     private final List<Event> events = new ArrayList<>();
 
-    public Track(final Party party) {
-        this.party = party;
+    public Track(final mugres.common.Track track) {
+        this.track = track;
     }
 
-    public Party party() {
-        return party;
+    public mugres.common.Track track() {
+        return track;
     }
 
     public int channel() {
-        return party.channel();
+        return track.channel();
     }
 
     public Instrument instrument() {
-        return party.instrument();
+        return track.instrument();
     }
 
     public List<Event> events() {
@@ -43,16 +42,16 @@ public class Track {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Track track = (Track) o;
-        return party.equals(track.party);
+        return this.track.equals(track.track);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(party);
+        return Objects.hash(track);
     }
 
     @Override
     public String toString() {
-        return party.toString();
+        return track.toString();
     }
 }

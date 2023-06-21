@@ -34,10 +34,9 @@ public class Call<T> implements Parametrizable {
                    final Parametrizable parentParameterValuesSource) {
         this.function = function;
         if (parentParameterValuesSource != null)
-            this.parametrizableSupport = ParametrizableSupport.forTarget(function.parameters(),
-                    this, parentParameterValuesSource);
+            this.parametrizableSupport = ParametrizableSupport.of(function.parameters(), parentParameterValuesSource);
         else
-            this.parametrizableSupport = ParametrizableSupport.forTarget(function.parameters(), this);
+            this.parametrizableSupport = ParametrizableSupport.of(function.parameters());
         if (arguments != null)
             arguments.forEach((key, value) -> parameterValue(key, value));
     }

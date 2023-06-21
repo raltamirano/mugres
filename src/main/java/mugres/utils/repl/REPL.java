@@ -3,7 +3,7 @@ package mugres.utils.repl;
 import mugres.MUGRES;
 import mugres.common.Context;
 import mugres.common.Key;
-import mugres.common.Party;
+import mugres.common.Track;
 import mugres.common.TimeSignature;
 import mugres.function.Call;
 import mugres.function.Function;
@@ -37,7 +37,7 @@ public class REPL {
     private static Map<Integer, String> patternsMap = new HashMap<>();
     private static Sequencer sequencer;
     private static Context functionCallsContext = Context.basicContext();
-    private static Party functionCallsParty = Party.WellKnownParties.PIANO.party();
+    private static Track functionCallsTrack = Track.WellKnownTracks.PIANO.track();
     private static String loopingPattern = null;
     private static Sequence loopingPatternMidiSequence = null;
     private static final Map<String, java.util.function.Function<String[], Boolean>> HANDLERS = new HashMap<>();
@@ -76,9 +76,9 @@ public class REPL {
         HANDLERS.put("calls-tempo", REPL::callsSetTempo);
         HANDLERS.put("calls-key", REPL::callsSetKey);
         HANDLERS.put("calls-ts", REPL::callsSetTimeSignature);
-        HANDLERS.put("calls-party", REPL::callsSetParty);
+        HANDLERS.put("calls-track", REPL::callsSetTrack);
         HANDLERS.put("calls-show-functions", REPL::callsShowFunctions);
-        HANDLERS.put("calls-show-parties", REPL::callsShowAvailableParties);
+        HANDLERS.put("calls-show-tracks", REPL::callsShowAvailableTracks);
         HANDLERS.put("call", REPL::callsExecute);
         HANDLERS.put("stop", REPL::stop);
         HANDLERS.put("quit", REPL::quit);
@@ -313,7 +313,7 @@ public class REPL {
             System.out.println(String.format("Tempo = %d", functionCallsContext.tempo()));
             System.out.println(String.format("Key = %s", functionCallsContext.key()));
             System.out.println(String.format("Time Signature = %s", functionCallsContext.timeSignature()));
-            System.out.println(String.format("Party = %s", functionCallsParty.name()));
+            System.out.println(String.format("Track = %s", functionCallsTrack.name()));
         }
 
         return true;
@@ -356,22 +356,22 @@ public class REPL {
         return true;
     }
 
-    private static boolean callsSetParty(final String[] args) {
+    private static boolean callsSetTrack(final String[] args) {
         if (args.length != 2) {
-            System.out.println(args[0] + ": single argument expected: Party ID");
+            System.out.println(args[0] + ": single argument expected: Track ID");
         } else {
-            functionCallsParty = Party.WellKnownParties.valueOf(args[1]).party();
+            functionCallsTrack = Track.WellKnownTracks.valueOf(args[1]).track();
         }
 
         return true;
     }
 
-    private static boolean callsShowAvailableParties(final String[] args) {
+    private static boolean callsShowAvailableTracks(final String[] args) {
         if (args.length != 1) {
             System.out.println(args[0] + ": no arguments expected");
         } else {
-            for(Party.WellKnownParties w : Party.WellKnownParties.values())
-                System.out.println(String.format("%-30s\t%s", w.name(), w.party().name()));
+            for(Track.WellKnownTracks w : Track.WellKnownTracks.values())
+                System.out.println(String.format("%-30s\t%s", w.name(), w.track().name()));
         }
 
         return true;
@@ -386,7 +386,7 @@ public class REPL {
                 functionCallSong = (Song)call.execute(functionCallsContext).data();
                 break;
             case EVENTS:
-                functionCallSong = Song.of(functionCallsContext, functionCallsParty, call);
+                functionCallSong = Song.of(functionCallsContext, functionCallsTrack, call);
                 break;
             default:
                 System.out.println("Unhandled function artifact: " + call.getFunction().artifact());

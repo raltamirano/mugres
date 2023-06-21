@@ -3,14 +3,14 @@ package mugres.tracker.performance;
 import mugres.common.Key;
 import mugres.common.Length;
 import mugres.common.TimeSignature;
-import mugres.common.Party;
+import mugres.common.Track;
 
 import java.util.*;
 
 public class Performance {
     private final String song;
     private final List<Control.ControlEvent> controlEvents = new ArrayList<>();
-    private final Set<Track> tracks = new HashSet<>();
+    private final Set<mugres.tracker.performance.Track> tracks = new HashSet<>();
     private Length length = Length.ZERO;
 
     public Performance(String song) {
@@ -25,7 +25,7 @@ public class Performance {
         return Collections.unmodifiableList(controlEvents);
     }
 
-    public Set<Track> tracks() {
+    public Set<mugres.tracker.performance.Track> tracks() {
         return Collections.unmodifiableSet(tracks);
     }
 
@@ -38,13 +38,13 @@ public class Performance {
         controlEvents.add(Control.ControlEvent.of(position, control));
     }
 
-    public Track createTrack(final Party party) {
-        if (tracks.stream().anyMatch(t -> t.party().name().equalsIgnoreCase(party.name())))
-            throw new IllegalArgumentException("party");
+    public mugres.tracker.performance.Track createTrack(final Track track) {
+        if (tracks.stream().anyMatch(t -> t.track().name().equalsIgnoreCase(track.name())))
+            throw new IllegalArgumentException("track");
 
-        final Track track = new Track(party);
-        tracks.add(track);
-        return track;
+        final mugres.tracker.performance.Track performanceTrack = new mugres.tracker.performance.Track(track);
+        tracks.add(performanceTrack);
+        return performanceTrack;
     }
 
     public Length length() {

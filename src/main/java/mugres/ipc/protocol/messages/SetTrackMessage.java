@@ -4,11 +4,11 @@ import mugres.common.Instrument;
 import mugres.ipc.protocol.Message;
 import mugres.ipc.protocol.MessageType;
 
-public class SetPartyMessage extends Message {
+public class SetTrackMessage extends Message {
     private final Instrument instrument;
 
-    private SetPartyMessage(final Instrument instrument) {
-        super(MessageType.SET_PARTY);
+    private SetTrackMessage(final Instrument instrument) {
+        super(MessageType.SET_TRACK);
 
         if (instrument == null)
             throw new IllegalArgumentException("instrument");
@@ -16,8 +16,8 @@ public class SetPartyMessage extends Message {
         this.instrument = instrument;
     }
 
-    public static SetPartyMessage of(final Instrument instrument) {
-        return new SetPartyMessage(instrument);
+    public static SetTrackMessage of(final Instrument instrument) {
+        return new SetTrackMessage(instrument);
     }
 
     public Instrument instrument() {

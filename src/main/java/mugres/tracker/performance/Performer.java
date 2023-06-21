@@ -3,7 +3,7 @@ package mugres.tracker.performance;
 import mugres.common.Context;
 import mugres.tracker.Event;
 import mugres.common.Length;
-import mugres.common.Party;
+import mugres.common.Track;
 import mugres.function.Call;
 import mugres.function.Result;
 import mugres.tracker.Arrangement;
@@ -21,34 +21,34 @@ public class Performer {
         addControlEvents(song, performance);
 
         Length offset = Length.ZERO;
-        for(Party party : song.parties()) {
-            final Track track = performance.createTrack(party);
+        for(Track track : song.tracks()) {
+            final mugres.tracker.performance.Track performanceTrack = performance.createTrack(track);
             offset = Length.ZERO;
             for(Arrangement.Entry arrangementEntry : song.arrangement().entries()) {
                 for(int arrangementEntryIndex = 1; arrangementEntryIndex <= arrangementEntry.repetitions();
                     arrangementEntryIndex++) {
-                    if (arrangementEntry.pattern().hasPartsFor(party)) {
+                    if (arrangementEntry.pattern().hasPartsFor(track)) {
                         if (!arrangementEntry.pattern().isRegenerate() &&
                                 generatedMatrix.containsKey(arrangementEntry.pattern().name()) &&
-                                generatedMatrix.get(arrangementEntry.pattern().name()).containsKey(party.name())) {
+                                generatedMatrix.get(arrangementEntry.pattern().name()).containsKey(track.name())) {
                             for (Event event : generatedMatrix.get(arrangementEntry.pattern().name())
-                                    .get(party.name())) {
-                                track.addEvent(event.offset(offset));
+                                    .get(track.name())) {
+                                performanceTrack.addEvent(event.offset(offset));
                             }
                         } else {
                             if (!generatedMatrix.containsKey(arrangementEntry.pattern().name()))
                                 generatedMatrix.put(arrangementEntry.pattern().name(), new HashMap<>());
 
-                            final List<Event> partyEvents = new ArrayList<>();
+                            final List<Event> trackEvents = new ArrayList<>();
                             Length previousCallsOffset = Length.ZERO;
-                            for (Call<List<Event>> call : arrangementEntry.pattern().matrix().get(party)) {
+                            for (Call<List<Event>> call : arrangementEntry.pattern().matrix().get(track)) {
                                 final Context callContext = arrangementEntry.pattern().context();
                                 final Result<List<Event>> functionResult = call.execute(callContext);
                                 if (functionResult.succeeded()) {
                                     final List<Event> events = sortEventList(functionResult.data());
                                     for (Event event : events) {
-                                        track.addEvent(event.offset(offset.plus(previousCallsOffset)));
-                                        partyEvents.add(event.offset(previousCallsOffset));
+                                        performanceTrack.addEvent(event.offset(offset.plus(previousCallsOffset)));
+                                        trackEvents.add(event.offset(previousCallsOffset));
                                     }
                                     previousCallsOffset = previousCallsOffset.plus(callContext.timeSignature()
                                             .measuresLength(call.getLengthInMeasures()));
@@ -59,7 +59,7 @@ public class Performer {
                             }
 
                             generatedMatrix.get(arrangementEntry.pattern().name())
-                                    .put(party.name(), partyEvents);
+                                    .put(track.name(), trackEvents);
                         }
                     }
                     offset = offset.plus(arrangementEntry.pattern().length());

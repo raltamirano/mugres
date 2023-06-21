@@ -18,7 +18,7 @@ import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 
 import static mugres.common.MIDI.END_OF_TRACK;
-import static mugres.common.Party.WellKnownParties.DRUMS;
+import static mugres.common.Track.WellKnownTracks.DRUMS;
 
 public class Drummer extends Processor {
     private final Configuration configuration;
@@ -179,7 +179,7 @@ public class Drummer extends Processor {
 
     public void hit(final DrumKit piece, final int velocity) {
         if (velocity > 0)
-            output().send(Signal.on(DRUMS.party().channel(), piece.pitch(), velocity));
+            output().send(Signal.on(DRUMS.track().channel(), piece.pitch(), velocity));
     }
 
     public void play(final String grooveName, final SwitchMode switchMode) {

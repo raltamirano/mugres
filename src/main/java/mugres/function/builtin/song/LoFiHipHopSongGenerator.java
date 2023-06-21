@@ -6,7 +6,7 @@ import mugres.common.Instrument;
 import mugres.common.Key;
 import mugres.common.Length;
 import mugres.common.Note;
-import mugres.common.Party;
+import mugres.common.Track;
 import mugres.common.chords.ChordProgression;
 import mugres.function.Call;
 import mugres.function.Function;
@@ -188,11 +188,11 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
         return  directions;
     }
 
-    private static final Party DRUMS = Party.WellKnownParties.DRUMS.party();
-    private static final Party BASS = Party.WellKnownParties.BASS.party();
-    private static final Party PAD = Party.WellKnownParties.PAD1.party();
-    private static final Party E_PIANO = Party.of("E-Piano", Instrument.Rhodes_Piano, 3);
-    private static final Party MELODY = Party.of("Melody", Instrument.Synth_Voice, 4);
+    private static final Track DRUMS = Track.WellKnownTracks.DRUMS.track();
+    private static final Track BASS = Track.WellKnownTracks.BASS.track();
+    private static final Track PAD = Track.WellKnownTracks.PAD1.track();
+    private static final Track E_PIANO = Track.of("E-Piano", Instrument.Rhodes_Piano, 3);
+    private static final Track MELODY = Track.of("Melody", Instrument.Synth_Voice, 4);
 
     private static final int MIN_TEMPO = 60;
     private static final int MAX_TEMPO = 100;

@@ -5,9 +5,9 @@ import mugres.ipc.Header;
 import mugres.ipc.Reader;
 import mugres.ipc.protocol.Message;
 import mugres.ipc.protocol.MessageType;
-import mugres.ipc.stream.readers.PartyListStreamMessageReader;
+import mugres.ipc.stream.readers.TrackListStreamMessageReader;
 import mugres.ipc.stream.readers.PlainStreamMessageReader;
-import mugres.ipc.stream.readers.SetPartyStreamMessageReader;
+import mugres.ipc.stream.readers.SetTrackStreamMessageReader;
 import mugres.ipc.stream.readers.SignalsStreamMessageReader;
 import mugres.ipc.stream.readers.StreamMessageReader;
 import mugres.ipc.stream.readers.TextStreamMessageReader;
@@ -50,7 +50,7 @@ public class DataInputStreamReader implements Reader {
         READERS.put(MessageType.SIGNALS, new SignalsStreamMessageReader());
         READERS.put(MessageType.BYE, new PlainStreamMessageReader());
         READERS.put(MessageType.TEXT, new TextStreamMessageReader());
-        READERS.put(MessageType.SET_PARTY, new SetPartyStreamMessageReader());
-        READERS.put(MessageType.PARTY_LIST, new PartyListStreamMessageReader());
+        READERS.put(MessageType.SET_TRACK, new SetTrackStreamMessageReader());
+        READERS.put(MessageType.TRACK_LIST, new TrackListStreamMessageReader());
     }
 }

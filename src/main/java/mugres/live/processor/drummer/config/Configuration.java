@@ -13,7 +13,7 @@ import javax.sound.midi.Sequence;
 import java.util.HashMap;
 import java.util.Map;
 
-import static mugres.common.Party.WellKnownParties.DRUMS;
+import static mugres.common.Track.WellKnownTracks.DRUMS;
 import static mugres.function.Function.LENGTH_PARAMETER;
 
 public class Configuration {
@@ -105,7 +105,7 @@ public class Configuration {
     private Sequence generateSequence(final Context context, final PreRecordedDrums generator,
                                       final Map<String, Object> arguments) {
         final Sequence sequence = ToMidiSequenceConverter.getInstance().convert(Performer
-                .perform(Song.of(context, DRUMS.party(), Call.of(generator, arguments))));
+                .perform(Song.of(context, DRUMS.track(), Call.of(generator, arguments))));
 
         // Remove control track
         sequence.deleteTrack(sequence.getTracks()[0]);

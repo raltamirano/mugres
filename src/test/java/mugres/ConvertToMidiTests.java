@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import javax.sound.midi.Sequence;
 
 import static mugres.common.Context.basicContext;
-import static mugres.common.Party.WellKnownParties.GUITAR1;
+import static mugres.common.Track.WellKnownTracks.GUITAR1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -25,7 +25,7 @@ public class ConvertToMidiTests {
         final Pattern pattern = song.createPattern("A", 2);
         song.arrangement().append(pattern, 1);
 
-        pattern.addPart(GUITAR1.party(), Call.of(random(), pattern.measures()));
+        pattern.addPart(GUITAR1.track(), Call.of(random(), pattern.measures()));
 
         final Performance performance = Performer.perform(song);
         System.out.println(String.format("Performance =>%n%s", performance));
@@ -34,7 +34,7 @@ public class ConvertToMidiTests {
         assertEquals(song.title(), performance.song());
         assertEquals(1, performance.tracks().size());
         final Track track = performance.tracks().iterator().next();
-        assertEquals(GUITAR1.party().name(), track.party());
+        assertEquals(GUITAR1.track().name(), track.track());
         // 2 measures of random quarter notes (pattern A repeats once)
         assertEquals(8, track.events().size());
 
@@ -42,8 +42,8 @@ public class ConvertToMidiTests {
         final Sequence sequence = ToMidiSequenceConverter.getInstance().convert(performance);
 
         assertNotNull(sequence);
-        // # tracks for a type 1 Midi file = one for control of tempo, key, etc + one per party
-        assertEquals(song.parties().size() + 1, sequence.getTracks().length);
+        // # tracks for a type 1 Midi file = one for control of tempo, key, etc + one per song's track
+        assertEquals(song.tracks().size() + 1, sequence.getTracks().length);
         // Expected events: set track name, tempo, time signature, and end-of-track
         assertEquals(4, sequence.getTracks()[0].size());
         // Expected events: one set track name, 16 note events (8 notes, each one get both a NOTE_ON

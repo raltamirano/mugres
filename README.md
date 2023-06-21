@@ -23,20 +23,20 @@ Some example commands you can issue:
 
     mugres> random-song        
     mugres> stop    
-    mugres> calls-party DRUMS
+    mugres> calls-track DRUMS
     mugres> call halfTime(len=4)
     mugres> stop    
-    mugres> calls-party STRINGS1
+    mugres> calls-track STRINGS1
     mugres> call random(len=2,scale='Minor Pentatonic',root=G)
 
 Here you have the commands:
 
 ###### call
 ###### calls-key
-###### calls-party
+###### calls-track
 ###### calls-show-context
 ###### calls-show-functions
-###### calls-show-parties
+###### calls-show-tracks
 ###### calls-tempo
 ###### calls-ts
 ###### help

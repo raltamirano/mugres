@@ -5,9 +5,9 @@ import mugres.ipc.Header;
 import mugres.ipc.Writer;
 import mugres.ipc.protocol.Message;
 import mugres.ipc.protocol.MessageType;
-import mugres.ipc.stream.writers.PartyListStreamMessageWriter;
+import mugres.ipc.stream.writers.TrackListStreamMessageWriter;
 import mugres.ipc.stream.writers.PlainStreamMessageWriter;
-import mugres.ipc.stream.writers.SetPartyStreamMessageWriter;
+import mugres.ipc.stream.writers.SetTrackStreamMessageWriter;
 import mugres.ipc.stream.writers.SignalsStreamMessageWriter;
 import mugres.ipc.stream.writers.StreamMessageWriter;
 import mugres.ipc.stream.writers.TextStreamMessageWriter;
@@ -50,7 +50,7 @@ public class DataOutputStreamWriter implements Writer {
         WRITERS.put(MessageType.SIGNALS, new SignalsStreamMessageWriter());
         WRITERS.put(MessageType.BYE, new PlainStreamMessageWriter());
         WRITERS.put(MessageType.TEXT, new TextStreamMessageWriter());
-        WRITERS.put(MessageType.SET_PARTY, new SetPartyStreamMessageWriter());
-        WRITERS.put(MessageType.PARTY_LIST, new PartyListStreamMessageWriter());
+        WRITERS.put(MessageType.SET_TRACK, new SetTrackStreamMessageWriter());
+        WRITERS.put(MessageType.TRACK_LIST, new TrackListStreamMessageWriter());
     }
 }

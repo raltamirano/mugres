@@ -43,7 +43,7 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
 
             for(mugres.tracker.performance.Track track : performance.tracks()) {
                 final Track midiTrack = sequence.createTrack();
-                trackName(midiTrack, track.party().name());
+                trackName(midiTrack, track.track().name());
                 programChange(midiTrack, track.channel(), track.instrument());
                 for(Event event : track.events())
                     addNoteEvent(midiTrack, track.channel(), event);

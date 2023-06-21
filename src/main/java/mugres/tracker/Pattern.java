@@ -5,7 +5,7 @@ import mugres.common.Context.ComposableContext;
 import mugres.common.DataType;
 import mugres.common.Key;
 import mugres.common.Length;
-import mugres.common.Party;
+import mugres.common.Track;
 import mugres.common.TimeSignature;
 import mugres.function.Call;
 import mugres.function.Function;
@@ -29,7 +29,7 @@ public class Pattern implements Parametrizable, Comparable<Pattern> {
     private final Context context;
     private boolean regenerate = false;
     private int beatSubdivision = 0;
-    private final Map<Party, List<Call<List<Event>>>> matrix = new HashMap<>();
+    private final Map<Track, List<Call<List<Event>>>> matrix = new HashMap<>();
     private final ParametrizableSupport parametrizableSupport;
 
     private static final Set<Parameter> PARAMETERS;
@@ -132,40 +132,40 @@ public class Pattern implements Parametrizable, Comparable<Pattern> {
         this.beatSubdivision = beatSubdivision;
     }
 
-    public Map<Party, List<Call<List<Event>>>> matrix() {
+    public Map<Track, List<Call<List<Event>>>> matrix() {
         return Collections.unmodifiableMap(matrix);
     }
 
-    public void addPart(final Party.WellKnownParties party, final Call<List<Event>> call) {
-        if (party == null)
-            throw new IllegalArgumentException("party");
+    public void addPart(final Track.WellKnownTracks track, final Call<List<Event>> call) {
+        if (track == null)
+            throw new IllegalArgumentException("track");
 
-        addPart(party.party(), call);
+        addPart(track.track(), call);
     }
 
-    public void addPart(final Party party, final Call<List<Event>> call) {
-        if (party == null)
-            throw new IllegalArgumentException("party");
+    public void addPart(final Track track, final Call<List<Event>> call) {
+        if (track == null)
+            throw new IllegalArgumentException("track");
         if (call == null)
             throw new IllegalArgumentException("call");
         if (!(call.getFunction() instanceof Function.EventsFunction))
             throw new IllegalArgumentException("Call's function must be an instance of " + Function.EventsFunction.class.getName());
 
-        if (!song.parties().contains(party))
-            song.addParty(party);
+        if (!song.tracks().contains(track))
+            song.addTrack(track);
 
-        matrix.computeIfAbsent(party, p -> new ArrayList()).add(call);
+        matrix.computeIfAbsent(track, p -> new ArrayList()).add(call);
     }
 
-    public void removePartsFor(final Party party) {
-        if (party == null)
-            throw new IllegalArgumentException("party");
+    public void removePartsFor(final Track track) {
+        if (track == null)
+            throw new IllegalArgumentException("track");
 
-        matrix.remove(party);
+        matrix.remove(track);
     }
 
-    public boolean hasPartsFor(final Party party) {
-        return matrix.containsKey(party) && !matrix.get(party).isEmpty();
+    public boolean hasPartsFor(final Track track) {
+        return matrix.containsKey(track) && !matrix.get(track).isEmpty();
     }
 
     public Length length() {

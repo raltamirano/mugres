@@ -5,7 +5,7 @@ import mugres.common.Context;
 import mugres.common.DataType;
 import mugres.common.Instrument;
 import mugres.common.Key;
-import mugres.common.Party;
+import mugres.common.Track;
 import mugres.common.TimeSignature;
 import mugres.function.Call;
 import mugres.parametrizable.Parameter;
@@ -35,14 +35,14 @@ public class Song implements Parametrizable {
     public static final Object MAX_TEMPO = 10000;
     public static final String TITLE = "title";
     public static final String PATTERNS = "patterns";
-    public static final String PARTIES = "parties";
+    public static final String TRACKS = "tracks";
     public static final String ARRANGEMENT = "arrangement";
 
     private String title;
     private final Context context;
     private final Map<String, Object> metadata;
     private final Set<Pattern> patterns = new TreeSet<>();
-    private final Set<Party> parties = new HashSet<>();
+    private final Set<Track> tracks = new HashSet<>();
     private final Arrangement arrangement = Arrangement.of();
     private final ParametrizableSupport parametrizableSupport;
     private final PropertyChangeSupport propertyChangeSupport;
@@ -86,36 +86,36 @@ public class Song implements Parametrizable {
     }
 
     public static Song of(final Call<List<Event>> call) {
-        return of(Context.basicContext(), Party.WellKnownParties.PIANO, call);
+        return of(Context.basicContext(), Track.WellKnownTracks.PIANO, call);
     }
 
-    public static Song of(final Party.WellKnownParties functionCallsParty,
+    public static Song of(final Track.WellKnownTracks functionCallsTrack,
                           final Call<List<Event>> call) {
-        return of(Context.basicContext(), functionCallsParty.party(), call);
+        return of(Context.basicContext(), functionCallsTrack.track(), call);
     }
 
     public static Song of(final Context functionCallsContext,
                           final Call<List<Event>> call) {
-        return of(functionCallsContext,Party.WellKnownParties.PIANO.party(), call);
+        return of(functionCallsContext, Track.WellKnownTracks.PIANO.track(), call);
     }
 
-    public static Song of(final Party functionCallsParty,
+    public static Song of(final Track functionCallsTrack,
                           final Call<List<Event>> call) {
-        return of(Context.basicContext(), functionCallsParty, call);
+        return of(Context.basicContext(), functionCallsTrack, call);
     }
 
     public static Song of(final Context functionCallsContext,
-                          final Party.WellKnownParties functionCallsParty,
+                          final Track.WellKnownTracks functionCallsTrack,
                           final Call<List<Event>> call) {
-            return of(functionCallsContext, functionCallsParty.party(), call);
+            return of(functionCallsContext, functionCallsTrack.track(), call);
     }
 
     public static Song of(final Context functionCallsContext,
-                          final Party functionCallsParty,
+                          final Track functionCallsTrack,
                           final Call<List<Event>> call) {
         final Song functionCallSong = new Song("Untitled", functionCallsContext, null);
         final Pattern pattern = functionCallSong.createPattern("A", call.getLengthInMeasures());
-        pattern.addPart(functionCallsParty, call);
+        pattern.addPart(functionCallsTrack, call);
         functionCallSong.arrangement.append(pattern, 1);
         return functionCallSong;
     }
@@ -210,40 +210,40 @@ public class Song implements Parametrizable {
             throw new IllegalArgumentException("Unknown pattern: " + patternName);
 
         final Song patternSong = Song.of(patternName, context);
-        patternSong.parties.addAll(parties);
+        patternSong.tracks.addAll(tracks);
         patternSong.patterns.add(pattern);
         patternSong.arrangement.append(pattern, 1);
 
         return patternSong;
     }
 
-    public void addParty(final Party party) {
-        if (party == null)
-            throw new IllegalArgumentException("party");
-        if (parties.contains(party))
-            throw new IllegalArgumentException("Party with same name already exists: " + party.name());
+    public void addTrack(final Track track) {
+        if (track == null)
+            throw new IllegalArgumentException("track");
+        if (tracks.contains(track))
+            throw new IllegalArgumentException("track with same name already exists: " + track.name());
 
-        parties.add(party);
-        propertyChangeSupport.firePropertyChange(PARTIES, null, parties());
+        tracks.add(track);
+        propertyChangeSupport.firePropertyChange(TRACKS, null, tracks());
     }
 
-    public void createParty(final Instrument instrument) {
+    public void createTrack(final Instrument instrument) {
         if (instrument == null)
             throw new IllegalArgumentException("instrument");
 
-        parties.add(Party.of(createPartyName(), instrument));
-        propertyChangeSupport.firePropertyChange(PARTIES, null, parties());
+        tracks.add(Track.of(createTrackName(), instrument));
+        propertyChangeSupport.firePropertyChange(TRACKS, null, tracks());
     }
 
-    public void removeParty(final Party party) {
-        if (party == null)
-            throw new IllegalArgumentException("party");
-        if (!parties.contains(party))
+    public void removeTrack(final Track track) {
+        if (track == null)
+            throw new IllegalArgumentException("track");
+        if (!tracks.contains(track))
             return;
 
-        if(parties.remove(party)) {
-            patterns.forEach(p -> p.removePartsFor(party));
-            propertyChangeSupport.firePropertyChange(PARTIES, null, parties());
+        if(tracks.remove(track)) {
+            patterns.forEach(p -> p.removePartsFor(track));
+            propertyChangeSupport.firePropertyChange(TRACKS, null, tracks());
         }
     }
 
@@ -259,14 +259,14 @@ public class Song implements Parametrizable {
         return null;
     }
 
-    public Set<Party> parties() {
-        return Collections.unmodifiableSet(parties);
+    public Set<Track> tracks() {
+        return Collections.unmodifiableSet(tracks);
     }
 
-    public Party party(final String name) {
-        for(Party party : parties)
-            if (party.name().equals(name))
-                return party;
+    public Track track(final String name) {
+        for(Track track : tracks)
+            if (track.name().equals(name))
+                return track;
 
         return null;
     }
@@ -303,14 +303,14 @@ public class Song implements Parametrizable {
         throw new IllegalStateException("Couldn't generate unique pattern name!");
     }
 
-    private String createPartyName() {
+    private String createTrackName() {
         for(int index=0; index<Integer.MAX_VALUE; index++) {
-            final String candidate = String.format("Party %04d", index);
-            if (party(candidate) == null)
+            final String candidate = String.format("Track %04d", index);
+            if (track(candidate) == null)
                 return candidate;
         }
 
-        throw new IllegalStateException("Couldn't generate unique party name!");
+        throw new IllegalStateException("Couldn't generate unique track name!");
     }
 
     @Override
@@ -321,7 +321,7 @@ public class Song implements Parametrizable {
                 ",\n\tcontext=" + context +
                 ",\n\tmetadata=" + metadata +
                 ",\n\tpatterns=" + patterns +
-                ",\n\tparties=" + parties +
+                ",\n\ttracks=" + tracks +
                 ",\n\tarrangement=" + arrangement +
                 "\n}";
     }
