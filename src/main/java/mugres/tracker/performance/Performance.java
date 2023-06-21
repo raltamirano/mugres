@@ -3,7 +3,7 @@ package mugres.tracker.performance;
 import mugres.common.Key;
 import mugres.common.Length;
 import mugres.common.TimeSignature;
-import mugres.common.Track;
+import mugres.tracker.Track;
 
 import java.util.*;
 

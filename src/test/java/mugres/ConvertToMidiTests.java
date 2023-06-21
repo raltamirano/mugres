@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import javax.sound.midi.Sequence;
 
 import static mugres.common.Context.basicContext;
-import static mugres.common.Track.WellKnownTracks.GUITAR1;
+import static mugres.tracker.Track.WellKnownTracks.GUITAR1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

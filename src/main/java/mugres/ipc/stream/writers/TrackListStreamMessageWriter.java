@@ -1,6 +1,6 @@
 package mugres.ipc.stream.writers;
 
-import mugres.common.Track;
+import mugres.tracker.Track;
 import mugres.ipc.protocol.messages.TrackListMessage;
 
 import java.io.DataOutputStream;

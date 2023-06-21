@@ -9,14 +9,14 @@ import java.util.List;
 import java.util.Objects;
 
 public class Track {
-    private final mugres.common.Track track;
+    private final mugres.tracker.Track track;
     private final List<Event> events = new ArrayList<>();
 
-    public Track(final mugres.common.Track track) {
+    public Track(final mugres.tracker.Track track) {
         this.track = track;
     }
 
-    public mugres.common.Track track() {
+    public mugres.tracker.Track track() {
         return track;
     }
 

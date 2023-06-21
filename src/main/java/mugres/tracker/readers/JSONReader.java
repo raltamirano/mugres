@@ -3,7 +3,7 @@ package mugres.tracker.readers;
 import mugres.common.Context;
 import mugres.common.Key;
 import mugres.common.TimeSignature;
-import mugres.common.Track;
+import mugres.tracker.Track;
 import mugres.function.Call;
 import mugres.tracker.Pattern;
 import mugres.tracker.Song;

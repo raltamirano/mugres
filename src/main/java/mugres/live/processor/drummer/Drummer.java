@@ -18,7 +18,7 @@ import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 
 import static mugres.common.MIDI.END_OF_TRACK;
-import static mugres.common.Track.WellKnownTracks.DRUMS;
+import static mugres.tracker.Track.WellKnownTracks.DRUMS;
 
 public class Drummer extends Processor {
     private final Configuration configuration;

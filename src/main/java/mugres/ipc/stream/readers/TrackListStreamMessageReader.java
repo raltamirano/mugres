@@ -1,7 +1,7 @@
 package mugres.ipc.stream.readers;
 
 import mugres.common.Instrument;
-import mugres.common.Track;
+import mugres.tracker.Track;
 import mugres.ipc.protocol.MessageType;
 import mugres.ipc.protocol.messages.TrackListMessage;
 

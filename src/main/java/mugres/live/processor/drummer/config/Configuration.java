@@ -13,7 +13,7 @@ import javax.sound.midi.Sequence;
 import java.util.HashMap;
 import java.util.Map;
 
-import static mugres.common.Track.WellKnownTracks.DRUMS;
+import static mugres.tracker.Track.WellKnownTracks.DRUMS;
 import static mugres.function.Function.LENGTH_PARAMETER;
 
 public class Configuration {

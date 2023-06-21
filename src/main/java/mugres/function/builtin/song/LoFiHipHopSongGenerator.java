@@ -6,7 +6,7 @@ import mugres.common.Instrument;
 import mugres.common.Key;
 import mugres.common.Length;
 import mugres.common.Note;
-import mugres.common.Track;
+import mugres.tracker.Track;
 import mugres.common.chords.ChordProgression;
 import mugres.function.Call;
 import mugres.function.Function;

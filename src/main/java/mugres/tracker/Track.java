@@ -1,4 +1,6 @@
-package mugres.common;
+package mugres.tracker;
+
+import mugres.common.Instrument;
 
 import java.util.Objects;
 

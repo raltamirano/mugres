@@ -3,7 +3,7 @@ package mugres.tracker.performance;
 import mugres.common.Context;
 import mugres.tracker.Event;
 import mugres.common.Length;
-import mugres.common.Track;
+import mugres.tracker.Track;
 import mugres.function.Call;
 import mugres.function.Result;
 import mugres.tracker.Arrangement;

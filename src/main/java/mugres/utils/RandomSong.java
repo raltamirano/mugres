@@ -5,7 +5,7 @@ import mugres.common.DrumKit;
 import mugres.common.Instrument;
 import mugres.common.Interval;
 import mugres.common.Note;
-import mugres.common.Track;
+import mugres.tracker.Track;
 import mugres.common.Scale;
 import mugres.common.Tonality;
 import mugres.common.Value;

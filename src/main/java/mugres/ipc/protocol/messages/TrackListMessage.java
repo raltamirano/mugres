@@ -1,6 +1,6 @@
 package mugres.ipc.protocol.messages;
 
-import mugres.common.Track;
+import mugres.tracker.Track;
 import mugres.ipc.protocol.Message;
 import mugres.ipc.protocol.MessageType;
 
