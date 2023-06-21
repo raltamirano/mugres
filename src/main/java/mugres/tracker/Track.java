@@ -7,9 +7,13 @@ import java.util.Objects;
 import static mugres.common.MIDI.DEFAULT_CHANNEL;
 
 public class Track implements Comparable<Track> {
+    public static final int MIN_BEAT_SUBDIVISION = 1;
+    public static final int MAX_BEAT_SUBDIVISION = 128;
+
     private String name;
     private Instrument instrument;
     private int channel;
+    private int beatSubdivision = MIN_BEAT_SUBDIVISION;
 
     private Track(final String name, final Instrument instrument, final int channel) {
         this.name = name;
@@ -45,6 +49,17 @@ public class Track implements Comparable<Track> {
         return channel;
     }
 
+    public int beatSubdivision() {
+        return beatSubdivision;
+    }
+
+    public void beatSubdivision(final int beatSubdivision) {
+        if (beatSubdivision < MIN_BEAT_SUBDIVISION || beatSubdivision > MAX_BEAT_SUBDIVISION)
+            throw new IllegalArgumentException("beatSubdivision");
+
+        this.beatSubdivision = beatSubdivision;
+    }
+
     public void channel(int channel) {
         this.channel = channel;
     }
@@ -68,6 +83,7 @@ public class Track implements Comparable<Track> {
                 "name='" + name + '\'' +
                 ", instrument=" + instrument +
                 ", channel=" + channel +
+                ", beatSubdivision=" + beatSubdivision +
                 '}';
     }
 

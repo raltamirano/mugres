@@ -20,14 +20,11 @@ import static mugres.common.Context.PATTERN_LENGTH;
 public class Pattern implements Parametrizable, Comparable<Pattern> {
     public static final int MIN_MEASURES = 1;
     public static final int MAX_MEASURES = 10000;
-    public static final int MIN_BEAT_SUBDIVISION = 0;
-    public static final int MAX_BEAT_SUBDIVISION = 128;
 
     private String name;
     private final Song song;
     private final Context context;
     private boolean regenerate = false;
-    private int beatSubdivision = 0;
     private final Map<Track, List<Call<List<Event>>>> matrix = new HashMap<>();
     private final ParametrizableSupport parametrizableSupport;
 
@@ -51,9 +48,6 @@ public class Pattern implements Parametrizable, Comparable<Pattern> {
                 "Whether this pattern should be regenerated every time it's referenced " +
                         "in the Arrangement or not",
                 DataType.BOOLEAN, true, false, false, false));
-        PARAMETERS.add(Parameter.of("beatSubdivision", "Beat subdivision", 7,
-                "Beat subdivision", DataType.INTEGER, true,  0, MIN_BEAT_SUBDIVISION,
-                MAX_BEAT_SUBDIVISION, false));
     }
 
     public Pattern(final Song song, final String name, final int measures) {
@@ -123,14 +117,6 @@ public class Pattern implements Parametrizable, Comparable<Pattern> {
         this.regenerate = regenerate;
     }
 
-    public int beatSubdivision() {
-        return beatSubdivision;
-    }
-
-    public void beatSubdivision(final int beatSubdivision) {
-        this.beatSubdivision = beatSubdivision;
-    }
-
     public Map<Track, List<Call<List<Event>>>> matrix() {
         return Collections.unmodifiableMap(matrix);
     }
@@ -194,7 +180,6 @@ public class Pattern implements Parametrizable, Comparable<Pattern> {
                 ",\n\tsong=" + song.title() +
                 ",\n\tcontext=" + context +
                 ",\n\tregenerate=" + regenerate +
-                ",\n\tbeatSubdivision=" + beatSubdivision +
                 ",\n\tmatrix=" + matrix +
                 "\n}";
     }
