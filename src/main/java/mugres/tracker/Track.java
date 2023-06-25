@@ -1,24 +1,54 @@
 package mugres.tracker;
 
+import mugres.common.DataType;
 import mugres.common.Instrument;
+import mugres.parametrizable.Parameter;
+import mugres.parametrizable.Parametrizable;
+import mugres.parametrizable.ParametrizableSupport;
 
+import java.beans.PropertyChangeListener;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import static mugres.common.MIDI.DEFAULT_CHANNEL;
+import static mugres.common.MIDI.MAX_CHANNEL;
+import static mugres.common.MIDI.MIN_CHANNEL;
 
-public class Track implements Comparable<Track> {
+public class Track implements Parametrizable, Comparable<Track> {
     public static final int MIN_BEAT_SUBDIVISION = 1;
     public static final int MAX_BEAT_SUBDIVISION = 128;
+    public static final int DEFAULT_BEAT_SUBDIVISION = MIN_BEAT_SUBDIVISION;
 
     private String name;
     private Instrument instrument;
     private int channel;
     private int beatSubdivision = MIN_BEAT_SUBDIVISION;
+    private final ParametrizableSupport parametrizableSupport;
+
+    private static final Set<Parameter> PARAMETERS;
+
+    static {
+        PARAMETERS = new HashSet<>();
+
+        PARAMETERS.add(Parameter.of("name", "Name", 1, "Name",
+                DataType.TEXT, false, ""));
+        PARAMETERS.add(Parameter.of("instrument", "Instrument", 2, "Instrument",
+                DataType.INSTRUMENT, false,120));
+        PARAMETERS.add(Parameter.of("channel", "MIDI Channel", 3, "MIDI Channel",
+                DataType.INTEGER, false, DEFAULT_CHANNEL, MIN_CHANNEL, MAX_CHANNEL, false));
+        PARAMETERS.add(Parameter.of("beatSubdivision", "Beat Subdivision", 3,
+                "Beat Subdivision", DataType.INTEGER, false, DEFAULT_BEAT_SUBDIVISION,
+                MIN_BEAT_SUBDIVISION, MAX_BEAT_SUBDIVISION, false));
+    }
 
     private Track(final String name, final Instrument instrument, final int channel) {
         this.name = name;
         this.instrument = instrument;
         this.channel = channel;
+
+        this.parametrizableSupport = ParametrizableSupport.forTarget(PARAMETERS, this);
     }
 
     public static Track of(final String name, final Instrument instrument) {
@@ -87,6 +117,56 @@ public class Track implements Comparable<Track> {
                 '}';
     }
 
+    @Override
+    public Set<Parameter> parameters() {
+        return parametrizableSupport.parameters();
+    }
+
+    @Override
+    public Parameter parameter(final String name) {
+        return parametrizableSupport.parameter(name);
+    }
+
+    @Override
+    public void parameterValue(final String name, Object value) {
+        parametrizableSupport.parameterValue(name, value);
+    }
+
+    @Override
+    public Object parameterValue(final String name) {
+        return parametrizableSupport.parameterValue(name);
+    }
+
+    @Override
+    public boolean overrides(final String name) {
+        return parametrizableSupport.overrides(name);
+    }
+
+    @Override
+    public void undoOverride(final String name) {
+        parametrizableSupport.undoOverride(name);
+    }
+
+    @Override
+    public boolean hasParentParameterValueSource() {
+        return parametrizableSupport.hasParentParameterValueSource();
+    }
+
+    @Override
+    public Map<String, Object> parameterValues() {
+        return parametrizableSupport.parameterValues();
+    }
+
+    @Override
+    public void addParameterValueChangeListener(final PropertyChangeListener listener) {
+        parametrizableSupport.addParameterValueChangeListener(listener);
+    }
+
+    @Override
+    public void removeParameterValueChangeListener(final PropertyChangeListener listener) {
+        parametrizableSupport.removeParameterValueChangeListener(listener);
+    }
+    
     @Override
     public int compareTo(final Track o) {
         return name.compareTo(o.name);
