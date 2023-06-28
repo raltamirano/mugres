@@ -31,7 +31,7 @@ public class ConvertToMidiTests {
         System.out.println(String.format("Performance =>%n%s", performance));
 
         assertNotNull(performance);
-        assertEquals(song.title(), performance.song());
+        assertEquals(song.name(), performance.song());
         assertEquals(1, performance.tracks().size());
         final Track track = performance.tracks().iterator().next();
         assertEquals(GUITAR1.track().name(), track.track());

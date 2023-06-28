@@ -16,7 +16,7 @@ public class Performer {
 
     public static Performance perform(final Song song) {
         final Map<String, Map<String, List<Event>>> generatedMatrix = new HashMap<>();
-        final Performance performance = new Performance(song.title());
+        final Performance performance = new Performance(song.name());
 
         addControlEvents(song, performance);
 

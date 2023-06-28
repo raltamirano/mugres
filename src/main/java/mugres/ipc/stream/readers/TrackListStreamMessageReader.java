@@ -9,6 +9,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class TrackListStreamMessageReader implements StreamMessageReader<TrackListMessage> {
     @Override
@@ -19,7 +20,7 @@ public class TrackListStreamMessageReader implements StreamMessageReader<TrackLi
         for(int i=0; i<numberOfTracks; i++) {
             final String name = dataInputStream.readUTF();
             final Instrument instrument = Instrument.of(dataInputStream.readInt());
-            trackList.add(Track.of(name, instrument));
+            trackList.add(Track.of(UUID.randomUUID(), name, instrument));
         }
         return TrackListMessage.of(trackList);
     }

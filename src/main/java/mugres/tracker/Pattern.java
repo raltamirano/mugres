@@ -9,25 +9,26 @@ import mugres.common.TimeSignature;
 import mugres.function.Call;
 import mugres.function.Function;
 import mugres.parametrizable.Parameter;
-import mugres.parametrizable.Parametrizable;
 import mugres.parametrizable.ParametrizableSupport;
 
-import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import static mugres.common.Context.PATTERN_LENGTH;
 
-public class Pattern implements Parametrizable, Comparable<Pattern> {
+public class Pattern extends TrackerElement {
     public static final int MIN_MEASURES = 1;
     public static final int MAX_MEASURES = 10000;
 
-    private String name;
     private final Song song;
-    private final Context context;
     private boolean regenerate = false;
     private final Map<Track, List<Call<List<Event>>>> matrix = new HashMap<>();
-    private final ParametrizableSupport parametrizableSupport;
-
     private static final Set<Parameter> PARAMETERS;
 
     static {
@@ -50,23 +51,24 @@ public class Pattern implements Parametrizable, Comparable<Pattern> {
                 DataType.BOOLEAN, true, false, false, false));
     }
 
-    public Pattern(final Song song, final String name, final int measures) {
+    private Pattern(final UUID id, final Song song, final String name, final int measures) {
+        super(id, name, ComposableContext.of(song.context()));
+
         this.song = song;
-        this.name = name;
-        this.context = ComposableContext.of(song.context());
-        this.context.put(PATTERN_LENGTH, measures);
 
-        this.parametrizableSupport = ParametrizableSupport.forTarget(PARAMETERS, this, song);
-        this.parametrizableSupport.setCustomHasParameterValueLogic(p ->
-                Context.MAIN_PROPERTIES.contains(p) ? context.overrides(p) : null);
+        context().put(PATTERN_LENGTH, measures);
     }
 
-    public String name() {
-        return name;
+    public static Pattern of(final UUID id, final Song song, final String name, final int measures) {
+        return new Pattern(id, song, name, measures);
     }
 
-    public void name(final String name) {
-        this.name = name;
+    @Override
+    protected ParametrizableSupport createParametrizableSupport() {
+        final ParametrizableSupport parametrizableSupport = ParametrizableSupport.forTarget(PARAMETERS, this, song);
+        parametrizableSupport.setCustomHasParameterValueLogic(p ->
+                Context.MAIN_PROPERTIES.contains(p) ? context().overrides(p) : null);
+        return parametrizableSupport;
     }
 
     public Song song() {
@@ -74,39 +76,11 @@ public class Pattern implements Parametrizable, Comparable<Pattern> {
     }
 
     public int measures() {
-        return context.get(PATTERN_LENGTH);
+        return context().get(PATTERN_LENGTH);
     }
 
     public void measures(final int measures) {
-        context.put(PATTERN_LENGTH, measures);
-    }
-
-    public int tempo() {
-        return context.tempo();
-    }
-
-    public void tempo(final int tempo) {
-        context.tempo(tempo);
-    }
-
-    public Key key() {
-        return context.key();
-    }
-
-    public void key(final Key key) {
-        context.key(key);
-    }
-
-    public TimeSignature timeSignature() {
-        return context.timeSignature();
-    }
-
-    public void timeSignature(final TimeSignature timeSignature) {
-        context.timeSignature(timeSignature);
-    }
-
-    public Context context() {
-        return context;
+        context().put(PATTERN_LENGTH, measures);
     }
 
     public boolean isRegenerate() {
@@ -154,88 +128,20 @@ public class Pattern implements Parametrizable, Comparable<Pattern> {
     }
 
     public Length length() {
-        return context.timeSignature().measuresLength(measures());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Pattern pattern = (Pattern) o;
-        return name.equals(pattern.name) &&
-                song.equals(pattern.song);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, song);
+        return context().timeSignature().measuresLength(measures());
     }
 
     @Override
     public String toString() {
         return "Pattern" +
                 "\n{" +
-                "\n\tname='" + name + '\'' +
+                "\n\tid=" + id() +
+                ",\n\tname='" + name() + '\'' +
                 ",\n\tmeasures=" + measures() +
-                ",\n\tsong=" + song.title() +
-                ",\n\tcontext=" + context +
+                ",\n\tsong=" + song.name() +
+                ",\n\tcontext=" + context() +
                 ",\n\tregenerate=" + regenerate +
                 ",\n\tmatrix=" + matrix +
                 "\n}";
-    }
-
-    @Override
-    public Set<Parameter> parameters() {
-        return parametrizableSupport.parameters();
-    }
-
-    @Override
-    public Parameter parameter(final String name) {
-        return parametrizableSupport.parameter(name);
-    }
-
-    @Override
-    public void parameterValue(final String name, Object value) {
-        parametrizableSupport.parameterValue(name, value);
-    }
-
-    @Override
-    public Object parameterValue(final String name) {
-        return parametrizableSupport.parameterValue(name);
-    }
-
-    @Override
-    public boolean overrides(final String name) {
-        return parametrizableSupport.overrides(name);
-    }
-
-    @Override
-    public void undoOverride(final String name) {
-        parametrizableSupport.undoOverride(name);
-    }
-
-    @Override
-    public boolean hasParentParameterValueSource() {
-        return parametrizableSupport.hasParentParameterValueSource();
-    }
-
-    @Override
-    public Map<String, Object> parameterValues() {
-        return parametrizableSupport.parameterValues();
-    }
-
-    @Override
-    public void addParameterValueChangeListener(final PropertyChangeListener listener) {
-        parametrizableSupport.addParameterValueChangeListener(listener);
-    }
-
-    @Override
-    public void removeParameterValueChangeListener(final PropertyChangeListener listener) {
-        parametrizableSupport.removeParameterValueChangeListener(listener);
-    }
-
-    @Override
-    public int compareTo(final Pattern o) {
-        return this.name.compareTo(o.name);
     }
 }

@@ -8,50 +8,42 @@ import mugres.common.Key;
 import mugres.common.TimeSignature;
 import mugres.function.Call;
 import mugres.parametrizable.Parameter;
-import mugres.parametrizable.Parametrizable;
 import mugres.parametrizable.ParametrizableSupport;
 import mugres.tracker.performance.Performance;
 import mugres.tracker.performance.Performer;
 import mugres.tracker.performance.converters.ToMidiSequenceConverter;
 
 import javax.sound.midi.Sequence;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import static mugres.utils.ObjectMapping.mapToPojo;
 
 /** MUGRES internal representation of a song. */
-public class Song implements Parametrizable {
+public class Song extends TrackerElement {
     public static final Object MIN_TEMPO = 1;
     public static final Object MAX_TEMPO = 10000;
-    public static final String TITLE = "title";
     public static final String PATTERNS = "patterns";
     public static final String TRACKS = "tracks";
     public static final String ARRANGEMENT = "arrangement";
 
-    private String title;
-    private final Context context;
     private final Map<String, Object> metadata;
     private final Set<Pattern> patterns = new TreeSet<>();
     private final Set<Track> tracks = new HashSet<>();
-    private final Arrangement arrangement = Arrangement.of();
-    private final ParametrizableSupport parametrizableSupport;
-    private final PropertyChangeSupport propertyChangeSupport;
+    private final Arrangement arrangement;
 
     private static final Set<Parameter> PARAMETERS;
 
     static {
         PARAMETERS = new HashSet<>();
 
-        PARAMETERS.add(Parameter.of("title", "Title", 1, "Title",
+        PARAMETERS.add(Parameter.of("name", "name", 1, "name",
                 DataType.TEXT, false, "Untitled"));
         PARAMETERS.add(Parameter.of(Context.TEMPO, "BPM", 2, "BPM",
                 DataType.INTEGER, false,120, MIN_TEMPO, MAX_TEMPO, false));
@@ -61,27 +53,32 @@ public class Song implements Parametrizable {
                 "Time Signature", DataType.TIME_SIGNATURE, false, TimeSignature.TS44));
     }
 
-    private Song(final String title, final Context context, final Map<String, Object> metadata) {
-        this.title = title;
-        this.context = context;
+    private Song(final UUID id, final String name, final Context context, final Map<String, Object> metadata) {
+        super(id, name, context);
+
         this.metadata = metadata != null ? new HashMap<>(metadata) : new HashMap<>();
 
-        this.parametrizableSupport = ParametrizableSupport.forTarget(PARAMETERS, this);
-        this.parametrizableSupport.setCustomHasParameterValueLogic(p ->
-                Context.MAIN_PROPERTIES.contains(p) ? context.overrides(p) : null);
-        this.propertyChangeSupport = new PropertyChangeSupport(this);
+        this.arrangement = Arrangement.of(this);
         this.arrangement.addPropertyChangeListener(e -> {
             if (e.getPropertyName().equals(Arrangement.ENTRIES))
-                propertyChangeSupport.firePropertyChange(ARRANGEMENT, null, arrangement);
+                propertyChangeSupport().firePropertyChange(ARRANGEMENT, null, arrangement);
         });
     }
 
-    public static Song of(final String title, final Context context) {
-        return new Song(title, context, null);
+    @Override
+    protected ParametrizableSupport createParametrizableSupport() {
+        final ParametrizableSupport parametrizableSupport = ParametrizableSupport.forTarget(PARAMETERS, this);
+        parametrizableSupport.setCustomHasParameterValueLogic(p ->
+                Context.MAIN_PROPERTIES.contains(p) ? context().overrides(p) : null);
+        return parametrizableSupport;
     }
 
-    public static Song of(final String title, final Context context, final Map<String, Object> metadata) {
-        return new Song(title, context, metadata);
+    public static Song of(final String name, final Context context) {
+        return new Song(UUID.randomUUID(), name, context, null);
+    }
+
+    public static Song of(final String name, final Context context, final Map<String, Object> metadata) {
+        return new Song(UUID.randomUUID(), name, context, metadata);
     }
 
     public static Song of(final Call<List<Event>> call) {
@@ -112,55 +109,11 @@ public class Song implements Parametrizable {
     public static Song of(final Context functionCallsContext,
                           final Track functionCallsTrack,
                           final Call<List<Event>> call) {
-        final Song functionCallSong = new Song("Untitled", functionCallsContext, null);
+        final Song functionCallSong = new Song(UUID.randomUUID(),"Untitled", functionCallsContext, null);
         final Pattern pattern = functionCallSong.createPattern("A", call.getLengthInMeasures());
         pattern.addPart(functionCallsTrack, call);
         functionCallSong.arrangement.append(pattern, 1);
         return functionCallSong;
-    }
-
-    public String title() {
-        return title;
-    }
-
-    public void title(final String title) {
-        final String oldValue = this.title;
-        this.title = title;
-        propertyChangeSupport.firePropertyChange(TITLE, oldValue, title);
-    }
-
-    public int tempo() {
-        return context.tempo();
-    }
-
-    public void tempo(final int tempo) {
-        final int oldValue = tempo();
-        context.tempo(tempo);
-        propertyChangeSupport.firePropertyChange(Context.TEMPO, oldValue, tempo);
-    }
-
-    public Key key() {
-        return context.key();
-    }
-
-    public void key(final Key key) {
-        final Key oldValue = key();
-        context.key(key);
-        propertyChangeSupport.firePropertyChange(Context.KEY, oldValue, key);
-    }
-
-    public TimeSignature timeSignature() {
-        return context.timeSignature();
-    }
-
-    public void timeSignature(final TimeSignature timeSignature) {
-        final TimeSignature oldValue = timeSignature();
-        context.timeSignature(timeSignature);
-        propertyChangeSupport.firePropertyChange(Context.TIME_SIGNATURE, oldValue, timeSignature);
-    }
-
-    public Context context() {
-        return context;
     }
 
     public Map<String, Object> metadata() {
@@ -183,22 +136,22 @@ public class Song implements Parametrizable {
         if (pattern(patternName) != null)
             throw new IllegalArgumentException(String.format("Pattern '%s' already exists!", patternName));
 
-        final Pattern pattern = new Pattern(this, patternName, measures);
+        final Pattern pattern = Pattern.of(UUID.randomUUID(),this, patternName, measures);
         patterns.add(pattern);
-        propertyChangeSupport.firePropertyChange(PATTERNS, null, patterns());
+        propertyChangeSupport().firePropertyChange(PATTERNS, null, patterns());
         return pattern;
     }
 
-    public void deletePattern(final String patternName) {
-        final Pattern toRemove = pattern(patternName);
+    public void deletePattern(final Pattern pattern) {
+        final Pattern toRemove = pattern(pattern.id());
         if (toRemove == null)
-            throw new IllegalArgumentException(String.format("Invalid pattern: ", patternName));
+            throw new IllegalArgumentException(String.format("Invalid pattern: ", pattern.name()));
 
         patterns.remove(toRemove);
-        propertyChangeSupport.firePropertyChange(PATTERNS, null, patterns());
+        propertyChangeSupport().firePropertyChange(PATTERNS, null, patterns());
 
         if (arrangement.removeAllForPattern(toRemove))
-            propertyChangeSupport.firePropertyChange(ARRANGEMENT, null, arrangement);
+            propertyChangeSupport().firePropertyChange(ARRANGEMENT, null, arrangement);
     }
 
     /** Creates a song that contains a single pattern from this song. That pattern will be arranged
@@ -208,7 +161,7 @@ public class Song implements Parametrizable {
         if (pattern == null)
             throw new IllegalArgumentException("Unknown pattern: " + patternName);
 
-        final Song patternSong = Song.of(patternName, context);
+        final Song patternSong = Song.of(patternName, context());
         patternSong.tracks.addAll(tracks);
         patternSong.patterns.add(pattern);
         patternSong.arrangement.append(pattern, 1);
@@ -223,15 +176,18 @@ public class Song implements Parametrizable {
             throw new IllegalArgumentException("track with same name already exists: " + track.name());
 
         tracks.add(track);
-        propertyChangeSupport.firePropertyChange(TRACKS, null, tracks());
+        propertyChangeSupport().firePropertyChange(TRACKS, null, tracks());
     }
 
-    public void createTrack(final Instrument instrument) {
+    public Track createTrack(final Instrument instrument) {
         if (instrument == null)
             throw new IllegalArgumentException("instrument");
 
-        tracks.add(Track.of(createTrackName(), instrument));
-        propertyChangeSupport.firePropertyChange(TRACKS, null, tracks());
+        final Track track = Track.of(UUID.randomUUID(), createTrackName(), instrument);
+        tracks.add(track);
+        propertyChangeSupport().firePropertyChange(TRACKS, null, tracks());
+
+        return track;
     }
 
     public void removeTrack(final Track track) {
@@ -242,12 +198,20 @@ public class Song implements Parametrizable {
 
         if(tracks.remove(track)) {
             patterns.forEach(p -> p.removePartsFor(track));
-            propertyChangeSupport.firePropertyChange(TRACKS, null, tracks());
+            propertyChangeSupport().firePropertyChange(TRACKS, null, tracks());
         }
     }
 
     public Set<Pattern> patterns() {
         return Collections.unmodifiableSet(patterns);
+    }
+
+    public Pattern pattern(final UUID id) {
+        for(Pattern pattern : patterns)
+            if (pattern.id().equals(id))
+                return pattern;
+
+        return null;
     }
 
     public Pattern pattern(final String name) {
@@ -260,6 +224,14 @@ public class Song implements Parametrizable {
 
     public Set<Track> tracks() {
         return Collections.unmodifiableSet(tracks);
+    }
+
+    public Track track(final UUID id) {
+        for(Track track : tracks)
+            if (track.id().equals(id))
+                return track;
+
+        return null;
     }
 
     public Track track(final String name) {
@@ -284,13 +256,6 @@ public class Song implements Parametrizable {
         MUGRES.output().send(this);
     }
 
-    public void addPropertyChangeListener(final PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
-    }
-
-    public void removePropertyChangeListener(final PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
-    }
 
     private String createPatternName() {
         for(int index=0; index<Integer.MAX_VALUE; index++) {
@@ -316,75 +281,13 @@ public class Song implements Parametrizable {
     public String toString() {
         return "Song" +
                 "\n{" +
-                "\n\ttitle='" + title + '\'' +
-                ",\n\tcontext=" + context +
+                "\n\tid=" + id() +
+                ",\n\tname='" + name() + '\'' +
+                ",\n\tcontext=" + context() +
                 ",\n\tmetadata=" + metadata +
                 ",\n\tpatterns=" + patterns +
                 ",\n\ttracks=" + tracks +
                 ",\n\tarrangement=" + arrangement +
                 "\n}";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Song song = (Song) o;
-        return title.equals(song.title);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(title);
-    }
-
-    @Override
-    public Set<Parameter> parameters() {
-        return parametrizableSupport.parameters();
-    }
-
-    @Override
-    public Parameter parameter(final String name) {
-        return parametrizableSupport.parameter(name);
-    }
-
-    @Override
-    public void parameterValue(final String name, Object value) {
-        parametrizableSupport.parameterValue(name, value);
-    }
-
-    @Override
-    public Object parameterValue(final String name) {
-        return parametrizableSupport.parameterValue(name);
-    }
-
-    @Override
-    public boolean overrides(final String name) {
-        return parametrizableSupport.overrides(name);
-    }
-
-    @Override
-    public void undoOverride(final String name) {
-        parametrizableSupport.undoOverride(name);
-    }
-
-    @Override
-    public boolean hasParentParameterValueSource() {
-        return parametrizableSupport.hasParentParameterValueSource();
-    }
-
-    @Override
-    public Map<String, Object> parameterValues() {
-        return parametrizableSupport.parameterValues();
-    }
-
-    @Override
-    public void addParameterValueChangeListener(final PropertyChangeListener listener) {
-        parametrizableSupport.addParameterValueChangeListener(listener);
-    }
-
-    @Override
-    public void removeParameterValueChangeListener(final PropertyChangeListener listener) {
-        parametrizableSupport.removeParameterValueChangeListener(listener);
     }
 }

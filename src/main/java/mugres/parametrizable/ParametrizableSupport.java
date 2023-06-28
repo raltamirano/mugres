@@ -41,7 +41,7 @@ public final class ParametrizableSupport implements Parametrizable {
     private ParametrizableSupport(final Set<Parameter> parameters,
                                   final Object target,
                                   final Parametrizable parentParameterValuesSource) {
-        if (parameters == null || parameters.isEmpty())
+        if (parameters == null)
             throw new IllegalArgumentException("parameters");
         if (target == null)
             throw new IllegalArgumentException("target");

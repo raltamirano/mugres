@@ -1,28 +1,45 @@
 package mugres.tracker;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
+import mugres.parametrizable.ParametrizableSupport;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
-public class Arrangement {
+import static java.util.Collections.emptySet;
+
+public class Arrangement extends TrackerElement {
     public static final String ENTRIES = "entries";
 
     private final List<Entry> entries = new ArrayList<>();
-    private final PropertyChangeSupport propertyChangeSupport;
+    private final Song song;
 
-    private Arrangement() {
-        this.propertyChangeSupport = new PropertyChangeSupport(this);
+    private Arrangement(final UUID id, final String name, final Song song) {
+        super(id, name, null);
+
+        if (song == null)
+            throw new IllegalArgumentException("song");
+
+        this.song = song;
     }
 
-    public static Arrangement of() {
-        return new Arrangement();
+
+    @Override
+    protected ParametrizableSupport createParametrizableSupport() {
+        return ParametrizableSupport.forTarget(emptySet(), this);
+    }
+
+    public static Arrangement of(final Song song) {
+        if (song == null)
+            throw new IllegalArgumentException("song");
+
+        return new Arrangement(UUID.randomUUID(), "Arrangement for song: " + song.id(), song);
     }
 
     public void append(final Pattern pattern, final int repetitions) {
-        entries.add(new Entry(pattern, repetitions));
-        propertyChangeSupport.firePropertyChange(ENTRIES, null, entries());
+        entries.add(Entry.of(this, pattern, repetitions));
+        propertyChangeSupport().firePropertyChange(ENTRIES, null, entries());
     }
 
     public void remove(final int index) {
@@ -30,7 +47,7 @@ public class Arrangement {
             return;
 
         entries.remove(index);
-        propertyChangeSupport.firePropertyChange(ENTRIES, null, entries());
+        propertyChangeSupport().firePropertyChange(ENTRIES, null, entries());
     }
 
     public void moveBack(final int index) {
@@ -38,7 +55,7 @@ public class Arrangement {
             return;
 
         Collections.swap(entries, index, index - 1);
-        propertyChangeSupport.firePropertyChange(ENTRIES, null, entries());
+        propertyChangeSupport().firePropertyChange(ENTRIES, null, entries());
     }
 
     public void moveForward(final int index) {
@@ -46,26 +63,18 @@ public class Arrangement {
             return;
 
         Collections.swap(entries, index, index + 1);
-        propertyChangeSupport.firePropertyChange(ENTRIES, null, entries());
+        propertyChangeSupport().firePropertyChange(ENTRIES, null, entries());
     }
 
     public boolean removeAllForPattern(Pattern toRemove) {
         final boolean removed = entries.removeIf(e -> e.pattern().equals(toRemove));
         if (removed)
-            propertyChangeSupport.firePropertyChange(ENTRIES, null, entries());
+            propertyChangeSupport().firePropertyChange(ENTRIES, null, entries());
         return removed;
     }
 
     public List<Entry> entries() {
         return Collections.unmodifiableList(entries);
-    }
-
-    public void addPropertyChangeListener(final PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
-    }
-
-    public void removePropertyChangeListener(final PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
     @Override
@@ -76,12 +85,29 @@ public class Arrangement {
     }
 
     public static class Entry {
+        private final Arrangement arrangement;
         private Pattern pattern;
         private int repetitions;
 
-        public Entry(Pattern pattern, int repetitions) {
+        private Entry(final Arrangement arrangement, final Pattern pattern, final int repetitions) {
+            if (arrangement == null)
+                throw new IllegalArgumentException("arrangement");
+            if (pattern == null)
+                throw new IllegalArgumentException("pattern");
+            if (repetitions <= 0)
+                throw new IllegalArgumentException("repetitions");
+
+            this.arrangement = arrangement;
             this.pattern = pattern;
             this.repetitions = repetitions;
+        }
+
+        public static Entry of(final Arrangement arrangement, Pattern pattern, int repetitions) {
+            return new Entry(arrangement, pattern, repetitions);
+        }
+
+        public Arrangement arrangement() {
+            return arrangement;
         }
 
         public Pattern pattern() {

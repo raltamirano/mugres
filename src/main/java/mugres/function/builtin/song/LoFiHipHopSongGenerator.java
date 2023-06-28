@@ -17,6 +17,7 @@ import mugres.tracker.Song;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static mugres.common.Context.basicContext;
@@ -191,8 +192,8 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
     private static final Track DRUMS = Track.WellKnownTracks.DRUMS.track();
     private static final Track BASS = Track.WellKnownTracks.BASS.track();
     private static final Track PAD = Track.WellKnownTracks.PAD1.track();
-    private static final Track E_PIANO = Track.of("E-Piano", Instrument.Rhodes_Piano, 3);
-    private static final Track MELODY = Track.of("Melody", Instrument.Synth_Voice, 4);
+    private static final Track E_PIANO = Track.of(UUID.randomUUID(), "E-Piano", Instrument.Rhodes_Piano, 3);
+    private static final Track MELODY = Track.of(UUID.randomUUID(), "Melody", Instrument.Synth_Voice, 4);
 
     private static final int MIN_TEMPO = 60;
     private static final int MAX_TEMPO = 100;

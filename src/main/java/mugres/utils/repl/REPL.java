@@ -135,7 +135,7 @@ public class REPL {
 
             System.out.println(String.format("Song loaded = %s", isSongLoaded() ? "Yes" : "No"));
             if (isSongLoaded()) {
-                System.out.println("Song: " + song.title());
+                System.out.println("Song: " + song.name());
                 System.out.println("Source file: " + songFile.getAbsolutePath());
                 System.out.println("Looping pattern: " + ((loopingPattern == null) ? "No" : loopingPattern));
             }
@@ -191,7 +191,7 @@ public class REPL {
 
                 if (!reload)
                     System.out.println(String.format("Successfully loaded song '%s' from '%s'",
-                            song.title(), songFile.getAbsolutePath()));
+                            song.name(), songFile.getAbsolutePath()));
             }
         } catch(final Throwable t) {
             t.printStackTrace();
