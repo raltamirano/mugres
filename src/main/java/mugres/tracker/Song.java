@@ -29,6 +29,8 @@ import static mugres.utils.ObjectMapping.mapToPojo;
 public class Song extends TrackerElement {
     public static final Object MIN_TEMPO = 1;
     public static final Object MAX_TEMPO = 10000;
+    public static final int MIN_BEAT_SUBDIVISION = 1;
+    public static final int MAX_BEAT_SUBDIVISION = 128;
     public static final String PATTERNS = "patterns";
     public static final String TRACKS = "tracks";
     public static final String ARRANGEMENT = "arrangement";

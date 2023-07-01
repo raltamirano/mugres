@@ -14,13 +14,8 @@ import static mugres.common.MIDI.MAX_CHANNEL;
 import static mugres.common.MIDI.MIN_CHANNEL;
 
 public class Track extends TrackerElement {
-    public static final int MIN_BEAT_SUBDIVISION = 1;
-    public static final int MAX_BEAT_SUBDIVISION = 128;
-    public static final int DEFAULT_BEAT_SUBDIVISION = MIN_BEAT_SUBDIVISION;
-
     private Instrument instrument;
     private int channel;
-    private int beatSubdivision = MIN_BEAT_SUBDIVISION;
 
     private static final Set<Parameter> PARAMETERS;
 
@@ -33,9 +28,6 @@ public class Track extends TrackerElement {
                 DataType.INSTRUMENT, false,120));
         PARAMETERS.add(Parameter.of("channel", "MIDI Channel", 3, "MIDI Channel",
                 DataType.INTEGER, false, DEFAULT_CHANNEL, MIN_CHANNEL, MAX_CHANNEL, false));
-        PARAMETERS.add(Parameter.of("beatSubdivision", "Beat Subdivision", 3,
-                "Beat Subdivision", DataType.INTEGER, false, DEFAULT_BEAT_SUBDIVISION,
-                MIN_BEAT_SUBDIVISION, MAX_BEAT_SUBDIVISION, false));
     }
 
     private Track(final UUID id, final String name, final Instrument instrument, final int channel) {
@@ -70,17 +62,6 @@ public class Track extends TrackerElement {
         return channel;
     }
 
-    public int beatSubdivision() {
-        return beatSubdivision;
-    }
-
-    public void beatSubdivision(final int beatSubdivision) {
-        if (beatSubdivision < MIN_BEAT_SUBDIVISION || beatSubdivision > MAX_BEAT_SUBDIVISION)
-            throw new IllegalArgumentException("beatSubdivision");
-
-        this.beatSubdivision = beatSubdivision;
-    }
-
     public void channel(int channel) {
         this.channel = channel;
     }
@@ -92,7 +73,6 @@ public class Track extends TrackerElement {
                 ", name='" + name() + '\'' +
                 ", instrument=" + instrument +
                 ", channel=" + channel +
-                ", beatSubdivision=" + beatSubdivision +
                 '}';
     }
 

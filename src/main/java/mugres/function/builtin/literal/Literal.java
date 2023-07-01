@@ -11,10 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static mugres.tracker.Song.MAX_BEAT_SUBDIVISION;
+import static mugres.tracker.Song.MIN_BEAT_SUBDIVISION;
+
 public class Literal extends EventsFunction {
     public Literal() {
         super("literal", "Literal",
-                Parameter.of(LITERAL, "Literal", 1, "Literal events to play",
+                Parameter.of("beatSubdivision", "Beat Subdivision", 1,
+                        "Beat Subdivision", DataType.INTEGER, false, MIN_BEAT_SUBDIVISION,
+                        MIN_BEAT_SUBDIVISION, MAX_BEAT_SUBDIVISION, false),
+                Parameter.of(LITERAL, "Literal", 2, "Literal events to play",
                         DataType.LITERAL, false)
         );
     }
