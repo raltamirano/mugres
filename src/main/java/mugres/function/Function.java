@@ -3,6 +3,7 @@ package mugres.function;
 import mugres.common.Context;
 import mugres.common.DataType;
 import mugres.function.builtin.literal.Literal;
+import mugres.function.builtin.misc.Silence;
 import mugres.tracker.Event;
 import mugres.common.Length;
 import mugres.common.TimeSignature;
@@ -230,6 +231,7 @@ public abstract class Function<T> {
         new TextMelody();
         new Euclides();
         new Literal();
+        new Silence();
     }
 
     private static synchronized void register(final Function function) {
