@@ -80,7 +80,9 @@ public class Pattern extends TrackerElement {
     }
 
     public void measures(final int measures) {
+        final int oldValue = measures();
         context().put(PATTERN_LENGTH, measures);
+        propertyChangeSupport().firePropertyChange(PATTERN_LENGTH, oldValue, measures);
     }
 
     public boolean isRegenerate() {

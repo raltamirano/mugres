@@ -59,6 +59,10 @@ public abstract class Function<T> {
         return description;
     }
 
+    public boolean literal() {
+        return this instanceof Literal;
+    }
+
     public Set<Parameter> parameters() {
         return Collections.unmodifiableSet(parameters);
     }
