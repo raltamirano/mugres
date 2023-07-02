@@ -95,6 +95,25 @@ public class Pattern extends TrackerElement {
         return Collections.unmodifiableMap(matrix);
     }
 
+    /**
+     * Returns the first function call for the given track on the matrix for this pattern, if any.
+     */
+    public Call<List<Event>> matrix(final Track track) {
+        final List<Call<List<Event>>> calls = matrix.get(track);
+        return (calls == null || calls.isEmpty()) ? null : calls.get(0);
+    }
+
+    /**
+     * Sets the first function call for the given track on the matrix for this pattern.
+     */
+    public void matrix(final Track track, final Call<List<Event>> call) {
+        final List<Call<List<Event>>> calls = validateTrackAndCallBeforeEditingCalls(track, call);
+        if (calls.isEmpty())
+            calls.add(call);
+        else
+            calls.set(0, call);
+    }
+
     public void addPart(final Track.WellKnownTracks track, final Call<List<Event>> call) {
         if (track == null)
             throw new IllegalArgumentException("track");
@@ -103,17 +122,7 @@ public class Pattern extends TrackerElement {
     }
 
     public void addPart(final Track track, final Call<List<Event>> call) {
-        if (track == null)
-            throw new IllegalArgumentException("track");
-        if (call == null)
-            throw new IllegalArgumentException("call");
-        if (!(call.getFunction() instanceof Function.EventsFunction))
-            throw new IllegalArgumentException("Call's function must be an instance of " + Function.EventsFunction.class.getName());
-
-        if (!song.tracks().contains(track))
-            song.addTrack(track);
-
-        matrix.computeIfAbsent(track, p -> new ArrayList()).add(call);
+        validateTrackAndCallBeforeEditingCalls(track, call).add(call);
     }
 
     public void removePartsFor(final Track track) {
@@ -129,6 +138,20 @@ public class Pattern extends TrackerElement {
 
     public Length length() {
         return context().timeSignature().measuresLength(measures());
+    }
+
+    private List<Call<List<Event>>> validateTrackAndCallBeforeEditingCalls(Track track, Call<List<Event>> call) {
+        if (track == null)
+            throw new IllegalArgumentException("track");
+        if (call == null)
+            throw new IllegalArgumentException("call");
+        if (!(call.getFunction() instanceof Function.EventsFunction))
+            throw new IllegalArgumentException("Call's function must be an instance of " + Function.EventsFunction.class.getName());
+
+        if (!song.tracks().contains(track))
+            song.addTrack(track);
+
+        return matrix.computeIfAbsent(track, p -> new ArrayList());
     }
 
     @Override
