@@ -45,7 +45,7 @@ public class Song extends TrackerElement {
     static {
         PARAMETERS = new HashSet<>();
 
-        PARAMETERS.add(Parameter.of("name", "name", 1, "name",
+        PARAMETERS.add(Parameter.of("name", "Name", 1, "Name",
                 DataType.TEXT, false, "Untitled"));
         PARAMETERS.add(Parameter.of(Context.TEMPO, "BPM", 2, "BPM",
                 DataType.INTEGER, false,120, MIN_TEMPO, MAX_TEMPO, false));

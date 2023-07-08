@@ -78,5 +78,10 @@ public enum Note {
         return number > other.number;
     }
 
+    @Override
+    public String toString() {
+        return label;
+    }
+
     public static final int BASE_OCTAVE = 3;
 }

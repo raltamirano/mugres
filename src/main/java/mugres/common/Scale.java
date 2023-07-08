@@ -219,4 +219,10 @@ public enum Scale {
     public static Set<Scale> byTonality(final Tonality tonality) {
         return Arrays.stream(values()).filter(s -> s.tonality() == tonality).collect(Collectors.toSet());
     }
+
+
+    @Override
+    public String toString() {
+        return label;
+    }
 }
