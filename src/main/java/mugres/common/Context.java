@@ -43,7 +43,7 @@ public interface Context {
     String TEMPO = "tempo";
     String KEY = "key";
     String TIME_SIGNATURE = "timeSignature";
-    String PATTERN_LENGTH = "patternLength";
+    String MEASURES = "measures";
     String CHORD_PROGRESSION = "chordProgression";
     Set<String> MAIN_PROPERTIES = new HashSet<>(asList(TEMPO, KEY, TIME_SIGNATURE, CHORD_PROGRESSION));
 

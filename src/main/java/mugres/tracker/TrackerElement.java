@@ -33,6 +33,8 @@ public abstract class TrackerElement implements Parametrizable, Comparable<Track
         this.id = id;
         this.name = name;
         this.context = context;
+        if (this.context != null)
+            this.context.addPropertyChangeListener(createContextPropertyChangeListener());
         this.propertyChangeSupport = new PropertyChangeSupport(this);
     }
 
@@ -161,6 +163,13 @@ public abstract class TrackerElement implements Parametrizable, Comparable<Track
     private static void validateName(final String name) {
         if (name == null || name.trim().isEmpty())
             throw new IllegalArgumentException("name");
+    }
+
+    private PropertyChangeListener createContextPropertyChangeListener() {
+        return e -> {
+            if (Context.MAIN_PROPERTIES.contains(e.getPropertyName()))
+                propertyChangeSupport().firePropertyChange(e.getPropertyName(), e.getOldValue(), e.getNewValue());
+        };
     }
 
     @Override

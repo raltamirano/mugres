@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static mugres.common.Context.PATTERN_LENGTH;
+import static mugres.common.Context.MEASURES;
 
 /** Function that generates musical artifacts. */
 public abstract class Function<T> {
@@ -85,8 +85,8 @@ public abstract class Function<T> {
 
     public T execute(final Context context, final Map<String, Object> arguments) {
         if (!arguments.containsKey(LENGTH_PARAMETER.name()))
-            if (context.has(PATTERN_LENGTH))
-                arguments.put(LENGTH_PARAMETER.name(), context.get(PATTERN_LENGTH));
+            if (context.has(MEASURES))
+                arguments.put(LENGTH_PARAMETER.name(), context.get(MEASURES));
 
         final T result = doExecute(context, prepareArguments(arguments));
         // TODO: Validate length/complete to length with rests / etc.

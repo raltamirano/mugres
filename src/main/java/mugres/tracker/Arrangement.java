@@ -1,5 +1,6 @@
 package mugres.tracker;
 
+import mugres.common.Context;
 import mugres.parametrizable.ParametrizableSupport;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class Arrangement extends TrackerElement {
     private final Song song;
 
     private Arrangement(final UUID id, final String name, final Song song) {
-        super(id, name, null);
+        super(id, name, Context.ComposableContext.of(song.context()));
 
         if (song == null)
             throw new IllegalArgumentException("song");

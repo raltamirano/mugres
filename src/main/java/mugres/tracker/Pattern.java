@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static mugres.common.Context.PATTERN_LENGTH;
+import static mugres.common.Context.MEASURES;
 
 public class Pattern extends TrackerElement {
     public static final int MIN_MEASURES = 1;
@@ -56,7 +56,7 @@ public class Pattern extends TrackerElement {
 
         this.song = song;
 
-        context().put(PATTERN_LENGTH, measures);
+        context().put(MEASURES, measures);
     }
 
     public static Pattern of(final UUID id, final Song song, final String name, final int measures) {
@@ -76,13 +76,13 @@ public class Pattern extends TrackerElement {
     }
 
     public int measures() {
-        return context().get(PATTERN_LENGTH);
+        return context().get(MEASURES);
     }
 
     public void measures(final int measures) {
         final int oldValue = measures();
-        context().put(PATTERN_LENGTH, measures);
-        propertyChangeSupport().firePropertyChange(PATTERN_LENGTH, oldValue, measures);
+        context().put(MEASURES, measures);
+        propertyChangeSupport().firePropertyChange(MEASURES, oldValue, measures);
     }
 
     public boolean isRegenerate() {
