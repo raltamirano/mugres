@@ -22,6 +22,7 @@ import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -233,6 +234,11 @@ public class REPL {
             System.out.println(args[0] + ": no arguments expected");
         } else {
             song = RandomSong.randomSong();
+            try {
+                final File tempFile = File.createTempFile("mugres-random-song", ".mid");
+                song.saveToMidiFile(tempFile);
+                System.out.println("Random song saved to: " + tempFile.getAbsolutePath());
+            } catch (final Exception ignore) {}
             doPlaySong();
         }
 

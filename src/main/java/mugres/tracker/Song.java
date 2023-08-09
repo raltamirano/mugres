@@ -13,7 +13,10 @@ import mugres.tracker.performance.Performance;
 import mugres.tracker.performance.Performer;
 import mugres.tracker.performance.converters.ToMidiSequenceConverter;
 
+import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -252,6 +255,20 @@ public class Song extends TrackerElement {
     public Sequence toMidiSequence() {
         final Performance performance = Performer.perform(this);
         return ToMidiSequenceConverter.getInstance().convert(performance);
+    }
+
+    public void saveToMidiFile(final File outputFile) throws IOException {
+        if (outputFile == null)
+            throw new IllegalArgumentException("outputFile");
+
+        final Sequence sequence = toMidiSequence();
+        int[] fileTypes = MidiSystem.getMidiFileTypes(sequence);
+        if (fileTypes.length > 0) {
+            if (MidiSystem.write(sequence, fileTypes[0], outputFile) == -1)
+                throw new IOException("Problems writing to output file");
+        } else {
+            throw new RuntimeException("Can't save to MIDI outputFile! (invalid file type)");
+        }
     }
 
     public void play() {
