@@ -24,13 +24,14 @@ public final class ParametrizableSupport implements Parametrizable {
     private ParametrizableSupport(final Set<Parameter> parameters,
                                   final Map<String, Object> values,
                                   final Parametrizable parentParameterValuesSource) {
-        if (parameters == null || parameters.isEmpty())
+        if (parameters == null)
             throw new IllegalArgumentException("parameters");
 
         this.parameters = parameters;
 
         this.values = new ConcurrentHashMap<>();
-        if (values != null && !values.isEmpty())
+
+        if (!parameters.isEmpty() && values != null && !values.isEmpty())
             this.values.putAll(values);
 
         this.target = null;

@@ -11,6 +11,8 @@ import mugres.filter.builtin.system.Out;
 import mugres.live.processor.Processor;
 import mugres.live.processor.transformer.config.Configuration;
 
+import java.util.Collections;
+
 public class Transformer extends Processor {
     private final Configuration config;
     private final In in;
@@ -20,7 +22,7 @@ public class Transformer extends Processor {
                        final Input input,
                        final Output output,
                        final Configuration config) {
-        super(context, input, output, config.signalers(), null);
+        super(context, input, output, config.signalers(), Collections.emptySet());
 
         this.config = config;
 

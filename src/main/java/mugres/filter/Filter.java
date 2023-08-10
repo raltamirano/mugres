@@ -137,6 +137,7 @@ public abstract class Filter {
         register(Clear.NAME, Clear.class);
         register(Splitter.NAME, Splitter.class);
         register(Randomizer.NAME, Randomizer.class);
+        register(Dodecafonism.NAME, Dodecafonism.class);
     }
 
     public static synchronized void register(final String name, final Class<? extends Filter> clazz) {
