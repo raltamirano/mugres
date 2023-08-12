@@ -33,6 +33,21 @@ public class EuclideanArrangement {
         return unmodifiableList(patterns);
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+
+        patterns.forEach(p -> builder
+                .append(p.instrument).append("/")
+                .append(p.pitch).append("/")
+                .append(p.velocity).append(System.lineSeparator())
+                .append(p.pattern)
+                .append(System.lineSeparator())
+        );
+
+        return builder.toString();
+    }
+
     public static class Entry {
         private final Instrument instrument;
         private final Pitch pitch;

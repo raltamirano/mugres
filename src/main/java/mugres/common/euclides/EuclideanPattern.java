@@ -9,8 +9,8 @@ public class EuclideanPattern {
     private EuclideanPattern(final int steps, final int events, final int offset) {
         if (steps <= 0)
             throw new IllegalArgumentException("Steps must be > 0");
-        if (events < 0)
-            throw new IllegalArgumentException("Events must be >= 0");
+        if (events <= 0)
+            throw new IllegalArgumentException("Events must be > 0");
         if (events > steps)
             throw new IllegalArgumentException("Events must be <= Size");
 
@@ -51,6 +51,7 @@ public class EuclideanPattern {
 
     private int[] calculatePattern() {
         final int[] pattern = new int[steps];
+        if (events == 0) return pattern;
 
         int bucket = 0;
         for(int s = 0; s < steps; s++) {
@@ -74,5 +75,16 @@ public class EuclideanPattern {
             rotated[s] = pattern[Math.abs((s+val) % pattern.length)];
 
         return rotated;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+
+        for(int i=0; i<steps; i++)
+            builder.append("|").append(eventAt(i) ? "x" : " ");
+        builder.append("|").append(System.lineSeparator());
+
+        return builder.toString();
     }
 }
