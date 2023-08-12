@@ -3,6 +3,7 @@ package mugres.live.processor;
 import mugres.common.Context;
 import mugres.common.ControlChange;
 import mugres.common.InstrumentChange;
+import mugres.controllable.ControllableSupport;
 import mugres.live.Signal;
 import mugres.common.io.Output;
 import mugres.common.io.Input;
@@ -11,15 +12,12 @@ import mugres.live.signaler.Signaler;
 import mugres.parametrizable.Parameter;
 import mugres.parametrizable.Parametrizable;
 import mugres.parametrizable.ParametrizableSupport;
-
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /** Live events/signals processor */
 public abstract class Processor implements Parametrizable, Controllable {
@@ -30,7 +28,7 @@ public abstract class Processor implements Parametrizable, Controllable {
     private final List<Signaler> signalers;
     private Input.Listener inputListener;
     private final ParametrizableSupport parametrizableSupport;
-    private final Map<Integer, Set<String>> controlChangeMappings = new ConcurrentHashMap<>();
+    private final ControllableSupport controllableSupport;
 
     protected Processor(final Context context,
                         final Input input,
@@ -44,6 +42,7 @@ public abstract class Processor implements Parametrizable, Controllable {
         this.parametrizableSupport = ParametrizableSupport.of(parameters);
         this.parametrizableSupport.setCustomHasParameterValueLogic(p ->
                 Context.MAIN_PROPERTIES.contains(p) ? context.overrides(p) : null);
+        this.controllableSupport = ControllableSupport.of(this);
     }
 
     public Context context() {
@@ -125,33 +124,27 @@ public abstract class Processor implements Parametrizable, Controllable {
 
     @Override
     public void mapParameterToControlChange(final String parameterName, final int controlChange) {
-        controlChangeMappings.computeIfAbsent(controlChange, key -> new HashSet()).add(parameterName);
+        controllableSupport.mapParameterToControlChange(parameterName, controlChange);
     }
 
     @Override
     public void unmapParameterFromControlChange(final String parameterName, final int controlChange) {
-        controlChangeMappings.computeIfAbsent(controlChange, key -> new HashSet()).remove(parameterName);
+        controllableSupport.unmapParameterFromControlChange(parameterName, controlChange);
     }
 
     @Override
     public void clearAllControlChangeMappings() {
-        controlChangeMappings.clear();
+        controllableSupport.clearAllControlChangeMappings();
     }
 
     @Override
     public Map<Integer, Set<String>> controlChangeMappings() {
-        return Collections.unmodifiableMap(controlChangeMappings);
+        return controllableSupport.controlChangeMappings();
     }
 
     @Override
     public void onControlChange(final ControlChange controlChange) {
-        final Set<String> mappedParameterNames = controlChangeMappings.get(controlChange.controller());
-        if (mappedParameterNames != null && !mappedParameterNames.isEmpty()) {
-            mappedParameterNames.forEach(parameterName -> {
-                reportStatus(String.format("Parameter %s => %s", parameterName, controlChange.value()), null);
-                parameterValue(parameterName, controlChange.value());
-            });
-        }
+        controllableSupport.onControlChange(controlChange);
     }
 
     @Override
