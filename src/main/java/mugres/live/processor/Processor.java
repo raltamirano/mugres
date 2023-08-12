@@ -95,6 +95,10 @@ public abstract class Processor implements Parametrizable, Controllable {
         statusListeners.add(listener);
     }
 
+    public void removeStatusListener(final StatusListener listener) {
+        statusListeners.remove(listener);
+    }
+
     protected void reportStatus(final String text, final Object data) {
         statusListeners.forEach(l -> l.report(Status.of(text, data)));
     }

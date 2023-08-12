@@ -47,6 +47,6 @@ public class Monitor extends Filter {
         }
     }
 
-    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("hh:mm:ss.SSS");
+    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss.SSS");
     private static final String LABEL_FORMAT = "[%-10s]";
 }
