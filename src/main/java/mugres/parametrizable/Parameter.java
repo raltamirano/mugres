@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
+import static mugres.common.DataType.OBJECT;
+
 public class Parameter implements Comparable<Parameter> {
     private final String name;
     private final String label;
@@ -20,11 +22,12 @@ public class Parameter implements Comparable<Parameter> {
     private final Object min;
     private final Object max;
     private final Collection<Object> domain;
+    private final Class<?> customType;
 
     private Parameter(final String name, final String label, final int order, final String documentation,
                       final DataType dataType, final boolean optional, final Object defaultValue,
                       final boolean multiple, final boolean overridable, final Object min, final Object max,
-                      final Collection<Object> domain) {
+                      final Collection<Object> domain, final Class<?> customType) {
         this.name = name;
         this.label = label;
         this.order = order;
@@ -37,39 +40,46 @@ public class Parameter implements Comparable<Parameter> {
         this.min = min;
         this.max = max;
         this.domain = domain != null ? new ArrayList<>(domain) : Collections.emptyList();
+        this.customType = customType;
     }
 
     public static Parameter of(final String name, final String label, final int order, final String documentation,
                                final DataType dataType, final boolean overridable) {
         return new Parameter(name, label, order, documentation, dataType, false, null, false,
-                overridable, null, null, null);
+                overridable, null, null, null, null);
+    }
+
+    public static <X> Parameter of(final String name, final String label, final int order, final String documentation,
+                               final Class<X> customType) {
+        return new Parameter(name, label, order, documentation, OBJECT, false, null, false,
+                false, null, null, null, customType);
     }
 
     public static Parameter of(final String name, final String label, final int order, final String documentation,
                                final DataType dataType, final boolean optional, final Object defaultValue) {
         return new Parameter(name, label, order, documentation, dataType, optional, defaultValue, false,
-                false, null, null, null);
+                false, null, null, null, null);
     }
 
     public static Parameter of(final String name, final String label, final int order, final String documentation,
                                final DataType dataType, final boolean optional, final Object defaultValue,
                                final Object min, final Object max, final boolean overridable) {
         return new Parameter(name, label, order, documentation, dataType, optional, defaultValue, false,
-                overridable, min, max, null);
+                overridable, min, max, null, null);
     }
 
     public static Parameter of(final String name, final String label, final int order, final String documentation,
                                final DataType dataType, final boolean optional, final Object defaultValue,
                                final Collection<Object> domain) {
         return new Parameter(name, label, order, documentation, dataType, optional, defaultValue, false,
-                false, null, null, domain);
+                false, null, null, domain, null);
     }
 
     public static Parameter of(final String name, final String label, final int order, final String documentation,
                                final DataType dataType, final boolean optional, final Object defaultValue,
                                final boolean multiple, final boolean overridable) {
         return new Parameter(name, label, order, documentation, dataType, optional, defaultValue, multiple,
-                overridable, null, null, null);
+                overridable, null, null, null, null);
     }
 
     public String name() {
@@ -118,6 +128,10 @@ public class Parameter implements Comparable<Parameter> {
 
     public Collection<Object> domain() {
         return domain;
+    }
+
+    public Class<?> customType() {
+        return customType;
     }
 
     @Override

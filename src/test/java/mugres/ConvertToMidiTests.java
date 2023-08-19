@@ -52,7 +52,7 @@ public class ConvertToMidiTests {
     }
 
     public Random random() {
-        return Function.forName("random");
+        return (Random) Function.forName("random");
     }
 }
 

@@ -44,6 +44,8 @@ public enum DataType {
     TWELVE_TONE_MATRIX(TwelveToneMatrix.class),
     /** Instrument */
     INSTRUMENT(Instrument.class),
+    /** Object */
+    OBJECT(Object.class),
     /** Unknown */
     UNKNOWN(Object.class);
 

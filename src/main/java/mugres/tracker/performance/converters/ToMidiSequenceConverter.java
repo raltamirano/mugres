@@ -111,7 +111,7 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
 
     private void programChange(final Track midiTrack, final int channel, final Instrument instrument)
             throws InvalidMidiDataException {
-        final MidiMessage midiMessage = new ShortMessage(PROGRAM_CHANGE, channel, instrument.midi(), 0);
+        final MidiMessage midiMessage = new ShortMessage(PROGRAM_CHANGE, channel - 1, instrument.midi(), 0);
         midiTrack.add(new MidiEvent(midiMessage, 0L));
     }
 
@@ -119,10 +119,10 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
             throws InvalidMidiDataException {
         long startTicks = event.position().length();
 
-        final ShortMessage noteOn = new ShortMessage(NOTE_ON, channel, event.pitch().midi(),
+        final ShortMessage noteOn = new ShortMessage(NOTE_ON, channel - 1, event.pitch().midi(),
                 event.velocity());
         midiTrack.add(new MidiEvent(noteOn, startTicks));
-        final ShortMessage noteOff = new ShortMessage(NOTE_OFF, channel, event.pitch().midi(),
+        final ShortMessage noteOff = new ShortMessage(NOTE_OFF, channel - 1, event.pitch().midi(),
                 0);
         midiTrack.add(new MidiEvent(noteOff, startTicks + event.length()
                 .length()));

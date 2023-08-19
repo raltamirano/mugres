@@ -4,6 +4,7 @@ import mugres.common.Context;
 import mugres.common.DataType;
 import mugres.function.builtin.literal.Literal;
 import mugres.function.builtin.misc.Silence;
+import mugres.function.builtin.song.ParametrizedSongGenerator;
 import mugres.tracker.Event;
 import mugres.common.Length;
 import mugres.common.TimeSignature;
@@ -169,11 +170,12 @@ public abstract class Function<T> {
                             argumentName, name, arguments.get(argumentName)));
         }
 
-        // Validate common parameters
-        final int length = (Integer)preparedArguments.get(LENGTH_PARAMETER.name());
-        if (length <= 0)
-            throw new IllegalArgumentException(String.format("'%s' parameter must be always > 0",
-                    LENGTH_PARAMETER.name()));
+        if (this instanceof EventsFunction) {
+            final int length = (Integer) preparedArguments.get(LENGTH_PARAMETER.name());
+            if (length <= 0)
+                throw new IllegalArgumentException(String.format("'%s' parameter must be always > 0",
+                        LENGTH_PARAMETER.name()));
+        }
 
         return preparedArguments;
     }
@@ -210,6 +212,10 @@ public abstract class Function<T> {
         public Artifact artifact() {
             return Artifact.SONG;
         }
+
+        public static Song execute(final String songFunction, final Context context, final Map<String, Object> arguments) {
+            return ((SongFunction)Function.forName(songFunction)).execute(context, arguments);
+        }
     }
 
     /** Mandatory length parameter some functions must have */
@@ -221,6 +227,7 @@ public abstract class Function<T> {
     private static final Map<String, Function> REGISTRY = new HashMap<>();
 
     static {
+        // Events functions
         new Random();
         new Drums();
         new HalfTime();
@@ -231,11 +238,14 @@ public abstract class Function<T> {
         new Arp();
         new Arp2();
         new BlackMetal();
-        new LoFiHipHopSongGenerator();
         new TextMelody();
         new Euclides();
         new Literal();
         new Silence();
+
+        // Song functions
+        new LoFiHipHopSongGenerator();
+        new ParametrizedSongGenerator();
     }
 
     private static synchronized void register(final Function function) {
@@ -245,8 +255,8 @@ public abstract class Function<T> {
         REGISTRY.put(name, function);
     }
 
-    public static <R, F extends Function<R>> F forName(final String name) {
-        return (F) REGISTRY.get(name);
+    public static Function forName(final String name) {
+        return REGISTRY.get(name);
     }
 
     public static Set<Function> forArtifact(final Artifact artifact) {

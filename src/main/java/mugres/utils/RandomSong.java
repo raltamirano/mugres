@@ -40,7 +40,7 @@ public class RandomSong {
 
     public static Song randomSong() {
         final Song song = Song.of("Song " + UUID.randomUUID(),
-                Context.basicContext().tempo(RND.nextInt(RANDOM_MAX_TEMPO - RANDOM_MIN_TEMPO) + RANDOM_MIN_TEMPO ));
+                Context.basicContext().tempo(RND.nextInt(RANDOM_MAX_TEMPO - RANDOM_MIN_TEMPO) + RANDOM_MIN_TEMPO));
 
         final List<Track> tracks = new ArrayList<>();
         final int numberOfTracks = RND.nextInt(RANDOM_MAX_TRACKS) + 1;

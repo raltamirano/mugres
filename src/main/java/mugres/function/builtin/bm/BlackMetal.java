@@ -128,6 +128,6 @@ public class BlackMetal extends ByStrategiesFunction {
     }
 
     private static Riffer riffer() {
-        return Function.forName("riffer");
+        return (Riffer) Function.forName("riffer");
     }
 }
