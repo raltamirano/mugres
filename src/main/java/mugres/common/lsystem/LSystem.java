@@ -99,6 +99,9 @@ public class LSystem {
     }
 
     private List<List<Symbol>> doGenerate(final int iterations, final List<Symbol> axiom) {
+        if (iterations <= 0)
+            throw new IllegalArgumentException("iterations");
+
         final List<List<Symbol>> result = new ArrayList<>();
         result.add(new ArrayList<>(axiom));
 
