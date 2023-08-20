@@ -24,13 +24,13 @@ public class LSystem {
 
         rules.rules().keySet().forEach(symbol -> {
             if (!alphabet.contains(symbol))
-                throw new IllegalArgumentException("Rules can only refer alphabet symbols! Unknown symbol: " + symbol);
+                throw new IllegalArgumentException("Rules can only refer to alphabet symbols! Unknown symbol: " + symbol);
         });
 
         if (axiom != null)
             axiom.forEach(symbol -> {
                 if (!alphabet.contains(symbol))
-                    throw new IllegalArgumentException("Axiom can only refer alphabet symbols! Unknown symbol: " + symbol);
+                    throw new IllegalArgumentException("Axiom can only refer to alphabet symbols! Unknown symbol: " + symbol);
             });
 
         this.alphabet = alphabet;
@@ -72,6 +72,10 @@ public class LSystem {
                 axiomSymbols.add(Symbol.of(c));
 
         return new LSystem(alphabetSymbols, rules, axiomSymbols);
+    }
+
+    public boolean hasSymbol(Symbol symbol) {
+        return alphabet.contains(symbol);
     }
 
     public List<Symbol> generate(final int iterations) {
