@@ -30,6 +30,10 @@ public class RuleSet {
             return add(Symbol.of(symbol), Production.of(production));
         }
 
+        public Builder add(final String symbol, final Production production) {
+            return add(Symbol.of(symbol), production);
+        }
+
         public Builder add(final Symbol symbol, final Production production) {
             if (symbol == null)
                 throw new IllegalArgumentException("symbol");
