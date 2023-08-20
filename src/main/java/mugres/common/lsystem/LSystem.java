@@ -74,14 +74,24 @@ public class LSystem {
         return new LSystem(alphabetSymbols, rules, axiomSymbols);
     }
 
-    public List<List<Symbol>> generate(final int iterations) {
+    public List<Symbol> generate(final int iterations) {
+        final List<List<Symbol>> generated = generateAll(iterations);
+        return generated.get(generated.size() - 1);
+    }
+
+    public List<Symbol> generate(final int iterations, final List<Symbol> axiom) {
+        final List<List<Symbol>> generated = generateAll(iterations, axiom);
+        return generated.get(generated.size() - 1);
+    }
+
+    public List<List<Symbol>> generateAll(final int iterations) {
         if (axiom.isEmpty())
             throw new UnsupportedOperationException("No default axiom defined for this L-System!");
 
-        return generate(iterations, axiom);
+        return generateAll(iterations, axiom);
     }
 
-    public List<List<Symbol>> generate(final int iterations, final List<Symbol> axiom) {
+    public List<List<Symbol>> generateAll(final int iterations, final List<Symbol> axiom) {
         if (axiom == null || axiom.isEmpty())
             throw new IllegalArgumentException("axiom");
 
