@@ -10,7 +10,6 @@ import mugres.function.utils.EventAccumulator;
 import mugres.parametrizable.Parameter;
 import mugres.tracker.Event;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
