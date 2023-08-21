@@ -32,7 +32,9 @@ public class Arpeggios {
             final Value value = parseNoteValue(matcher.group(3));
             final Octave octave = matcher.group(4) == null ? Octave.SAME : Octave.of(matcher.group(4));
 
-            if (!isRest) {
+            if (isRest) {
+                result.add(Event.rest(position, value));
+            } else {
                 final int index = Integer.parseInt(element) - 1;
                 if (index >= 0 && index < pitches.size())
                     result.add(Event.of(position, octave.apply(pitches.get(index)), value, DEFAULT_VELOCITY));

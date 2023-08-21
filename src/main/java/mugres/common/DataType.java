@@ -1,8 +1,10 @@
 package mugres.common;
 
+import mugres.common.chords.ChordMode;
 import mugres.common.euclides.EuclideanPattern;
 import mugres.common.literal.Literal;
 import mugres.common.ttm.TwelveToneMatrix;
+import mugres.function.builtin.follower.FollowerChord;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -46,6 +48,8 @@ public enum DataType {
     INSTRUMENT(Instrument.class),
     /** Object */
     OBJECT(Object.class),
+    /** Chord Mode */
+    CHORD_MODE(ChordMode.class),
     /** Unknown */
     UNKNOWN(Object.class);
 

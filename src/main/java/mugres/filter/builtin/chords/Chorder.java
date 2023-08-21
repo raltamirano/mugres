@@ -39,7 +39,7 @@ public class Chorder extends Filter {
 
         for(final Signal in : signals.signals()) {
             final List<Pitch> chordPitches;
-            switch (getChordMode(arguments)) {
+            switch (getMode(arguments)) {
                 case DIATONIC:
                     final Key key = getKey(context);
                     if (key.notes().contains(in.pitch().note())) {
@@ -84,15 +84,15 @@ public class Chorder extends Filter {
         }
     }
 
-    private ChordMode getChordMode(final Map<String, Object> arguments) {
-        return ChordMode.valueOf(arguments.get("chordMode").toString());
+    private Mode getMode(final Map<String, Object> arguments) {
+        return Mode.valueOf(arguments.get("chordMode").toString());
     }
 
     private Type getChordType(final Map<String, Object> arguments) {
         return Type.forAbbreviation(arguments.get("chordType").toString());
     }
 
-    public enum ChordMode {
+    public enum Mode {
         DIATONIC,
         FIXED,
         RANDOM

@@ -54,12 +54,16 @@ public class EventAccumulator {
     }
 
     public boolean offer(final List<Event> events) {
+        return offer(events, false);
+    }
+
+    public boolean offer(final List<Event> events, final boolean asChord) {
         if (fulfilled || events == null || events.isEmpty())
             return fulfilled;
 
         final Iterator<Event> iterator = events.iterator();
         while(accumulatedLength.lessThan(totalLength) && iterator.hasNext()) {
-            addEvent(iterator.next());
+            addEvent(iterator.next(), !asChord || !iterator.hasNext());
             if (fulfilled) break;
         }
 
@@ -74,14 +78,22 @@ public class EventAccumulator {
     }
 
     public void fillWith(final List<Event> events) {
+        fillWith(events, false);
+    }
+
+    public void fillWith(final List<Event> events, final boolean asChord) {
         if (events == null || events.isEmpty())
             throw new IllegalArgumentException("events");
 
         while (!fulfilled)
-            offer(events);
+            offer(events, asChord);
     }
 
     public boolean fillWith(final List<Event> events, final Length lengthToFill) {
+        return fillWith(events, lengthToFill, false);
+    }
+
+    public boolean fillWith(final List<Event> events, final Length lengthToFill, final boolean asChord) {
         if (events == null || events.isEmpty())
             throw new IllegalArgumentException("events");
         if (lengthToFill == null)
@@ -89,10 +101,12 @@ public class EventAccumulator {
 
         Length control = Length.ZERO;
         while(!fulfilled && control.lessThan(lengthToFill)) {
-            for (Event event : events) {
+            final Iterator<Event> iterator = events.iterator();
+            while (iterator.hasNext()) {
+                final Event event = iterator.next();
                 if (fulfilled)
                     break;
-                addEvent(event);
+                addEvent(event, !asChord || !iterator.hasNext());
                 control = control.plus(event.length());
             }
         }
@@ -108,17 +122,21 @@ public class EventAccumulator {
         return totalLength.minus(accumulatedLength);
     }
 
-    private void addEvent(final Event event) {
+    private void addEvent(final Event event, final boolean incrementAccumulatedLength) {
         if (fulfilled)
             throw new IllegalStateException("Already fulfilled!");
 
         final boolean willExceed = willExceedTotalLength(event.length());
         final Length actualLength = willExceed ? unfulfilledLength() : event.length();
-
         if (!willExceed || onExcessAction == OnExcessAction.SHORTEN)
-            accumulated.add(Event.of(accumulatedLength, event.pitch(), actualLength, event.velocity()));
+            if (event.rest())
+                accumulated.add(Event.rest(accumulatedLength, actualLength));
+            else
+                accumulated.add(Event.of(accumulatedLength, event.pitch(), actualLength, event.velocity()));
 
-        accumulatedLength = accumulatedLength.plus(actualLength);
+        if (incrementAccumulatedLength)
+            accumulatedLength = accumulatedLength.plus(actualLength);
+
         fulfilled = accumulatedLength.equals(totalLength);
     }
 

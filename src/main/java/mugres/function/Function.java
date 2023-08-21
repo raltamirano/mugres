@@ -3,6 +3,7 @@ package mugres.function;
 import mugres.common.Context;
 import mugres.common.DataType;
 import mugres.function.builtin.follower.FollowerArp;
+import mugres.function.builtin.follower.FollowerChord;
 import mugres.function.builtin.literal.Literal;
 import mugres.function.builtin.misc.Silence;
 import mugres.function.builtin.song.ParametrizedSongGenerator;
@@ -244,6 +245,7 @@ public abstract class Function<T> {
         new Literal();
         new Silence();
         new FollowerArp();
+        new FollowerChord();
 
         // Song functions
         new LoFiHipHopSongGenerator();

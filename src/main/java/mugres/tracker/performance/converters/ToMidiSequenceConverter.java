@@ -46,7 +46,8 @@ public class ToMidiSequenceConverter implements Converter<Sequence> {
                 trackName(midiTrack, track.track().name());
                 programChange(midiTrack, track.channel(), track.instrument());
                 for(Event event : track.events())
-                    addNoteEvent(midiTrack, track.channel(), event);
+                    if (!event.rest())
+                        addNoteEvent(midiTrack, track.channel(), event);
             }
 
             setSequenceLength(sequence, performance.length());
