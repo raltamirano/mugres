@@ -257,6 +257,10 @@ public class Song extends TrackerElement {
         return ToMidiSequenceConverter.getInstance().convert(performance);
     }
 
+    public void saveToMidiFile(final String outputFile) throws IOException {
+       saveToMidiFile(new File(outputFile));
+    }
+
     public void saveToMidiFile(final File outputFile) throws IOException {
         if (outputFile == null)
             throw new IllegalArgumentException("outputFile");

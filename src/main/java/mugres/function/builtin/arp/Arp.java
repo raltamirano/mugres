@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 import static mugres.common.DataType.BOOLEAN;
 import static mugres.common.DataType.INTEGER;
 import static mugres.common.DataType.TEXT;
-import static mugres.function.builtin.arp.Utils.ARP_PATTERN;
-import static mugres.function.builtin.arp.Utils.REST;
 import static mugres.function.builtin.arp.Utils.parseNoteValue;
+import static mugres.function.utils.Arpeggios.ARP_PATTERN;
+import static mugres.function.utils.Arpeggios.REST;
 import static mugres.utils.Randoms.random;
 import static mugres.utils.Utils.rangeClosed;
 

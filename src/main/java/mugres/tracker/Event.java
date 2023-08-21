@@ -17,6 +17,8 @@ public class Event {
             throw new IllegalArgumentException("position");
         if (pitch == null)
             throw new IllegalArgumentException("pitch");
+        if (length == null || length.isEmpty())
+            throw new IllegalArgumentException("length");
 
         this.position = position;
         this.length = length;

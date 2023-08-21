@@ -69,6 +69,10 @@ public class Length implements Comparable<Length> {
         return new Length(this.n % other.n);
     }
 
+    public boolean isEmpty() {
+        return n == 0;
+    }
+
     public static final Length ZERO = Length.of(0);
 
     @Override
