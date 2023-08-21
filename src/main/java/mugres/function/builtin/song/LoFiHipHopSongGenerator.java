@@ -4,7 +4,6 @@ import mugres.common.Context;
 import mugres.common.Direction;
 import mugres.common.Instrument;
 import mugres.common.Key;
-import mugres.common.Length;
 import mugres.common.Note;
 import mugres.tracker.Track;
 import mugres.common.chords.ChordProgression;
@@ -82,7 +81,7 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
         final Direction[] directions = directionsSequence();
         int octave = BASE_OCTAVE;
         final StringBuilder progression = new StringBuilder();
-        final Map<Length, ChordProgression.ChordEvent> events = pattern.context().chordProgression().events();
+        final List<ChordProgression.ChordEvent> events = pattern.context().chordProgression().events();
         for(int index = 0; index < events.size(); index++) {
             if (index > 0) progression.append("|");
 
@@ -122,7 +121,7 @@ public class LoFiHipHopSongGenerator extends Function.SongFunction {
         final StringBuilder progression = new StringBuilder();
 
         boolean first = true;
-        for (ChordProgression.ChordEvent c : pattern.context().chordProgression().events().values()) {
+        for (ChordProgression.ChordEvent c : pattern.context().chordProgression().events()) {
             if (!first) progression.append("|");
             progression.append(c.notation());
             progression.append(" [4]");

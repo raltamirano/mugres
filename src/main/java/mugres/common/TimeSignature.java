@@ -48,6 +48,10 @@ public class TimeSignature {
         return denominator.length().multiply(measures * numerator);
     }
 
+    public Length beatsLength(final int beats) {
+        return denominator.length().multiply(beats);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

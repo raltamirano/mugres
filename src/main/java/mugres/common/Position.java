@@ -25,4 +25,12 @@ public class Position {
     public int beat() {
         return beat;
     }
+
+    public Length asLength(final Context context) {
+        if (beat > context.timeSignature().numerator())
+            throw new IllegalArgumentException("Incompatible Time Signature!");
+
+        final int distanceInBeats = ((measure - 1) * context.timeSignature().numerator()) + (beat - 1);
+        return context.timeSignature().beatsLength(distanceInBeats);
+    }
 }

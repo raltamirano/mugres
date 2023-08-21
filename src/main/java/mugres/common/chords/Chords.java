@@ -26,32 +26,32 @@ public class Chords {
 
         if (measures < 4) {
             for (int index = 0; index < measures; index++) {
-                progression.event(scale.chordAtDegree(key.root(), roots.get(index)), at);
+                progression.event(at, scale.chordAtDegree(key.root(), roots.get(index)));
                 at = at.plus(context.timeSignature().measureLength());
             }
         } else if (measures == 4) {
             if (alterChords) {
                 for (int index = 0; index < measures; index++) {
-                    progression.event(scale.chordAtDegree(key.root(), roots.get(index)), at);
+                    progression.event(at, scale.chordAtDegree(key.root(), roots.get(index)));
                     at = at.plus(context.timeSignature().measureLength());
                 }
             }  else {
                 for (int r = 0; r < 2; r++)
                     for (int index = 0; index < 2; index++) {
-                        progression.event(scale.chordAtDegree(key.root(), roots.get(index)), at);
+                        progression.event(at, scale.chordAtDegree(key.root(), roots.get(index)));
                         at = at.plus(context.timeSignature().measureLength());
                     }
             }
         } else {
             // Always alter chord if measures > 4
             for (int index = 0; index < 4; index++) {
-                progression.event(scale.chordAtDegree(key.root(), roots.get(index)), at);
+                progression.event(at, scale.chordAtDegree(key.root(), roots.get(index)));
                 at = at.plus(context.timeSignature().measureLength());
             }
 
             final List<Integer> newRoots = randoms(scaleDegrees, 4,  false);
             for (final Integer newRoot : newRoots) {
-                progression.event(scale.chordAtDegree(key.root(), newRoot), at);
+                progression.event(at, scale.chordAtDegree(key.root(), newRoot));
                 at = at.plus(context.timeSignature().measureLength());
             }
         }
