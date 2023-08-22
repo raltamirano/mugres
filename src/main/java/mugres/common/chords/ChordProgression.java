@@ -32,7 +32,11 @@ public class ChordProgression {
     }
 
     public ChordProgression event(final int measure, final Chord chord) {
-        return event(Position.of(measure, 1).asLength(context), chord);
+        return event(measure, 1, chord);
+    }
+
+    public ChordProgression event(final int measure, final int beat, final Chord chord) {
+        return event(Position.of(measure, beat).asLength(context), chord);
     }
 
     public ChordProgression event(final Length at, final Chord chord) {

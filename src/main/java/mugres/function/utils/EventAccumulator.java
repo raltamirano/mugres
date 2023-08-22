@@ -108,7 +108,7 @@ public class EventAccumulator {
             final Iterator<Event> iterator = events.iterator();
             while (iterator.hasNext()) {
                 final Event event = iterator.next();
-                if (fulfilled)
+                if (fulfilled || control.greaterThanOrEqual(lengthToFill))
                     break;
                 addEvent(event, !asChord || !iterator.hasNext(), cut);
                 control = control.plus(event.length());
