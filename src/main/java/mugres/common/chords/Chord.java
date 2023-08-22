@@ -5,10 +5,14 @@ import mugres.common.Note;
 import mugres.common.Pitch;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
+import static mugres.common.Interval.*;
 import static mugres.common.Note.BASE_OCTAVE;
 
 /**
@@ -46,6 +50,20 @@ public class Chord {
 
     public static Chord of(final Note root, final Type type) {
         return new Chord(root, type);
+    }
+
+    public static Chord guitarBarreChord6thString(final Note root, final Type type) {
+        final List<Interval> chordIntervals = GUITAR_BARRE_CHORDS_6TH.get(type);
+        if (chordIntervals == null)
+            throw new IllegalArgumentException("No chord for type: " + type);
+        return new Chord(root, root.label() + " Guitar Barre Chord on 6th String", chordIntervals);
+    }
+
+    public static Chord guitarBarreChord5thString(final Note root, final Type type) {
+        final List<Interval> chordIntervals = GUITAR_BARRE_CHORDS_5TH.get(type);
+        if (chordIntervals == null)
+            throw new IllegalArgumentException("No chord for type: " + type);
+        return new Chord(root, root.label() + " Guitar Barre Chord on 5th String", chordIntervals);
     }
 
     public String name() {
@@ -96,4 +114,14 @@ public class Chord {
 
         return pitches;
     }
+
+    private static final Map<Type, List<Interval>> GUITAR_BARRE_CHORDS_6TH = new HashMap() {{
+        put(Type.MAJOR, asList(PERFECT_FIFTH, PERFECT_FOURTH, MAJOR_THIRD, MINOR_THIRD, PERFECT_FOURTH));
+        put(Type.MINOR, asList(PERFECT_FIFTH, PERFECT_FOURTH, MINOR_THIRD, MAJOR_THIRD, PERFECT_FOURTH));
+    }};
+
+    private static final Map<Type, List<Interval>> GUITAR_BARRE_CHORDS_5TH = new HashMap() {{
+        put(Type.MAJOR, asList(PERFECT_FIFTH, PERFECT_FOURTH, MAJOR_THIRD, MINOR_THIRD));
+        put(Type.MINOR, asList(PERFECT_FIFTH, PERFECT_FOURTH, MINOR_THIRD, MAJOR_THIRD));
+    }};
 }
