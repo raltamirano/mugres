@@ -2,6 +2,7 @@ package mugres.tracker;
 
 import mugres.common.DataType;
 import mugres.common.Instrument;
+import mugres.common.TrackReference;
 import mugres.parametrizable.Parameter;
 import mugres.parametrizable.ParametrizableSupport;
 
@@ -14,6 +15,7 @@ import static mugres.common.MIDI.MAX_CHANNEL;
 import static mugres.common.MIDI.MIN_CHANNEL;
 
 public class Track extends TrackerElement {
+    private TrackReference reference;
     private Instrument instrument;
     private int channel;
 
@@ -35,6 +37,11 @@ public class Track extends TrackerElement {
 
         this.instrument = instrument;
         this.channel = channel;
+        this.reference = TrackReference.of(id);
+    }
+
+    public TrackReference reference() {
+        return reference;
     }
 
     @Override

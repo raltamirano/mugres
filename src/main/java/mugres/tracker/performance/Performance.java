@@ -3,6 +3,7 @@ package mugres.tracker.performance;
 import mugres.common.Key;
 import mugres.common.Length;
 import mugres.common.TimeSignature;
+import mugres.common.TrackReference;
 import mugres.tracker.Track;
 
 import java.util.*;
@@ -45,6 +46,22 @@ public class Performance {
         final mugres.tracker.performance.Track performanceTrack = new mugres.tracker.performance.Track(track);
         tracks.add(performanceTrack);
         return performanceTrack;
+    }
+
+    public mugres.tracker.performance.Track track(final TrackReference trackReference) {
+        if (trackReference == null)
+            throw new IllegalArgumentException("trackReference");
+
+        return tracks.stream().filter(t -> t.track().id().equals(trackReference.trackId()))
+                .findFirst().orElse(null);
+    }
+
+    public mugres.tracker.performance.Track track(final String trackName) {
+        if (trackName == null)
+            throw new IllegalArgumentException("trackName");
+
+        return tracks.stream().filter(t -> t.track().name().equals(trackName))
+                .findFirst().orElse(null);
     }
 
     public Length length() {

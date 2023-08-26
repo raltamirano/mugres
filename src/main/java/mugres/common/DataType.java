@@ -5,6 +5,7 @@ import mugres.common.euclides.EuclideanPattern;
 import mugres.common.literal.Literal;
 import mugres.common.ttm.TwelveToneMatrix;
 import mugres.function.builtin.follower.FollowerChord;
+import mugres.tracker.Track;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -54,6 +55,12 @@ public enum DataType {
     INTERVAL(Interval.class),
     /** Interval Type */
     INTERVAL_TYPE(IntervalType.class),
+    /** Octave */
+    OCTAVE(Octave.class),
+    /** Scale Correction */
+    SCALE_CORRECTION(ScaleCorrection.class),
+    /** Track */
+    TRACK(TrackReference.class),
     /** Unknown */
     UNKNOWN(Object.class);
 

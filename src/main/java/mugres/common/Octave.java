@@ -43,7 +43,7 @@ public class Octave {
 
     public static final Pattern OCTAVE_PATTERN = Pattern.compile("\\[(\\+|-|=)(\\d)]");
 
-    private enum Type {
+    public enum Type {
         SET("="),
         INCREMENT("+"),
         DECREMENT("-");

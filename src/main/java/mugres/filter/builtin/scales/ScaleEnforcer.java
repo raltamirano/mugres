@@ -5,6 +5,7 @@ import mugres.common.Interval;
 import mugres.common.Note;
 import mugres.common.Pitch;
 import mugres.common.Scale;
+import mugres.common.ScaleCorrection;
 import mugres.live.Signal;
 import mugres.live.Signals;
 import mugres.filter.Filter;
@@ -35,14 +36,14 @@ public class ScaleEnforcer extends Filter {
     protected Signals internalHandle(final Context context, final  Signals signals) {
         final Signals result = Signals.create();
         final List<Note> scaleNotes = getScaleNotes(context, arguments);
-        final CorrectionMode correctionMode = getCorrectionMode(arguments);
+        final ScaleCorrection scaleCorrection = getScaleCorrection(arguments);
 
         for(final Signal in : signals.signals()) {
             if (scaleNotes.contains(in.pitch().note()))
                 result.add(in);
             else
                 try {
-                    switch (correctionMode) {
+                    switch (scaleCorrection) {
                         case UP:
                             correctUp(result, scaleNotes, in);
                             break;
@@ -99,14 +100,7 @@ public class ScaleEnforcer extends Filter {
         }
     }
 
-    private CorrectionMode getCorrectionMode(final Map<String, Object> arguments) {
-        return CorrectionMode.valueOf(arguments.get("correctionMode").toString());
-    }
-
-    public enum CorrectionMode {
-        UP,
-        DOWN,
-        RANDOM,
-        DISCARD
+    private ScaleCorrection getScaleCorrection(final Map<String, Object> arguments) {
+        return ScaleCorrection.valueOf(arguments.get("correctionMode").toString());
     }
 }

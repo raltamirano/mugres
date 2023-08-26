@@ -2,9 +2,11 @@ package mugres.function;
 
 import mugres.common.Context;
 import mugres.common.DataType;
+import mugres.common.TrackReference;
 import mugres.function.builtin.follower.FollowerArp;
 import mugres.function.builtin.follower.FollowerChord;
 import mugres.function.builtin.literal.Literal;
+import mugres.function.builtin.misc.HarmonizeTrack;
 import mugres.function.builtin.misc.Silence;
 import mugres.function.builtin.song.ParametrizedSongGenerator;
 import mugres.tracker.Event;
@@ -25,6 +27,8 @@ import mugres.function.builtin.song.LoFiHipHopSongGenerator;
 import mugres.function.builtin.text.TextMelody;
 import mugres.tracker.Song;
 import mugres.parametrizable.Parameter;
+import mugres.tracker.performance.Performance;
+import mugres.tracker.performance.Track;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -87,11 +91,12 @@ public abstract class Function<T> {
     public abstract Artifact artifact();
 
     public T execute(final Context context, final Map<String, Object> arguments) {
-        if (!arguments.containsKey(LENGTH_PARAMETER.name()))
+        final Map<String, Object> theArguments = new HashMap<>(arguments);
+        if (!theArguments.containsKey(LENGTH_PARAMETER.name()))
             if (context.has(MEASURES))
-                arguments.put(LENGTH_PARAMETER.name(), context.get(MEASURES));
+                theArguments.put(LENGTH_PARAMETER.name(), context.get(MEASURES));
 
-        final T result = doExecute(context, prepareArguments(arguments));
+        final T result = doExecute(context, prepareArguments(theArguments));
         // TODO: Validate length/complete to length with rests / etc.
         return result;
     }
@@ -100,8 +105,8 @@ public abstract class Function<T> {
         return execute(context, Collections.emptyMap());
     }
 
-    /** This methods is useful for functions that either have only a single parameter or
-     * a single mandatory parameter (besides {@link #LENGTH_PARAMETER}) among all of its parameters. */
+    /** This method is useful for functions that either have only a single parameter or
+     * a single mandatory parameter besides {@link #LENGTH_PARAMETER} among all of its parameters. */
     public T executeSingleArg(final Context context, final Object argument) {
         final List<Parameter> parameterList = new ArrayList<>(this.parameters);
         final long mandatoryParameters = parameterList.stream().filter(p -> !p.name().equals(LENGTH_PARAMETER.name())
@@ -201,6 +206,48 @@ public abstract class Function<T> {
         public Artifact artifact() {
             return Artifact.EVENTS;
         }
+
+        protected Performance performance(final Context context) {
+            final Performance performance = context.get(PERFORMANCE);
+            if (performance == null)
+                throw new UnsupportedOperationException(name() + " function called without a performance in context!");
+            return performance;
+        }
+
+        protected Length trackPosition(final Context context) {
+            final Length position = context.get(TRACK_POSITION);
+            if (position == null)
+                throw new UnsupportedOperationException(name() + " function called without track position in context!");
+            return position;
+        }
+
+        protected List<Event> parallelEventsOnTrack(final Context context,
+                                                    final TrackReference trackReference,
+                                                    final Length length) {
+            final Performance performance = performance(context);
+            final Track track = performance.track(trackReference);
+
+            if (track == null)
+                throw new IllegalArgumentException("Invalid track reference: " + trackReference);
+
+            return parallelEventsOnTrack(context, track, length);
+        }
+
+        private List<Event> parallelEventsOnTrack(final Context context,
+                                                  final Track track,
+                                                  final Length length) {
+            final Length start = trackPosition(context);
+            final Length end = start.plus(length);
+            final List<Event> result = new ArrayList<>();
+
+            for (Event event : track.events())
+                if (event.position().greaterThanOrEqual(start) && event.position().lessThanOrEqual(end))
+                    result.add(event);
+
+            return result;
+        }
+
+
     }
 
     public static abstract class SongFunction extends Function<Song> {
@@ -226,6 +273,9 @@ public abstract class Function<T> {
     public static final Parameter COMPOSED_CALL_RESULT_PARAMETER = Parameter.of("composedCallResult", "CCR",
             Integer.MAX_VALUE, "Result of composed Call", DataType.UNKNOWN, false);
 
+    public static final String PERFORMANCE = "performance";
+    public static final String TRACK_POSITION = "trackPosition";
+
     private static final Map<String, Function> REGISTRY = new HashMap<>();
 
     static {
@@ -244,6 +294,7 @@ public abstract class Function<T> {
         new Euclides();
         new Literal();
         new Silence();
+        new HarmonizeTrack();
         new FollowerArp();
         new FollowerChord();
 
