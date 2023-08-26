@@ -183,23 +183,23 @@ public enum Scale {
     }
 
     public List<Pitch> harmonize(final Note scaleRoot, final int startingAtDegree,
-                                 final Interval.Type intervalType, final int numberOfPitches) {
+                                 final IntervalType intervalType, final int numberOfPitches) {
         return harmonize(scaleRoot, noteAtDegree(scaleRoot, startingAtDegree), intervalType, numberOfPitches);
     }
 
     public List<Pitch> harmonize(final Note scaleRoot, final Note startingAtNote,
-                                 final Interval.Type intervalType, final int numberOfPitches) {
+                                 final IntervalType intervalType, final int numberOfPitches) {
         return harmonize(scaleRoot, startingAtNote, intervalType, numberOfPitches, BASE_OCTAVE);
     }
 
     public List<Pitch> harmonize(final Note scaleRoot, final int startingAtDegree,
-                                 final Interval.Type intervalType, final int numberOfPitches,
+                                 final IntervalType intervalType, final int numberOfPitches,
                                  final int baseOctave) {
         return harmonize(scaleRoot, noteAtDegree(scaleRoot, startingAtDegree), intervalType, numberOfPitches, baseOctave);
     }
 
     public List<Pitch> harmonize(final Note scaleRoot, final Note startingAtNote,
-                                 final Interval.Type intervalType, final int numberOfPitches,
+                                 final IntervalType intervalType, final int numberOfPitches,
                                  final int baseOctave) {
         final List<Pitch> result = new ArrayList<>();
 

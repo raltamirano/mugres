@@ -50,6 +50,10 @@ public enum DataType {
     OBJECT(Object.class),
     /** Chord Mode */
     CHORD_MODE(ChordMode.class),
+    /** Interval */
+    INTERVAL(Interval.class),
+    /** Interval Type */
+    INTERVAL_TYPE(IntervalType.class),
     /** Unknown */
     UNKNOWN(Object.class);
 

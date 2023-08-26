@@ -76,7 +76,7 @@ public enum Key {
     }
 
     public List<Pitch> chord(final Note chordRoot, final int numberOfNotes, final int baseOctave) {
-        return defaultScale().harmonize(root, chordRoot, Interval.Type.THIRD, numberOfNotes, baseOctave);
+        return defaultScale().harmonize(root, chordRoot, IntervalType.THIRD, numberOfNotes, baseOctave);
     }
 
     public static Key of(String label) {

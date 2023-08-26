@@ -3,7 +3,7 @@ package mugres.utils;
 import mugres.common.Context;
 import mugres.common.DrumKit;
 import mugres.common.Instrument;
-import mugres.common.Interval;
+import mugres.common.IntervalType;
 import mugres.common.Note;
 import mugres.tracker.Track;
 import mugres.common.Scale;
@@ -106,7 +106,7 @@ public class RandomSong {
                         break;
                     case 2: // Arp
                         final Map<String, Object> arpArguments = toMap(
-                                Arp2.PITCHES, actualScale.harmonize(actualRoot, actualRoot, Interval.Type.THIRD,
+                                Arp2.PITCHES, actualScale.harmonize(actualRoot, actualRoot, IntervalType.THIRD,
                                         RANDOM_MAX_ARP_PITCHES, startingOctave),
                                 Arp2.PATTERN, randomArpPattern()
                         );
