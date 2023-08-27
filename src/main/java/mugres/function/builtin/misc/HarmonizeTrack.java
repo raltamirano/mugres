@@ -55,12 +55,16 @@ public class HarmonizeTrack extends Function.EventsFunction {
 
 
         Events.toRelativeToZero(toHarmonize).forEach(e -> {
-            Length offset = separation;
-            List<Pitch> harmony = scale.harmonize(root, e.pitch().note(), intervalType, voices + 1, e.pitch().octave());
-            harmony = harmony.subList(1, harmony.size());
-            for (Pitch h : harmony) {
-                result.add(Event.of(e.position().plus(offset), octave.apply(h), e.length(), e.velocity()));
-                offset = offset.plus(separation);
+            if (e.rest())  {
+                result.add(e);
+            } else {
+                Length offset = separation;
+                List<Pitch> harmony = scale.harmonize(root, e.pitch().note(), intervalType, voices + 1, e.pitch().octave());
+                harmony = harmony.subList(1, harmony.size());
+                for (Pitch h : harmony) {
+                    result.add(Event.of(e.position().plus(offset), octave.apply(h), e.length(), e.velocity()));
+                    offset = offset.plus(separation);
+                }
             }
         });
 
