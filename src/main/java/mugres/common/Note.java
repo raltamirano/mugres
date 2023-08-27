@@ -1,5 +1,7 @@
 package mugres.common;
 
+import static java.lang.Math.abs;
+
 public enum Note {
     C("C", 0),
     CS("C#", 1),
@@ -51,7 +53,7 @@ public enum Note {
     }
 
     public Note down(final int semitones) {
-        return of((number - semitones) % 12);
+        return of(abs(((number + 12) - semitones) % 12));
     }
 
     public String label() {
