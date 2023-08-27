@@ -12,7 +12,6 @@ import mugres.function.builtin.song.ParametrizedSongGenerator;
 import mugres.tracker.Event;
 import mugres.common.Length;
 import mugres.common.TimeSignature;
-import mugres.function.builtin.arp.Arp;
 import mugres.function.builtin.arp.Arp2;
 import mugres.function.builtin.bm.BlackMetal;
 import mugres.function.builtin.chords.Chords;
@@ -23,7 +22,6 @@ import mugres.function.builtin.drums.HipHopBeat;
 import mugres.function.builtin.euclides.Euclides;
 import mugres.function.builtin.random.Random;
 import mugres.function.builtin.riffer.Riffer;
-import mugres.function.builtin.song.LoFiHipHopSongGenerator;
 import mugres.function.builtin.text.TextMelody;
 import mugres.tracker.Song;
 import mugres.parametrizable.Parameter;
@@ -140,15 +138,9 @@ public abstract class Function<T> {
         return timeSignature.measuresLength(measures);
     }
 
-    protected Result<T> getComposedCallResult(final Map<String, Object> arguments) {
-        return (Result<T>) arguments.get(COMPOSED_CALL_RESULT_PARAMETER.name());
-    }
 
     private Map<String, Object> prepareArguments(final Map<String, Object> arguments) {
         final Map<String, Object> preparedArguments = new HashMap<>();
-
-        if (arguments.containsKey(COMPOSED_CALL_RESULT_PARAMETER.name()))
-            preparedArguments.put(COMPOSED_CALL_RESULT_PARAMETER.name(), arguments.get(COMPOSED_CALL_RESULT_PARAMETER.name()));
 
         if (parameters.isEmpty()) {
             if (arguments.isEmpty())
@@ -169,12 +161,6 @@ public abstract class Function<T> {
 
                 preparedArguments.put(parameter.name(), argument);
             }
-
-            for(String argumentName : arguments.keySet())
-                if (!allowedInternalParameter(argumentName) && !parameters.stream().anyMatch(p -> p.name().equals(argumentName)))
-                    throw new IllegalArgumentException(String.format("Unexpected argument '%s' " +
-                            "while calling function '%s'. Value: '%s'",
-                            argumentName, name, arguments.get(argumentName)));
         }
 
         if (this instanceof EventsFunction) {
@@ -185,11 +171,6 @@ public abstract class Function<T> {
         }
 
         return preparedArguments;
-    }
-
-    private boolean allowedInternalParameter(String argumentName) {
-        if (COMPOSED_CALL_RESULT_PARAMETER.name().equals(argumentName)) return true;
-        return false;
     }
 
     public static abstract class EventsFunction extends Function<List<Event>> {
@@ -270,12 +251,8 @@ public abstract class Function<T> {
     /** Mandatory length parameter some functions must have */
     public static final Parameter LENGTH_PARAMETER = Parameter.of("len", "Length", -1,
             "Length in measures", DataType.INTEGER, false);
-    public static final Parameter COMPOSED_CALL_RESULT_PARAMETER = Parameter.of("composedCallResult", "CCR",
-            Integer.MAX_VALUE, "Result of composed Call", DataType.UNKNOWN, false);
-
     public static final String PERFORMANCE = "performance";
     public static final String TRACK_POSITION = "trackPosition";
-
     private static final Map<String, Function> REGISTRY = new HashMap<>();
 
     static {
@@ -287,7 +264,6 @@ public abstract class Function<T> {
         new HipHopBeat();
         new Riffer();
         new Chords();
-        new Arp();
         new Arp2();
         new BlackMetal();
         new TextMelody();
@@ -299,7 +275,6 @@ public abstract class Function<T> {
         new FollowerChord();
 
         // Song functions
-        new LoFiHipHopSongGenerator();
         new ParametrizedSongGenerator();
     }
 

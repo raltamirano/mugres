@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static mugres.function.Function.COMPOSED_CALL_RESULT_PARAMETER;
 import static mugres.function.Function.LENGTH_PARAMETER;
 
 /** Function call. */
@@ -272,18 +271,6 @@ public class Call<T> implements Parametrizable {
         return function;
     }
 
-    public Call<T> compose(final String functionName, final Map<String, Object> arguments) {
-        final Function function = Function.forName(functionName);
-        if (function == null)
-            throw new RuntimeException("Unknown function: " + functionName);
-
-        return compose(function, arguments);
-    }
-
-    public Call<T> compose(final Function<T> function, final Map<String, Object> arguments) {
-        return new ComposedCall<>(this, function, arguments);
-    }
-
     public Result<T> execute(final Context context) {
         try {
             return new Result(function.execute(context, parameterValues()));
@@ -348,27 +335,4 @@ public class Call<T> implements Parametrizable {
 
     private static final Pattern FUNCTION_CALL = Pattern.compile("([a-z][0-9a-zA-Z_-]+[0-9a-zA-Z])\\((.*)\\)");
     private static final Pattern NAMED_ARGS_LIST = Pattern.compile("([a-z][0-9a-zA-Z_-]*[0-9a-zA-Z])\\=(\\'(?:[#\\[\\]\\{\\}\\|\\s0-9a-zA-Z_-]+)\\'|(?:\\-?\\d+(?:\\.\\d+)?)|true|false|yes|no|y|n|(?:[0-9a-zA-Z_-]+))");
-
-    private static class ComposedCall<X> extends Call<X> {
-        private final Call<X> wrapped;
-
-        ComposedCall(final Call<X> wrapped,
-                             final Function<X> functionToApply,
-                             final Map<String, Object> functionToApplyArguments) {
-            super(functionToApply, functionToApplyArguments, wrapped.parametrizableSupport.parentParameterValuesSource());
-
-            this.wrapped = wrapped;
-        }
-
-        @Override
-        public Result<X> execute(Context context) {
-            try {
-                final Result<X> wrappedResult = wrapped.execute(context);
-                parameterValue(COMPOSED_CALL_RESULT_PARAMETER.name(), wrappedResult);
-                return new Result(function.execute(context, parameterValues()));
-            } catch (final Throwable t) {
-                return new Result(t);
-            }
-        }
-    }
 }
