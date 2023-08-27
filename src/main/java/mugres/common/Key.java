@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import static mugres.common.Tonality.MAJOR;
 import static mugres.common.Tonality.MINOR;
+import static mugres.common.Tonality.UNDETERMINED;
 
 public enum Key {
     C("C", Note.C, MAJOR),
@@ -79,13 +80,28 @@ public enum Key {
         return defaultScale().harmonize(root, chordRoot, IntervalType.THIRD, numberOfNotes, baseOctave);
     }
 
-    public static Key of(String label) {
+    public static Key of(final String label) {
         for(Key key : values())
             if (key.label.equals(label))
                 return key;
         throw new IllegalArgumentException("Invalid Key label: " + label);
     }
 
+    public static Key of(final Note root, final Tonality tonality) {
+        for(Key key : values())
+            if (key.root.equals(root) && key.tonality == tonality)
+                return key;
+        throw new IllegalArgumentException(String.format("Invalid Key for root %s %s: ", root, tonality));
+    }
+
+    public Key relative() {
+        if (tonality == UNDETERMINED)
+            return this;
+        if (tonality == MAJOR)
+            return Key.of(root.down(Interval.MINOR_THIRD), MINOR);
+        else
+            return Key.of(root.up(Interval.MINOR_THIRD), MAJOR);
+    }
 
     @Override
     public String toString() {

@@ -44,6 +44,31 @@ public class Chord {
         this.intervals = null;
     }
 
+    public static Chord major(final Note root) {
+        return new Chord(root, Type.MAJOR);
+    }
+
+    public static Chord minor(final Note root) {
+        return new Chord(root, Type.MINOR);
+    }
+
+    public static Chord major7(final Note root) {
+        return new Chord(root, Type.MAJOR_7TH);
+    }
+
+    public static Chord minor7(final Note root) {
+        return new Chord(root, Type.MINOR_7TH);
+    }
+
+    public static Chord dominant7(final Note root) {
+        return new Chord(root, Type.DOMINANT_7TH);
+    }
+
+
+    public static Chord powerChord(final Note root) {
+        return new Chord(root, Type.POWER_CHORD);
+    }
+
     public static Chord of(final Note root, final String name, final List<Interval> intervals) {
         return new Chord(root, name, intervals);
     }
