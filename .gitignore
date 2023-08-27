@@ -37,3 +37,5 @@ build/
 .vscode/
 src/test/resources/test.json
 src/main/java/mugres/Tests.java
+
+.run/

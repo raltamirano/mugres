@@ -56,7 +56,7 @@ public class Performer {
                                         trackEvents.add(event.offset(previousCallsOffset));
                                     }
                                     previousCallsOffset = previousCallsOffset.plus(callContext.timeSignature()
-                                            .measuresLength(call.getLengthInMeasures()));
+                                            .measuresLength(functionResult.measures()));
                                 } else {
                                     // TODO: better error handling
                                     throw new RuntimeException(functionResult.error());

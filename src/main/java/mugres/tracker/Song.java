@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import static mugres.function.Function.LENGTH_PARAMETER;
 import static mugres.utils.ObjectMapping.mapToPojo;
 
 /** MUGRES internal representation of a song. */
@@ -114,11 +115,21 @@ public class Song extends TrackerElement {
     public static Song of(final Context functionCallsContext,
                           final Track functionCallsTrack,
                           final Call<List<Event>> call) {
+        final int measures = validateLengthInMeasures(functionCallsContext, call);
         final Song functionCallSong = new Song(UUID.randomUUID(),"Untitled", functionCallsContext, null);
-        final Pattern pattern = functionCallSong.createPattern("A", call.getLengthInMeasures());
+        final Pattern pattern = functionCallSong.createPattern("A", measures);
         pattern.addPart(functionCallsTrack, call);
         functionCallSong.arrangement.append(pattern, 1);
         return functionCallSong;
+    }
+
+    private static int validateLengthInMeasures(final Context context,
+                                                final Call<List<Event>> call) {
+        if (call.parameterValues().containsKey(LENGTH_PARAMETER.name()))
+            return (int) call.parameterValue(LENGTH_PARAMETER.name());
+        if (context.has(Context.MEASURES))
+            return context.get(Context.MEASURES);
+        throw new IllegalArgumentException("No length in measures for this call!");
     }
 
     public Map<String, Object> metadata() {

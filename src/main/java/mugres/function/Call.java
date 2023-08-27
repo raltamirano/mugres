@@ -273,14 +273,10 @@ public class Call<T> implements Parametrizable {
 
     public Result<T> execute(final Context context) {
         try {
-            return new Result(function.execute(context, parameterValues()));
+            return function.execute(context, parameterValues());
         } catch (final Throwable t) {
-            return new Result(t);
+            return Result.error(t);
         }
-    }
-
-    public int getLengthInMeasures() {
-        return (int)parameterValue(LENGTH_PARAMETER.name());
     }
 
     @Override

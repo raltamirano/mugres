@@ -88,24 +88,33 @@ public abstract class Function<T> {
 
     public abstract Artifact artifact();
 
-    public T execute(final Context context, final Map<String, Object> arguments) {
+    public Result<T> execute(final Context context, final Map<String, Object> arguments) {
         final Map<String, Object> theArguments = new HashMap<>(arguments);
-        if (!theArguments.containsKey(LENGTH_PARAMETER.name()))
+        if (!theArguments.containsKey(LENGTH_PARAMETER.name())) {
             if (context.has(MEASURES))
                 theArguments.put(LENGTH_PARAMETER.name(), context.get(MEASURES));
+            else
+                throw new IllegalStateException(String.format("No length could be determined for function call: %s!",
+                        name()));
+        }
+        final int measures = (int)theArguments.get(LENGTH_PARAMETER.name());
 
-        final T result = doExecute(context, prepareArguments(theArguments));
-        // TODO: Validate length/complete to length with rests / etc.
-        return result;
+        try {
+            final T result = doExecute(context, prepareArguments(theArguments));
+            // TODO: Validate length/complete to length with rests / etc.
+            return Result.success(result, measures);
+        } catch (final Exception t) {
+            return Result.error(t);
+        }
     }
 
-    public T executeNoArgs(final Context context) {
+    public Result<T> executeNoArgs(final Context context) {
         return execute(context, Collections.emptyMap());
     }
 
     /** This method is useful for functions that either have only a single parameter or
      * a single mandatory parameter besides {@link #LENGTH_PARAMETER} among all of its parameters. */
-    public T executeSingleArg(final Context context, final Object argument) {
+    public Result<T> executeSingleArg(final Context context, final Object argument) {
         final List<Parameter> parameterList = new ArrayList<>(this.parameters);
         final long mandatoryParameters = parameterList.stream().filter(p -> !p.name().equals(LENGTH_PARAMETER.name())
                 && !p.isOptional()).count();
@@ -137,7 +146,6 @@ public abstract class Function<T> {
         final TimeSignature timeSignature = context.timeSignature();
         return timeSignature.measuresLength(measures);
     }
-
 
     private Map<String, Object> prepareArguments(final Map<String, Object> arguments) {
         final Map<String, Object> preparedArguments = new HashMap<>();
@@ -243,7 +251,7 @@ public abstract class Function<T> {
             return Artifact.SONG;
         }
 
-        public static Song execute(final String songFunction, final Context context, final Map<String, Object> arguments) {
+        public static Result<Song> execute(final String songFunction, final Context context, final Map<String, Object> arguments) {
             return ((SongFunction)Function.forName(songFunction)).execute(context, arguments);
         }
     }

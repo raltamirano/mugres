@@ -26,7 +26,7 @@ public enum Value {
     public static Value of(final char id) {
         return of(String.valueOf(id));
     }
-    
+
     public static Value of(final String id) {
         for(Value v : values())
             if (v.id.equals(id))

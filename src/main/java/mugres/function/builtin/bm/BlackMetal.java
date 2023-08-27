@@ -124,7 +124,7 @@ public class BlackMetal extends ByStrategiesFunction {
         arguments.put(LENGTH_PARAMETER.name(), measures);
         arguments.put("value", SIXTEENTH);
         arguments.put("riff", riff);
-        return riffer().execute(context, arguments);
+        return riffer().execute(context, arguments).data();
     }
 
     private static Riffer riffer() {
