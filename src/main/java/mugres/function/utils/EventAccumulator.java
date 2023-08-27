@@ -72,30 +72,36 @@ public class EventAccumulator {
         return fulfilled;
     }
 
-    public void fillWith(final Event event) {
+    public EventAccumulator fillWith(final Event event) {
         if (event == null)
             throw new IllegalArgumentException("event");
 
         fillWith(Collections.singletonList(event));
+
+        return this;
     }
 
-    public void fillWith(final List<Event> events) {
+    public EventAccumulator fillWith(final List<Event> events) {
         fillWith(events, false, Length.ZERO);
+
+        return this;
     }
 
-    public void fillWith(final List<Event> events, final boolean asChord, final Length separation) {
+    public EventAccumulator fillWith(final List<Event> events, final boolean asChord, final Length separation) {
         if (events == null || events.isEmpty())
             throw new IllegalArgumentException("events");
 
         while (!fulfilled)
             offer(events, asChord, separation);
+
+        return this;
     }
 
-    public boolean fillWith(final List<Event> events, final Length lengthToFill) {
+    public EventAccumulator fillWith(final List<Event> events, final Length lengthToFill) {
         return fillWith(events, lengthToFill, false, Length.ZERO);
     }
 
-    public boolean fillWith(final List<Event> events, final Length lengthToFill, final boolean asChord,
+    public EventAccumulator fillWith(final List<Event> events, final Length lengthToFill, final boolean asChord,
                             final Length separation) {
         if (events == null || events.isEmpty())
             throw new IllegalArgumentException("events");
@@ -116,7 +122,7 @@ public class EventAccumulator {
             }
         }
 
-        return fulfilled;
+        return this;
     }
 
     private boolean willExceedTotalLength(final Length proposedLength) {
