@@ -3,9 +3,10 @@ package mugres.tracker;
 import mugres.common.Length;
 import mugres.common.Pitch;
 import mugres.common.Value;
+import mugres.utils.Events;
 
 /** A musical event */
-public class Event {
+public class Event implements Comparable<Event> {
     private Length position;
     private final Value value;
     private final Length length;
@@ -77,6 +78,13 @@ public class Event {
                 new Event(newPosition, pitch, length, value, velocity);
     }
 
+    public Event withPosition(final Length newPosition) {
+        return rest() ?
+                new Event(newPosition, length, value) :
+                new Event(newPosition, pitch, length, value, velocity);
+    }
+
+
     public Pitch pitch() {
         return pitch;
     }
@@ -96,5 +104,10 @@ public class Event {
     @Override
     public String toString() {
         return String.format("%s (%03d) %-13s @ %6s ", pitch, velocity, value, position);
+    }
+
+    @Override
+    public int compareTo(final Event o) {
+        return this.position.compareTo(o.position);
     }
 }
