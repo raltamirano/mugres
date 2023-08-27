@@ -105,7 +105,7 @@ public class Length implements Comparable<Length> {
     /**
      * Pulses Per Quarter Note
      */
-    public static final int PPQN = 480;
+    public static final int PPQN = 960;
 
     /**
      * Quarter Note Length
