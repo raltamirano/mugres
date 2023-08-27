@@ -9,6 +9,6 @@ public class MIDI {
     public static final int DEFAULT_CHANNEL = MIN_CHANNEL;
     /** End Of Track Meta Message value */
     public static final int END_OF_TRACK = 0x2F;
-    /** Percussion channel: 10 (0-based) */
-    public static final int PERCUSSION = 9;
+    /** Percussion channel: 10 */
+    public static final int PERCUSSION = 10;
 }
