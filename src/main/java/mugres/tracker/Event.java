@@ -3,11 +3,10 @@ package mugres.tracker;
 import mugres.common.Length;
 import mugres.common.Pitch;
 import mugres.common.Value;
-import mugres.utils.Events;
 
 /** A musical event */
 public class Event implements Comparable<Event> {
-    private Length position;
+    private final Length position;
     private final Value value;
     private final Length length;
     private final Pitch pitch;
@@ -84,6 +83,11 @@ public class Event implements Comparable<Event> {
                 new Event(newPosition, pitch, length, value, velocity);
     }
 
+    public Event withLength(final Length newLength) {
+        return rest() ?
+                new Event(position, newLength, value) :
+                new Event(position, pitch, newLength, value, velocity);
+    }
 
     public Pitch pitch() {
         return pitch;
