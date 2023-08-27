@@ -1,5 +1,7 @@
 package mugres.common;
 
+import mugres.tracker.Event;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,21 +24,27 @@ public class Rhythm {
     public Length length() {
         Length length = Length.ZERO;
         for (Item i : items)
-            length = length.plus(i.value());
+            length = length.plus(i.length());
         return length;
     }
 
     public static class Item {
-        private final Value value;
+        private final Length position;
+        private final Length length;
         private final boolean rest;
 
-        private Item(Value value, boolean rest) {
-            this.value = value;
+        private Item(final Length position, final Length length, final boolean rest) {
+            this.position = position;
+            this.length = length;
             this.rest = rest;
         }
 
-        public Value value() {
-            return value;
+        public Length position() {
+            return position;
+        }
+
+        public Length length() {
+            return length;
         }
 
         public boolean rest() {
@@ -48,18 +56,19 @@ public class Rhythm {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Item item = (Item) o;
-            return rest == item.rest && value == item.value;
+            return rest == item.rest && length == item.length && position == item.position;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(value, rest);
+            return Objects.hash(length, rest);
         }
 
         @Override
         public String toString() {
             return "Rhythm.Item{" +
-                    "value=" + value +
+                    "position=" + position +
+                    ",length=" + length +
                     ", silence=" + rest +
                     '}';
         }
@@ -68,17 +77,29 @@ public class Rhythm {
     public class Builder {
         private final List<Item> items = new ArrayList<>();
 
-        public Builder add(final Value value, final boolean rest) {
-            items.add(new Item(value, rest));
+        public Builder add(final Length position, final Value value, final boolean rest) {
+            items.add(new Item(position, value.length(), rest));
             return this;
         }
 
-        public Builder note(final Value value) {
-            return add(value, false);
+        public Builder add(final Length position, final Length length, final boolean rest) {
+            items.add(new Item(position, length, rest));
+            return this;
         }
 
-        public Builder rest(final Value value) {
-            return add(value, true);
+        public Builder note(final Length position, final Length length) {
+            return add(position, length, false);
+        }
+        public Builder note(final Length position, final Value value) {
+            return add(position, value, false);
+        }
+
+        public Builder rest(final Length position, final Length length) {
+            return add(position, length, true);
+        }
+
+        public Builder rest(final Length position, final Value value) {
+            return add(position, value, true);
         }
 
         public Rhythm build() {
