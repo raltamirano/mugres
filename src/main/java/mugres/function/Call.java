@@ -50,6 +50,14 @@ public class Call<T> implements Parametrizable {
         parameterValue(LENGTH_PARAMETER.name(), lengthInMeasures);
     }
 
+    public static <X> Call<X> of(final String functionName) {
+        final Function function = Function.forName(functionName);
+        if (function == null)
+            throw new RuntimeException("Unknown function: " + functionName);
+
+        return of(function, Collections.emptyMap());
+    }
+
     public static <X> Call<X> of(final String functionName, final Map<String, Object> arguments) {
         final Function function = Function.forName(functionName);
         if (function == null)

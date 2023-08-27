@@ -185,7 +185,7 @@ public class Song extends TrackerElement {
         return patternSong;
     }
 
-    public void addTrack(final Track track) {
+    public Track addTrack(final Track track) {
         if (track == null)
             throw new IllegalArgumentException("track");
         if (tracks.contains(track))
@@ -193,6 +193,16 @@ public class Song extends TrackerElement {
 
         tracks.add(track);
         propertyChangeSupport().firePropertyChange(TRACKS, null, tracks());
+
+        return track;
+    }
+
+    public Track createTrack(final int channel) {
+        final Track track = Track.of(UUID.randomUUID(), createTrackName(), Instrument.Acoustic_Grand_Piano, channel);
+        tracks.add(track);
+        propertyChangeSupport().firePropertyChange(TRACKS, null, tracks());
+
+        return track;
     }
 
     public Track createTrack(final Instrument instrument) {
@@ -200,6 +210,14 @@ public class Song extends TrackerElement {
             throw new IllegalArgumentException("instrument");
 
         final Track track = Track.of(UUID.randomUUID(), createTrackName(), instrument);
+        tracks.add(track);
+        propertyChangeSupport().firePropertyChange(TRACKS, null, tracks());
+
+        return track;
+    }
+
+    public Track createTrack(final String name, final int channel) {
+        final Track track = Track.of(UUID.randomUUID(), name, Instrument.Acoustic_Grand_Piano, channel);
         tracks.add(track);
         propertyChangeSupport().firePropertyChange(TRACKS, null, tracks());
 

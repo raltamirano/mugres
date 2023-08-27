@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import static java.util.Collections.emptyMap;
 import static mugres.common.Context.MEASURES;
 
 public class Pattern extends TrackerElement {
@@ -123,6 +124,15 @@ public class Pattern extends TrackerElement {
         addPart(track.track(), call);
     }
 
+    public void addPart(final Track track, final String function) {
+        addPart(track, function, emptyMap());
+    }
+
+    public void addPart(final Track track, final String function, final Map<String, Object> arguments) {
+        final Call<List<Event>> call = Call.of(function, arguments);
+        validateTrackAndCallBeforeEditingCalls(track, call).add(call);
+    }
+
     public void addPart(final Track track, final Call<List<Event>> call) {
         validateTrackAndCallBeforeEditingCalls(track, call).add(call);
     }
@@ -148,7 +158,8 @@ public class Pattern extends TrackerElement {
         if (call == null)
             throw new IllegalArgumentException("call");
         if (!(call.getFunction() instanceof Function.EventsFunction))
-            throw new IllegalArgumentException("Call's function must be an instance of " + Function.EventsFunction.class.getName());
+            throw new IllegalArgumentException("Call's function must be an instance of " +
+                    Function.EventsFunction.class.getName());
 
         if (!song.tracks().contains(track))
             song.addTrack(track);

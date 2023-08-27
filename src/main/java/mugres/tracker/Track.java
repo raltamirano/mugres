@@ -50,8 +50,24 @@ public class Track extends TrackerElement {
         return ParametrizableSupport.forTarget(PARAMETERS, this);
     }
 
+    public static Track of(final String name) {
+        return new Track(UUID.randomUUID(), name, Instrument.Acoustic_Grand_Piano, DEFAULT_CHANNEL);
+    }
+
+    public static Track of(final String name, final Instrument instrument) {
+        return new Track(UUID.randomUUID(), name, instrument, DEFAULT_CHANNEL);
+    }
+
     public static Track of(final UUID id, final String name, final Instrument instrument) {
         return new Track(id, name, instrument, DEFAULT_CHANNEL);
+    }
+
+    public static Track of(final String name, final int channel) {
+        return new Track(UUID.randomUUID(), name, Instrument.Acoustic_Grand_Piano, channel);
+    }
+
+    public static Track of(final String name, final Instrument instrument, final int channel) {
+        return new Track(UUID.randomUUID(), name, instrument, channel);
     }
 
     public static Track of(final UUID id, final String name, final Instrument instrument, final int channel) {
