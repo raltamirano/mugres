@@ -11,7 +11,7 @@ import mugres.common.Tonality;
 import mugres.common.Value;
 import mugres.common.euclides.EuclideanPattern;
 import mugres.function.Call;
-import mugres.function.builtin.arp.Arp2;
+import mugres.function.builtin.arp.Arp;
 import mugres.function.builtin.euclides.Euclides;
 import mugres.function.builtin.random.Random;
 import mugres.function.builtin.text.TextMelody;
@@ -45,7 +45,8 @@ public class RandomSong {
         final List<Track> tracks = new ArrayList<>();
         final int numberOfTracks = RND.nextInt(RANDOM_MAX_TRACKS) + 1;
         for(int i = 0; i < numberOfTracks; i++)
-            tracks.add(Track.of(UUID.randomUUID(), "Track " + i, random(Instrument.values(), Instrument.DrumKit), i));
+            tracks.add(Track.of(UUID.randomUUID(), "Track " + i, random(Instrument.values(), Instrument.DrumKit),
+                    i + 1));
 
         final boolean hasPercussion = RND.nextBoolean();
         final boolean percussionAlwaysPresent = RND.nextBoolean();
@@ -106,11 +107,11 @@ public class RandomSong {
                         break;
                     case 2: // Arp
                         final Map<String, Object> arpArguments = toMap(
-                                Arp2.PITCHES, actualScale.harmonize(actualRoot, actualRoot, IntervalType.THIRD,
+                                Arp.PITCHES, actualScale.harmonize(actualRoot, actualRoot, IntervalType.THIRD,
                                         RANDOM_MAX_ARP_PITCHES, startingOctave),
-                                Arp2.PATTERN, randomArpPattern()
+                                Arp.PATTERN, randomArpPattern()
                         );
-                        pattern.addPart(track, Call.of("arp2", pattern.measures(), arpArguments));
+                        pattern.addPart(track, Call.of("arp", pattern.measures(), arpArguments));
                         break;
                     case 3: // Euclidean patterns
                         final List<EuclideanPattern> euclideanPatterns = new ArrayList<>();
@@ -196,6 +197,8 @@ public class RandomSong {
         for(int i=0; i<RANDOM_MAX_ARP_PITCHES; i++) {
             final int index = i == 0 ? 1 : RND.nextInt(RANDOM_MAX_ARP_PITCHES) + 1;
             final String duration = random(Value.values()).id();
+            steps.add(String.valueOf(index));
+            steps.add(duration);
         }
 
         return String.join("", steps);
@@ -208,7 +211,7 @@ public class RandomSong {
     private static final Set<Integer> RANDOM_MIDDLE8_REPETITIONS = new HashSet<>(asList( 1, 2, 4 ));
     private static final int RANDOM_BASIC_ARRANGEMENT_ENTRIES = 8;
     private static final Set<Integer> RANDOM_BASIC_ARRANGEMENT_PATTERN_REPETITIONS = new HashSet<>(asList( 1, 2 ));
-    private static final Set<Integer> RANDOM_STARTING_OCTAVE_OPTIONS = new HashSet<>(asList( 1, 2, 3, 4, 5 ));
+    private static final Set<Integer> RANDOM_STARTING_OCTAVE_OPTIONS = new HashSet<>(asList( 0, 1, 2, 3, 4 ));
     private static final Set<Integer> RANDOM_OCTAVE_TO_GENERATE_OPTIONS = new HashSet<>(asList( 1, 2, 3 ));
     private static final int RANDOM_MIN_TEMPO = 20;
     private static final int RANDOM_MAX_TEMPO = 200;

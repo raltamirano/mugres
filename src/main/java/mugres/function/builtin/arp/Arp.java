@@ -15,9 +15,9 @@ import static mugres.common.DataType.PITCH;
 import static mugres.common.DataType.TEXT;
 import static mugres.function.utils.Arpeggios.arpeggiate;
 
-public class Arp2 extends EventsFunction {
-    public Arp2() {
-        super("arp2", "Arpeggiates provided pitches",
+public class Arp extends EventsFunction {
+    public Arp() {
+        super("arp", "Arpeggiates provided pitches",
                 Parameter.of(PITCHES, "Pitches", 1,  "Ordered list of pitches to arpeggiate",
                         PITCH, false, emptyList(), true, false),
                 Parameter.of(PATTERN, "Pattern", 2, "Arp pattern",

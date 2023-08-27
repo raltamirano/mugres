@@ -12,7 +12,7 @@ import mugres.function.builtin.song.ParametrizedSongGenerator;
 import mugres.tracker.Event;
 import mugres.common.Length;
 import mugres.common.TimeSignature;
-import mugres.function.builtin.arp.Arp2;
+import mugres.function.builtin.arp.Arp;
 import mugres.function.builtin.bm.BlackMetal;
 import mugres.function.builtin.chords.Chords;
 import mugres.function.builtin.drums.BlastBeat;
@@ -264,7 +264,7 @@ public abstract class Function<T> {
         new HipHopBeat();
         new Riffer();
         new Chords();
-        new Arp2();
+        new Arp();
         new BlackMetal();
         new TextMelody();
         new Euclides();
