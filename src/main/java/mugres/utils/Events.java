@@ -69,4 +69,17 @@ public class Events {
         events.forEach(e -> result.add(e.withPosition(e.position().minus(minPosition))));
         return result;
     }
+
+    public static List<Event> offset(final List<Event> events, final Length offset) {
+        if (events == null)
+            throw new IllegalArgumentException("events");
+        if (offset == null)
+            throw new IllegalArgumentException("offset");
+        if (events.isEmpty())
+            return Collections.emptyList();
+
+        final List<Event> result = new ArrayList<>();
+        events.forEach(e -> result.add(e.offset(offset)));
+        return result;
+    }
 }
