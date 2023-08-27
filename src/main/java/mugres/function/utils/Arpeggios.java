@@ -38,6 +38,8 @@ public class Arpeggios {
                 final int index = Integer.parseInt(element) - 1;
                 if (index >= 0 && index < pitches.size())
                     result.add(Event.of(position, octave.apply(pitches.get(index)), length, DEFAULT_VELOCITY));
+                else
+                    throw new IllegalArgumentException("Invalid arp element index: " + (index+1));
             }
 
             position = position.plus(length);
