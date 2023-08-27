@@ -12,7 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static mugres.common.Pitch.DEFAULT_VELOCITY;
-import static mugres.function.builtin.arp.Utils.parseNoteValue;
+import static mugres.common.Value.QUARTER;
 import static mugres.function.utils.EventAccumulator.OnExcessAction.SHORTEN;
 
 public class Arpeggios {
@@ -27,20 +27,20 @@ public class Arpeggios {
 
         Length position = Length.ZERO;
         while(matcher.find()) {
-            final String element = matcher.group(2);
+            final String element = matcher.group(1);
             final boolean isRest = REST.equals(element);
-            final Value value = parseNoteValue(matcher.group(3));
-            final Octave octave = matcher.group(4) == null ? Octave.SAME : Octave.of(matcher.group(4));
+            final Length length = parseNoteValues(matcher.group(2));
+            final Octave octave = matcher.group(3) == null ? Octave.SAME : Octave.of(matcher.group(3));
 
             if (isRest) {
-                result.add(Event.rest(position, value));
+                result.add(Event.rest(position, length));
             } else {
                 final int index = Integer.parseInt(element) - 1;
                 if (index >= 0 && index < pitches.size())
-                    result.add(Event.of(position, octave.apply(pitches.get(index)), value, DEFAULT_VELOCITY));
+                    result.add(Event.of(position, octave.apply(pitches.get(index)), length, DEFAULT_VELOCITY));
             }
 
-            position = position.plus(value.length());
+            position = position.plus(length);
         }
 
         return result;
@@ -55,6 +55,17 @@ public class Arpeggios {
         return accumulator.accumulated();
     }
 
+    private static Length parseNoteValues(final String input) {
+        if (input == null || input.trim().isEmpty())
+            return QUARTER.length();
+
+        Length length = Length.ZERO;
+        for (char c : input.toCharArray())
+            length = length.plus(Value.of(c).length());
+
+        return length;
+    }
+
     public static final String REST = "R";
-    public static final Pattern ARP_PATTERN = Pattern.compile("(([1-9]|" + REST + ")(w|h|q|e|s|t|m)?(" + Octave.OCTAVE_PATTERN.pattern() + ")?)+?");
+    public static final Pattern ARP_PATTERN = Pattern.compile("(?:([1-9A-K]|" + REST + ")([whqestm]*)(" + Octave.OCTAVE_PATTERN.pattern() + ")?)+?");
 }
