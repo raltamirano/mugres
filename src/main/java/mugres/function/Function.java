@@ -241,7 +241,7 @@ public abstract class Function<T> {
             final List<Event> result = new ArrayList<>();
 
             for (Event event : track.events())
-                if (event.position().greaterThanOrEqual(start) && event.position().lessThanOrEqual(end))
+                if (event.position().greaterThanOrEqual(start) && event.position().lessThan(end))
                     result.add(event);
 
             return result;

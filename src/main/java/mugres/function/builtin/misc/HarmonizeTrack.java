@@ -13,6 +13,7 @@ import mugres.common.TrackReference;
 import mugres.function.Function;
 import mugres.parametrizable.Parameter;
 import mugres.tracker.Event;
+import mugres.utils.Events;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +54,9 @@ public class HarmonizeTrack extends Function.EventsFunction {
         final int voices = (int)arguments.get(VOICES);
 
 
-        toHarmonize.forEach(e -> {
+        Events.toRelativeToZero(toHarmonize).forEach(e -> {
             Length offset = separation;
-            List<Pitch> harmony = scale.harmonize(root, e.pitch().note(), intervalType, voices + 1);
+            List<Pitch> harmony = scale.harmonize(root, e.pitch().note(), intervalType, voices + 1, e.pitch().octave());
             harmony = harmony.subList(1, harmony.size());
             for (Pitch h : harmony) {
                 result.add(Event.of(e.position().plus(offset), octave.apply(h), e.length(), e.velocity()));
