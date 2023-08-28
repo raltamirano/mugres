@@ -3,10 +3,12 @@ package mugres.tracker;
 import mugres.common.DataType;
 import mugres.common.Instrument;
 import mugres.common.TrackReference;
+import mugres.function.Call;
 import mugres.parametrizable.Parameter;
 import mugres.parametrizable.ParametrizableSupport;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -19,6 +21,7 @@ public class Track extends TrackerElement {
     private TrackReference reference;
     private Instrument instrument;
     private int channel;
+    private Call<List<Event>> defaultCall;
 
     private static final Set<Parameter> PARAMETERS;
 
@@ -39,10 +42,6 @@ public class Track extends TrackerElement {
         this.instrument = instrument;
         this.channel = channel;
         this.reference = TrackReference.of(id);
-    }
-
-    public TrackReference reference() {
-        return reference;
     }
 
     @Override
@@ -90,6 +89,22 @@ public class Track extends TrackerElement {
         this.channel = channel;
     }
 
+    public TrackReference reference() {
+        return reference;
+    }
+
+    public Call<List<Event>> defaultCall() {
+        return defaultCall;
+    }
+
+    public void defaultCall(final Call<List<Event>> defaultCall) {
+        this.defaultCall = defaultCall;
+    }
+
+    public boolean hasDefaultCall() {
+        return defaultCall != null;
+    }
+
     @Override
     public String toString() {
         return "Track{" +
@@ -97,6 +112,7 @@ public class Track extends TrackerElement {
                 ", name='" + name() + '\'' +
                 ", instrument=" + instrument +
                 ", channel=" + channel +
+                ", defaultCall=" + defaultCall +
                 '}';
     }
 

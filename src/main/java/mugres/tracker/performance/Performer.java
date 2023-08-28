@@ -12,6 +12,9 @@ import mugres.tracker.Song;
 
 import java.util.*;
 
+import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
+
 public class Performer {
     private Performer() {}
 
@@ -29,7 +32,7 @@ public class Performer {
             for(Arrangement.Entry arrangementEntry : song.arrangement().entries()) {
                 for(int arrangementEntryIndex = 1; arrangementEntryIndex <= arrangementEntry.repetitions();
                     arrangementEntryIndex++) {
-                    if (arrangementEntry.pattern().hasPartsFor(track)) {
+                    if (arrangementEntry.pattern().hasPartsFor(track) || track.hasDefaultCall()) {
                         if (!arrangementEntry.pattern().isRegenerate() &&
                                 generatedMatrix.containsKey(arrangementEntry.pattern().name()) &&
                                 generatedMatrix.get(arrangementEntry.pattern().name()).containsKey(track.name())) {
@@ -43,7 +46,10 @@ public class Performer {
 
                             final List<Event> trackEvents = new ArrayList<>();
                             Length previousCallsOffset = Length.ZERO;
-                            for (Call<List<Event>> call : arrangementEntry.pattern().matrix().get(track)) {
+                            List<Call<List<Event>>> calls = arrangementEntry.pattern().matrix().get(track);
+                            if (calls == null || calls.isEmpty())
+                                calls = singletonList(track.defaultCall());
+                            for (Call<List<Event>> call : calls) {
                                 final Context callContext = Context.ComposableContext.of(arrangementEntry.pattern().context());
                                 final Length thisCallOffset = offset.plus(previousCallsOffset);
                                 callContext.put(Function.PERFORMANCE, performance);
