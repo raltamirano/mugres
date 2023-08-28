@@ -132,6 +132,6 @@ public class Pitch implements Comparable<Pitch> {
 
     public static final int BASE_OCTAVE = 3;
     public static final Pitch MIDDLE_C = of(Note.C, BASE_OCTAVE);
-    public static final Pitch CONCERT_PITCH = of(Note.A, 4);
+    public static final Pitch CONCERT_PITCH = of(Note.A, 3);
     public static final int DEFAULT_VELOCITY = 100;
 }
