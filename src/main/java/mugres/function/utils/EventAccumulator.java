@@ -46,20 +46,20 @@ public class EventAccumulator {
         return fulfilled;
     }
 
-    public boolean offer(final Event event) {
+    public EventAccumulator offer(final Event event) {
         if (event == null)
             throw new IllegalArgumentException("event");
 
         return offer(Collections.singletonList(event));
     }
 
-    public boolean offer(final List<Event> events) {
+    public EventAccumulator offer(final List<Event> events) {
         return offer(events, false, Length.ZERO);
     }
 
-    public boolean offer(final List<Event> events, final boolean asChord, final Length separation) {
+    public EventAccumulator offer(final List<Event> events, final boolean asChord, final Length separation) {
         if (fulfilled || events == null || events.isEmpty())
-            return fulfilled;
+            return this;
 
         Length cut = Length.ZERO;
         final Iterator<Event> iterator = events.iterator();
@@ -69,7 +69,7 @@ public class EventAccumulator {
             cut = asChord ? cut.plus(separation) : Length.ZERO;
         }
 
-        return fulfilled;
+        return this;
     }
 
     public EventAccumulator fillWith(final Event event) {
@@ -119,6 +119,30 @@ public class EventAccumulator {
                 addEvent(event, !asChord || !iterator.hasNext(), cut);
                 control = control.plus(event.length());
                 cut = asChord ? cut.plus(separation) : Length.ZERO;
+            }
+        }
+
+        return this;
+    }
+    public EventAccumulator fillWithChords(final List<List<Event>> chords,
+                                           final Length lengthToFill,
+                                           final Length separation) {
+        if (chords == null || chords.isEmpty())
+            throw new IllegalArgumentException("chords");
+        if (lengthToFill == null)
+            throw new IllegalArgumentException("lengthToFill");
+
+        Length control = Length.ZERO;
+        while(!fulfilled && control.lessThan(lengthToFill)) {
+            final Iterator<List<Event>> iterator = chords.iterator();
+            while (iterator.hasNext()) {
+                final List<Event> chord = iterator.next();
+                if (fulfilled || control.greaterThanOrEqual(lengthToFill))
+                    break;
+                offer(chord, true, separation);
+                // fixme: assuming all notes same position/length!
+                final Length chordLength = chord.get(0).length();
+                control = control.plus(chordLength);
             }
         }
 

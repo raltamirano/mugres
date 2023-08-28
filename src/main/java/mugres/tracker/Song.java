@@ -6,6 +6,7 @@ import mugres.common.DataType;
 import mugres.common.Instrument;
 import mugres.common.Key;
 import mugres.common.TimeSignature;
+import mugres.common.chords.ChordProgression;
 import mugres.function.Call;
 import mugres.parametrizable.Parameter;
 import mugres.parametrizable.ParametrizableSupport;
@@ -130,6 +131,14 @@ public class Song extends TrackerElement {
         if (context.has(Context.MEASURES))
             return context.get(Context.MEASURES);
         throw new IllegalArgumentException("No length in measures for this call!");
+    }
+
+    public ChordProgression chordProgression(final int measures) {
+        return context().chordProgression(ChordProgression.of(context(), measures)).chordProgression();
+    }
+
+    public ChordProgression chordProgression() {
+        return context().chordProgression();
     }
 
     public Map<String, Object> metadata() {

@@ -73,6 +73,34 @@ public class Rhythm {
         return result;
     }
 
+    public List<List<Event>> applyToEventsAsChord(final List<Event> chord) {
+        if (chord == null)
+            throw new IllegalArgumentException("chord");
+        if (chord.isEmpty())
+            return Collections.emptyList();
+
+        final List<Event> filteredEvents = chord.stream()
+                .filter(e -> !e.rest())
+                .collect(Collectors.toList());
+        if (filteredEvents.isEmpty())
+            return Collections.emptyList();
+
+        final List<List<Event>> result = new ArrayList<>();
+        Length startPosition = Length.ZERO;
+        for(Item item : items) {
+            final Length newPosition = startPosition.plus(item.position());
+            if (item.rest()) {
+                result.add(Collections.singletonList(Event.rest(newPosition, item.length())));
+            } else {
+                result.add(filteredEvents.stream()
+                        .map(e -> e.withPosition(newPosition).withLength(item.length()))
+                        .collect(Collectors.toList()));
+            }
+        }
+
+        return result;
+    }
+
     public List<Event> applyToPitches(final List<Pitch> pitches) {
         if (pitches == null)
             throw new IllegalArgumentException("pitches");

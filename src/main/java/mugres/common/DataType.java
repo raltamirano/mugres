@@ -61,6 +61,8 @@ public enum DataType {
     SCALE_CORRECTION(ScaleCorrection.class),
     /** Track */
     TRACK(TrackReference.class),
+    /** Track */
+    RHYTHM(Rhythm.class),
     /** Unknown */
     UNKNOWN(Object.class);
 

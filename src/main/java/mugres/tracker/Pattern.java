@@ -6,6 +6,7 @@ import mugres.common.DataType;
 import mugres.common.Key;
 import mugres.common.Length;
 import mugres.common.TimeSignature;
+import mugres.common.chords.ChordProgression;
 import mugres.function.Call;
 import mugres.function.Function;
 import mugres.parametrizable.Parameter;
@@ -74,6 +75,14 @@ public class Pattern extends TrackerElement {
 
     public Song song() {
         return song;
+    }
+
+    public ChordProgression chordProgression(final int measures) {
+        return context().chordProgression(ChordProgression.of(context(), measures)).chordProgression();
+    }
+
+    public ChordProgression chordProgression() {
+        return context().chordProgression();
     }
 
     public int measures() {
