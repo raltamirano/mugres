@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
 import static mugres.common.Interval.*;
-import static mugres.common.Note.BASE_OCTAVE;
+import static mugres.common.Pitch.BASE_OCTAVE;
 
 /**
  * Chord

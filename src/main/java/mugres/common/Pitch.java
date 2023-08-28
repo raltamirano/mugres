@@ -7,7 +7,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Math.log;
-import static mugres.common.Note.BASE_OCTAVE;
 
 public class Pitch implements Comparable<Pitch> {
     private final int midi;
@@ -131,7 +130,8 @@ public class Pitch implements Comparable<Pitch> {
     private static final Map<Integer, Pitch> CACHE = new HashMap<>();
     private static final Pattern PITCH = Pattern.compile("((?:C|D|E|F|G|A|B)#?)(\\[(-?\\d)\\])?");
 
-    public static final Pitch MIDDLE_C = of(Note.C, 3);
+    public static final int BASE_OCTAVE = 3;
+    public static final Pitch MIDDLE_C = of(Note.C, BASE_OCTAVE);
     public static final Pitch CONCERT_PITCH = of(Note.A, 4);
     public static final int DEFAULT_VELOCITY = 100;
 }

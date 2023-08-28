@@ -1,6 +1,7 @@
 package mugres.common;
 
 import static java.lang.Math.abs;
+import static mugres.common.Pitch.BASE_OCTAVE;
 
 public enum Note {
     C("C", 0),
@@ -84,6 +85,4 @@ public enum Note {
     public String toString() {
         return label;
     }
-
-    public static final int BASE_OCTAVE = 3;
 }

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static mugres.common.Note.BASE_OCTAVE;
+import static mugres.common.Pitch.BASE_OCTAVE;
 import static mugres.utils.Randoms.random;
 
 public class Randomizer extends Filter {

@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
-import static mugres.common.Note.BASE_OCTAVE;
+import static mugres.common.Pitch.BASE_OCTAVE;
 import static mugres.common.Note.C;
 import static mugres.common.Scale.MINOR_PENTATONIC;
 import static mugres.utils.Randoms.RND;

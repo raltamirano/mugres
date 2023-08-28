@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static mugres.common.Note.BASE_OCTAVE;
+import static mugres.common.Pitch.BASE_OCTAVE;
 import static mugres.common.chords.Type.AUGMENTED_7TH;
 import static mugres.common.chords.Type.DIMINISHED_7TH;
 import static mugres.common.chords.Type.DOMINANT_7TH;

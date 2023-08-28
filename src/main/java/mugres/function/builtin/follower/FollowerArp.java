@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static mugres.common.DataType.INTEGER;
 import static mugres.common.DataType.TEXT;
-import static mugres.common.Note.BASE_OCTAVE;
+import static mugres.common.Pitch.BASE_OCTAVE;
 import static mugres.function.utils.EventAccumulator.OnExcessAction.SHORTEN;
 
 public class FollowerArp extends EventsFunction {

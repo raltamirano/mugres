@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static mugres.common.Note.BASE_OCTAVE;
+import static mugres.common.Pitch.BASE_OCTAVE;
 import static mugres.common.Note.C;
 import static mugres.common.Scale.MINOR_PENTATONIC;
 import static mugres.common.Value.QUARTER;

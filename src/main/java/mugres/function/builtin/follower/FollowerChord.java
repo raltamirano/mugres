@@ -16,7 +16,7 @@ import java.util.Map;
 import static mugres.common.DataType.CHORD_MODE;
 import static mugres.common.DataType.INTEGER;
 import static mugres.common.DataType.LENGTH;
-import static mugres.common.Note.BASE_OCTAVE;
+import static mugres.common.Pitch.BASE_OCTAVE;
 import static mugres.common.Pitch.DEFAULT_VELOCITY;
 import static mugres.function.utils.EventAccumulator.OnExcessAction.SHORTEN;
 
