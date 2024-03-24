@@ -127,8 +127,8 @@ public enum Instrument {
     Bird_Tweet(123, "Bird Tweet"),
     Telephone_Ring(124, "Telephone Ring"),
     Helicopter(125, "Helicopter"),
-    Gunshot(127, "Gunshot"),
     Applause(126, "Applause"),
+    Gunshot(127, "Gunshot"),
     DrumKit(-1, "DrumKit", true);
 
     private int id;

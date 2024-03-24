@@ -15,6 +15,7 @@ import javax.sound.midi.Sequence;
 
 import static mugres.common.Context.basicContext;
 import static mugres.tracker.Track.WellKnownTracks.GUITAR1;
+import static mugres.tracker.Track.WellKnownTracks.PIANO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -34,7 +35,7 @@ public class ConvertToMidiTests {
         assertEquals(song.name(), performance.song());
         assertEquals(1, performance.tracks().size());
         final Track track = performance.tracks().iterator().next();
-        assertEquals(GUITAR1.track().name(), track.track());
+        assertEquals(GUITAR1.track().instrument(), track.instrument());
         // 2 measures of random quarter notes (pattern A repeats once)
         assertEquals(8, track.events().size());
 
@@ -46,9 +47,9 @@ public class ConvertToMidiTests {
         assertEquals(song.tracks().size() + 1, sequence.getTracks().length);
         // Expected events: set track name, tempo, time signature, and end-of-track
         assertEquals(4, sequence.getTracks()[0].size());
-        // Expected events: one set track name, 16 note events (8 notes, each one get both a NOTE_ON
+        // Expected events: one set track name, one Program Change, 16 note events (8 notes, each one get both a NOTE_ON
         // and a NOTE_OFF event) and end-of-track
-        assertEquals(18, sequence.getTracks()[1].size());
+        assertEquals(19, sequence.getTracks()[1].size());
     }
 
     public Random random() {
