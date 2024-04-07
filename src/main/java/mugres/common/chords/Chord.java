@@ -69,7 +69,6 @@ public class Chord {
         return new Chord(root, Type.DOMINANT_7TH, BASE_OCTAVE);
     }
 
-
     public static Chord powerChord(final Note root) {
         return new Chord(root, Type.POWER_CHORD, BASE_OCTAVE_STANDARD_TUNING_GUITAR);
     }

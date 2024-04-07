@@ -2,12 +2,15 @@ package mugres.common.chords;
 
 import mugres.common.Context;
 import mugres.common.Length;
+import mugres.common.Note;
 import mugres.common.Position;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ChordProgression {
@@ -29,6 +32,30 @@ public class ChordProgression {
 
     public static ChordProgression of(final Context context, final int measures) {
         return new ChordProgression(context, measures);
+    }
+
+    public static ChordProgression of(final Context context, final String input) {
+        final Matcher matcher = PROGRESSION.matcher(input);
+        if (!matcher.matches())
+            throw new IllegalArgumentException("Invalid chord progression: " + input);
+
+        final int measures = Integer.parseInt(matcher.group("measures"));
+        final ChordProgression chordProgression = of(context, measures);
+
+        final Matcher eventsMatcher = EVENT.matcher(matcher.group("events"));
+        while(eventsMatcher.find()) {
+            final int measure = Integer.parseInt(eventsMatcher.group("measure"));
+            final int beat = Integer.parseInt(eventsMatcher.group("beat"));
+            final Note root = Note.of(eventsMatcher.group("root"));
+            final Type type = eventsMatcher.group("type") == null ?
+                    Type.MAJOR :
+                    Type.forAbbreviation(eventsMatcher.group("type"));
+            final Chord chord = Chord.of(root, type);
+    
+            chordProgression.event(measure, beat, chord);
+        }
+
+        return chordProgression;
     }
 
     public ChordProgression event(final int measure, final Chord chord) {
@@ -90,6 +117,9 @@ public class ChordProgression {
 
         return result;
     }
+
+    private static final Pattern EVENT = Pattern.compile("(?<measure>\\d+):(?<beat>\\d+):(?<chord>(?<root>(C|D|E|F|G|A|B)#?)(?<type>.*?(?=\\*))?)\\*");
+    private static final Pattern PROGRESSION = Pattern.compile("^(?<measures>\\d+)>(?<events>(" + EVENT.pattern() + ")+)$");
 
     public static class ChordEvent {
         private final Chord chord;

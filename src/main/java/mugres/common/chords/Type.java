@@ -63,6 +63,6 @@ public enum Type {
             if (t.abbreviations.contains(abbreviation))
                 return t;
 
-        throw new IllegalArgumentException("Invalid chord type abbreviated: " + abbreviation);
+        throw new IllegalArgumentException("Invalid chord type abbreviation: " + abbreviation);
     }
 }
