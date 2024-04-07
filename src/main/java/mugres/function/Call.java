@@ -158,6 +158,14 @@ public class Call<T> implements Parametrizable {
         return of(function, theArgs, parentParameterValuesSource);
     }
 
+    public static <X> Call fromRawArguments(final String functionName, final int lengthInMeasures,
+                                            final Map<String, String> arguments) {
+        final Function function = getFunction(functionName);
+        final Map<String, Object> theArgs = arguments != null ? parseArguments(function, arguments) : Collections.emptyMap();
+        theArgs.put(LENGTH_PARAMETER.name(), lengthInMeasures);
+        return of(function, theArgs);
+    }
+
     public static <X> Call<X> parse(final String input) {
         return parse(input, Collections.emptyMap());
     }
@@ -189,19 +197,29 @@ public class Call<T> implements Parametrizable {
             allArguments.put(parameterName, argumentString);
         }
 
+        final Map<String, Object> arguments = parseArguments(function, allArguments);
+
+        if (arguments.isEmpty() && !functionArguments.isEmpty())
+            throw new IllegalArgumentException("Invalid function call arguments format: " + functionArguments);
+
+        return of(function, arguments);
+    }
+
+    private static Map<String, Object> parseArguments(final Function function,
+                                               final Map<String, String> rawArguments) {
         final Map<String, Object> arguments = new HashMap<>();
-        for(Map.Entry<String, String> entry : allArguments.entrySet()) {
+        for(Map.Entry<String, String> entry : rawArguments.entrySet()) {
             final String parameterName = entry.getKey();
             final String argumentString = entry.getValue().trim();
 
             final Parameter parameter = function.parameter(parameterName);
             if (parameter == null)
                 throw new RuntimeException(String.format("Unexpected parameter '%s' for function '%s'",
-                        parameterName, functionName));
+                        parameterName, function.name()));
 
             if (parameter.isMultiple())
                 throw new RuntimeException(String.format("Unsupported attribute 'multiple' on parameter '%s' for function '%s'",
-                        parameterName, functionName));
+                        parameterName, function.name()));
 
             Object argument = null;
             if (argumentString != null && !argumentString.isEmpty()) {
@@ -231,8 +249,7 @@ public class Call<T> implements Parametrizable {
                         if (areTextDelimitersPresent(argumentString))
                             argument = removeTextDelimiters(argumentString);
                         else
-                            throw new IllegalArgumentException("TEXT function parameter's values must be " +
-                                    "enclosed in single quotes (')");
+                            argument = argumentString;
                         break;
                     case INTEGER:
                         argument = Integer.parseInt(argumentString);
@@ -252,11 +269,7 @@ public class Call<T> implements Parametrizable {
             if (argument != null)
                 arguments.put(parameterName, argument);
         }
-
-        if (arguments.isEmpty() && !functionArguments.isEmpty())
-            throw new IllegalArgumentException("Invalid function call arguments format: " + functionArguments);
-
-        return of(function, arguments);
+        return arguments;                                                                 
     }
 
     private static boolean areTextDelimitersPresent(final String input) {
