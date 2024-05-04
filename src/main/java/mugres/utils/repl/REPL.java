@@ -56,8 +56,15 @@ public class REPL {
         while (running) {
             System.out.print("mugres> ");
             final String line = scanner.nextLine().trim();
-            if (!line.isEmpty())
-                running = executeCommand(line.split("\\s"));
+            if (!line.isEmpty()) {
+                try {
+                    running = executeCommand(line.split("\\s"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println();
+                    System.out.println();
+                }
+            }
         }
 
         System.out.println("Goodbye");
@@ -412,7 +419,7 @@ public class REPL {
             System.out.println(args[0] + ": no arguments expected");
         } else {
             for(Function<?> g : Function.allFunctions())
-                System.out.println(String.format("%-20s\t%-50s\t%s", g.name(), g.description(),
+                System.out.println(String.format("%-20s\t%-80s\t%s", g.name(), g.description(),
                         g.artifact().label()));
         }
 
