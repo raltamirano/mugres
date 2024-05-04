@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Collections.unmodifiableList;
+import static mugres.common.MIDI.isValidVelocity;
 
 public class EuclideanArrangement {
     private final List<Entry> patterns = new ArrayList<>();
@@ -61,7 +62,7 @@ public class EuclideanArrangement {
                 throw new IllegalArgumentException("instrument");
             if (pitch == null)
                 throw new IllegalArgumentException("pitch");
-            if (velocity < 0 || velocity > 127)
+            if (!isValidVelocity(velocity))
                 throw new IllegalArgumentException("velocity");
             if (pattern == null)
                 throw new IllegalArgumentException("pattern");

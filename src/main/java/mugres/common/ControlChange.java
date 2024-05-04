@@ -2,6 +2,10 @@ package mugres.common;
 
 import java.util.Objects;
 
+import static mugres.common.MIDI.isValidChannel;
+import static mugres.common.MIDI.isValidController;
+import static mugres.common.MIDI.isValidCCValue;
+
 /**
  * Control change signal
  */
@@ -52,9 +56,19 @@ public abstract class ControlChange<V> {
                 '}';
     }
 
+    /**
+     * MIDI CC
+     */
     public static class MidiControlChange extends ControlChange<Integer> {
         private MidiControlChange(int channel, int controller, int value) {
             super(channel, controller, value);
+
+            if (!isValidChannel(channel))
+                throw new IllegalArgumentException("channel");
+            if (!isValidController(controller))
+                throw new IllegalArgumentException("controller");
+            if (!isValidCCValue(controller))
+                throw new IllegalArgumentException("value");
         }
 
         public static MidiControlChange of(final int channel, final int controller, final int value) {

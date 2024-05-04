@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Math.log;
+import static mugres.common.MIDI.isValidNote;
 
 public class Pitch implements Comparable<Pitch> {
     private final int midi;
@@ -14,7 +15,7 @@ public class Pitch implements Comparable<Pitch> {
     private final int octave;
 
     private Pitch(final int midi, final Note note, final int octave) {
-        if (!isValidMidiNoteNumber(midi))
+        if (!isValidNote(midi))
             throw new IllegalArgumentException("Invalid Midi note number: " + midi);
 
         this.midi = midi;
@@ -79,7 +80,7 @@ public class Pitch implements Comparable<Pitch> {
 
     public Pitch safeTranspose(final int semitones) {
         final int newMidi = midi + semitones;
-        return isValidMidiNoteNumber(newMidi) ? of(newMidi) : this;
+        return isValidNote(newMidi) ? of(newMidi) : this;
     }
 
     public int midi() {
@@ -96,10 +97,6 @@ public class Pitch implements Comparable<Pitch> {
 
     public double hz() {
         return 440.0  * Math.pow(2.0, (midi-69.0)/12.0);
-    }
-
-    public static boolean isValidMidiNoteNumber(final int noteNumber) {
-        return noteNumber >= 0 && noteNumber <= 127;
     }
 
     @Override

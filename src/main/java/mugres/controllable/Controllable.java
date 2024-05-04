@@ -18,7 +18,7 @@ public interface Controllable {
     Map<Integer, Set<String>> controlChangeMappings();
 
     /**
-     * Accepts a Control Change.
+     * Accept a Control Change event.
      */
     void onControlChange(final ControlChange controlChange);
 }
