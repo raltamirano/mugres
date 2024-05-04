@@ -22,7 +22,6 @@ import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -87,7 +86,8 @@ public class REPL {
         HANDLERS.put("calls-track", REPL::callsSetTrack);
         HANDLERS.put("calls-show-functions", REPL::callsShowFunctions);
         HANDLERS.put("calls-show-tracks", REPL::callsShowAvailableTracks);
-        HANDLERS.put("call", REPL::callsExecute);
+        HANDLERS.put("call", REPL::executeCall);
+        HANDLERS.put("loop-call", REPL::loopCall);
         HANDLERS.put("stop", REPL::stop);
         HANDLERS.put("quit", REPL::quit);
     }
@@ -390,7 +390,15 @@ public class REPL {
         return true;
     }
 
-    private static boolean callsExecute(final String[] args) {
+    private static boolean executeCall(final String[] args) {
+        return doExecuteCall(args, false);
+    }
+
+    private static boolean loopCall(final String[] args) {
+        return doExecuteCall(args, true);
+    }
+
+    private static boolean doExecuteCall(String[] args, boolean loop) {
         final Call call = Call.parse(String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
 
         Song functionCallSong = null;
@@ -408,7 +416,7 @@ public class REPL {
         if (functionCallSong != null) {
             final Performance performance = Performer.perform(functionCallSong);
             final Sequence songMidiSequence = ToMidiSequenceConverter.getInstance().convert(performance);
-            playMidiSequence(songMidiSequence, false);
+            playMidiSequence(songMidiSequence, loop);
         }
 
         return true;
